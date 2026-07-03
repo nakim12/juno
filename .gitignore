@@ -23,6 +23,7 @@ node_modules/
 .next/
 out/
 frontend/.env*.local
+*.tsbuildinfo
 
 # Editor / OS
 .DS_Store

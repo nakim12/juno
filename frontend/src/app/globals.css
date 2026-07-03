@@ -2,26 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Editorial dark theme — committed (not adaptive) to match the product aesthetic. */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222 47% 11%;
-  --muted: 210 40% 96%;
-  --border: 214 32% 91%;
-  --accent: 221 83% 53%;
+  --background: 240 6% 6%;
+  --surface: 240 5% 9%;
+  --foreground: 40 12% 92%;
+  --muted: 240 5% 12%;
+  --muted-foreground: 240 5% 62%;
+  --border: 240 5% 16%;
+  --accent: 245 90% 66%;
+  --accent-2: 275 85% 65%;
+  --accent-3: 190 92% 52%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 222 47% 8%;
-    --foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --border: 217 33% 20%;
-    --accent: 217 91% 60%;
-  }
+* {
+  border-color: hsl(var(--border));
 }
 
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---- Typographic helpers ---- */
+.mono {
+  font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", monospace;
+  font-feature-settings: "ss01";
+}
+
+.eyebrow {
+  font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.display {
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+}
+
+.gradient-text {
+  background: linear-gradient(
+    100deg,
+    hsl(var(--accent)),
+    hsl(var(--accent-2)) 52%,
+    hsl(var(--accent-3))
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Background decoration ---- */
+.hero-glow {
+  background:
+    radial-gradient(55% 55% at 50% -5%, hsl(var(--accent) / 0.22) 0%, transparent 68%),
+    radial-gradient(40% 40% at 82% 8%, hsl(var(--accent-2) / 0.16) 0%, transparent 70%),
+    radial-gradient(35% 35% at 12% 20%, hsl(var(--accent-3) / 0.1) 0%, transparent 70%);
+}
+
+.grid-bg {
+  background-image:
+    linear-gradient(hsl(var(--border) / 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border) / 0.5) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(75% 65% at 50% 0%, #000 0%, transparent 82%);
+  -webkit-mask-image: radial-gradient(75% 65% at 50% 0%, #000 0%, transparent 82%);
+}
+
+/* ---- Surfaces ---- */
+.card {
+  background: hsl(var(--surface));
+  border: 1px solid hsl(var(--border));
+  border-radius: 1rem;
+}
+
+.hairline {
+  border-top: 1px solid hsl(var(--border));
 }
