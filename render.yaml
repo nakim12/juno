@@ -1,0 +1,22 @@
+# Render blueprint for the Juno backend (design doc §6: "Backend deploy: Render").
+# Deploy: push to GitHub, then in Render choose "New +" -> "Blueprint" and point
+# it at this repo. Set the secret env vars in the dashboard.
+services:
+  - type: web
+    name: juno-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: prod
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      # JSON array of allowed origins, e.g. ["https://juno.vercel.app"]
+      - key: CORS_ORIGINS
+        sync: false

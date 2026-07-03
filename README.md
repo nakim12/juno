@@ -99,6 +99,12 @@ pip install -r dashboard/requirements.txt
 streamlit run dashboard/app.py
 ```
 
+## Deployment
+
+Frontend deploys to **Vercel**, backend to **Render** (a `render.yaml` blueprint
+and a `backend/Dockerfile` are included). See
+[`docs/deployment.md`](./docs/deployment.md) for step-by-step instructions.
+
 ## Build phases
 
 Development follows the phased plan in the design doc (§8):
