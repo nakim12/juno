@@ -86,7 +86,7 @@ export default function Landing() {
       <nav className="sticky top-0 z-20 border-b border-border/70 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="mono flex items-center gap-2 text-sm font-medium">
-            <span className="grid h-6 w-6 place-items-center rounded-md bg-gradient-to-br from-accent to-accent-2 text-xs text-white">
+            <span className="grid h-6 w-6 place-items-center rounded-md bg-gradient-to-br from-accent to-accent-2 text-xs font-semibold text-background">
               J
             </span>
             juno<span className="text-accent">.</span>
@@ -137,7 +137,7 @@ export default function Landing() {
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 href="/analyze"
-                className="rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-accent/25 transition hover:opacity-90"
+                className="rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 text-sm font-semibold text-background shadow-lg shadow-accent/25 transition hover:opacity-90"
               >
                 Try the live demo →
               </Link>
@@ -164,9 +164,9 @@ export default function Landing() {
             </div>
             <div className="space-y-3 p-5">
               {[
-                { name: "Affiliate", roi: "4.5x", conf: "high", tone: "text-green-400 border-green-400/30 bg-green-400/10" },
-                { name: "Search", roi: "2.9x", conf: "high", tone: "text-green-400 border-green-400/30 bg-green-400/10" },
-                { name: "TikTok", roi: "1.7x", conf: "low", tone: "text-red-400 border-red-400/30 bg-red-400/10" },
+                { name: "Affiliate", roi: "4.5x", conf: "high", tone: "text-success border-[hsl(var(--success)/0.4)] bg-[hsl(var(--success)/0.14)]" },
+                { name: "Search", roi: "2.9x", conf: "high", tone: "text-success border-[hsl(var(--success)/0.4)] bg-[hsl(var(--success)/0.14)]" },
+                { name: "TikTok", roi: "1.7x", conf: "low", tone: "text-error border-[hsl(var(--error)/0.4)] bg-[hsl(var(--error)/0.14)]" },
               ].map((c) => (
                 <div
                   key={c.name}
@@ -292,7 +292,7 @@ export default function Landing() {
           </p>
           <Link
             href="/analyze"
-            className="mt-9 inline-block rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-accent/25 transition hover:opacity-90"
+            className="mt-9 inline-block rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3.5 text-sm font-semibold text-background shadow-lg shadow-accent/25 transition hover:opacity-90"
           >
             Launch the demo →
           </Link>

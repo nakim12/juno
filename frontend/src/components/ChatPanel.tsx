@@ -61,7 +61,7 @@ export function ChatPanel({ sessionId }: { sessionId: string }) {
             <div
               className={`inline-block max-w-[85%] rounded-2xl px-4 py-2 text-sm ${
                 turn.role === "user"
-                  ? "bg-[hsl(var(--accent))] text-white"
+                  ? "bg-[hsl(var(--accent))] font-medium text-[hsl(var(--background))]"
                   : "border border-border bg-[hsl(var(--muted))]"
               }`}
             >
@@ -88,7 +88,7 @@ export function ChatPanel({ sessionId }: { sessionId: string }) {
         <button
           onClick={send}
           disabled={busy}
-          className="rounded-lg bg-[hsl(var(--accent))] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded-lg bg-[hsl(var(--accent))] px-4 py-2 text-sm font-medium text-[hsl(var(--background))] disabled:opacity-50"
         >
           Send
         </button>

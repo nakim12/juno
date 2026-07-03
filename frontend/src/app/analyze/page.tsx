@@ -55,7 +55,7 @@ export default function Analyze() {
       </header>
 
       {error && (
-        <div className="mb-6 rounded-lg border border-red-400/30 bg-red-400/10 p-3 text-sm text-red-400">
+        <div className="mb-6 rounded-lg border border-[hsl(var(--error)/0.4)] bg-[hsl(var(--error)/0.14)] p-3 text-sm text-error">
           {error}
         </div>
       )}

@@ -2,17 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Editorial dark theme — committed (not adaptive) to match the product aesthetic. */
+/* Deep Navy + Warm Gold — "Roman goddess" theme. Committed (not adaptive). */
 :root {
-  --background: 240 6% 6%;
-  --surface: 240 5% 9%;
-  --foreground: 40 12% 92%;
-  --muted: 240 5% 12%;
-  --muted-foreground: 240 5% 62%;
-  --border: 240 5% 16%;
-  --accent: 245 90% 66%;
-  --accent-2: 275 85% 65%;
-  --accent-3: 190 92% 52%;
+  --background: 226 60% 10%;      /* #0A1128 deep navy */
+  --surface: 222 51% 16%;         /* #14203D card navy */
+  --muted: 221 48% 14%;           /* subtle fill between bg and surface */
+  --muted-foreground: 220 18% 70%;/* #A5AEC0 muted blue-gray */
+  --foreground: 42 39% 94%;       /* #F5F1E8 warm off-white */
+  --border: 220 45% 21%;          /* #1E2E4F subtle border */
+  --accent: 31 53% 64%;           /* #D4A574 warm brushed gold */
+  --accent-2: 38 54% 54%;         /* #C99B4A deeper gold */
+  --accent-3: 43 45% 78%;         /* champagne highlight (gradient sparkle) */
+  --success: 130 14% 49%;         /* #6B8F71 muted sage */
+  --warning: 38 54% 54%;          /* #C99B4A deeper gold */
+  --error: 0 44% 51%;             /* #B84A4A muted brick */
 }
 
 * {

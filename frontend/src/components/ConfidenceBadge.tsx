@@ -1,9 +1,9 @@
 import type { Confidence } from "@/types";
 
 const STYLES: Record<Confidence, string> = {
-  high: "text-green-400 border-green-400/30 bg-green-400/10",
-  medium: "text-amber-400 border-amber-400/30 bg-amber-400/10",
-  low: "text-red-400 border-red-400/30 bg-red-400/10",
+  high: "text-success border-[hsl(var(--success)/0.4)] bg-[hsl(var(--success)/0.14)]",
+  medium: "text-warning border-[hsl(var(--warning)/0.4)] bg-[hsl(var(--warning)/0.14)]",
+  low: "text-error border-[hsl(var(--error)/0.4)] bg-[hsl(var(--error)/0.14)]",
 };
 
 export function ConfidenceBadge({ level }: { level: Confidence }) {
