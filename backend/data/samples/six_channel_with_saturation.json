@@ -1,0 +1,69 @@
+{
+  "metadata": {
+    "model_type": "bayesian",
+    "data_span_weeks": 78,
+    "generated_at": "2026-01-15T00:00:00Z",
+    "source": "sample"
+  },
+  "channels": [
+    {
+      "name": "Search",
+      "spend_weekly": [12000, 12500, 11800, 12200],
+      "roi_point": 2.9,
+      "roi_ci": [2.6, 3.2],
+      "adstock_decay": 0.25,
+      "saturation_params": { "half_saturation": 90000, "shape": 1.2 },
+      "contribution_pct": 0.30
+    },
+    {
+      "name": "Meta",
+      "spend_weekly": [9000, 9200, 8900, 9100],
+      "roi_point": 2.1,
+      "roi_ci": [1.4, 2.8],
+      "adstock_decay": 0.55,
+      "saturation_params": { "half_saturation": 70000, "shape": 1.0 },
+      "contribution_pct": 0.22
+    },
+    {
+      "name": "TikTok",
+      "spend_weekly": [6000, 6200, 5900, 6100],
+      "roi_point": 1.7,
+      "roi_ci": [0.6, 2.8],
+      "adstock_decay": 0.7,
+      "saturation_params": { "half_saturation": 45000, "shape": 0.95 },
+      "contribution_pct": 0.15
+    },
+    {
+      "name": "YouTube",
+      "spend_weekly": [7000, 7100, 6900, 7050],
+      "roi_point": 1.4,
+      "roi_ci": [0.8, 2.0],
+      "adstock_decay": 0.92,
+      "saturation_params": { "half_saturation": 30000, "shape": 1.0 },
+      "contribution_pct": 0.18
+    },
+    {
+      "name": "Display",
+      "spend_weekly": [3000, 3100, 2900, 3050],
+      "roi_point": 0.7,
+      "roi_ci": [0.1, 1.3],
+      "adstock_decay": 0.5,
+      "saturation_params": { "half_saturation": 20000, "shape": 0.9 },
+      "contribution_pct": 0.10
+    },
+    {
+      "name": "Affiliate",
+      "spend_weekly": [1500, 1550, 1450, 1500],
+      "roi_point": 4.5,
+      "roi_ci": [3.9, 5.1],
+      "adstock_decay": 0.15,
+      "saturation_params": { "half_saturation": 8000, "shape": 1.3 },
+      "contribution_pct": 0.05
+    }
+  ],
+  "model_diagnostics": {
+    "r_squared": 0.88,
+    "mape": 0.09,
+    "holdout_mape": 0.12
+  }
+}

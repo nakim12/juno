@@ -1,0 +1,42 @@
+{
+  "metadata": {
+    "model_type": "bayesian",
+    "data_span_weeks": 52,
+    "generated_at": "2026-01-15T00:00:00Z",
+    "source": "sample"
+  },
+  "channels": [
+    {
+      "name": "Search",
+      "spend_weekly": [5000, 5200, 4800, 5100, 5300, 4900, 5000, 5200],
+      "roi_point": 3.2,
+      "roi_ci": [2.8, 3.6],
+      "adstock_decay": 0.3,
+      "saturation_params": { "half_saturation": 40000, "shape": 1.1 },
+      "contribution_pct": 0.45
+    },
+    {
+      "name": "Social",
+      "spend_weekly": [3000, 3100, 2900, 3050, 3200, 2950, 3000, 3100],
+      "roi_point": 1.8,
+      "roi_ci": [0.9, 2.7],
+      "adstock_decay": 0.6,
+      "saturation_params": { "half_saturation": 25000, "shape": 1.0 },
+      "contribution_pct": 0.33
+    },
+    {
+      "name": "Display",
+      "spend_weekly": [1500, 1600, 1400, 1550, 1650, 1450, 1500, 1600],
+      "roi_point": 0.9,
+      "roi_ci": [0.2, 1.6],
+      "adstock_decay": 0.5,
+      "saturation_params": { "half_saturation": 12000, "shape": 0.9 },
+      "contribution_pct": 0.22
+    }
+  ],
+  "model_diagnostics": {
+    "r_squared": 0.82,
+    "mape": 0.11,
+    "holdout_mape": 0.14
+  }
+}

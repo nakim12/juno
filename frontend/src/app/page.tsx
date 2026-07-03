@@ -1,0 +1,93 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { listSamples, loadSample } from "@/lib/api";
+import { ReportView } from "@/components/ReportView";
+import { ChatPanel } from "@/components/ChatPanel";
+import type { AnalysisReport, SampleInfo } from "@/types";
+
+export default function Home() {
+  const [samples, setSamples] = useState<SampleInfo[]>([]);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [report, setReport] = useState<AnalysisReport | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    listSamples()
+      .then(setSamples)
+      .catch(() => setError("Could not reach the backend. Is it running on :8000?"));
+  }, []);
+
+  async function onLoad(id: string) {
+    setLoading(true);
+    setError(null);
+    try {
+      const { session_id, report } = await loadSample(id);
+      setSessionId(session_id);
+      setReport(report);
+    } catch {
+      setError("Failed to load sample.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="mx-auto min-h-screen max-w-6xl px-6 py-10">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Juno</h1>
+        <p className="mt-1 max-w-2xl text-sm opacity-70">
+          An agentic copilot that interprets Marketing Mix Model outputs and answers
+          your questions with grounded reasoning and explicit confidence.
+        </p>
+      </header>
+
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800">
+          {error}
+        </div>
+      )}
+
+      <section className="mb-8">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide opacity-60">
+          Load a sample MMM output
+        </h2>
+        <div className="flex flex-wrap gap-3">
+          {samples.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => onLoad(s.id)}
+              disabled={loading}
+              className="rounded-lg border border-border px-4 py-3 text-left text-sm transition hover:border-[hsl(var(--accent))] disabled:opacity-50"
+            >
+              <div className="font-medium">{s.name}</div>
+              <div className="text-xs opacity-60">
+                {s.n_channels} channels · {s.data_span_weeks ?? "?"} weeks · {s.model_type}
+              </div>
+            </button>
+          ))}
+          {samples.length === 0 && !error && (
+            <p className="text-sm opacity-50">Loading samples…</p>
+          )}
+        </div>
+      </section>
+
+      {loading && <p className="text-sm opacity-60">Analyzing…</p>}
+
+      {report && sessionId && (
+        <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr]">
+          <div>
+            <ReportView report={report} />
+          </div>
+          <div className="lg:sticky lg:top-10 lg:h-[80vh]">
+            <h2 className="mb-3 text-lg font-semibold">Chat</h2>
+            <div className="h-[calc(100%-2.5rem)] rounded-xl border border-border p-4">
+              <ChatPanel sessionId={sessionId} />
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
