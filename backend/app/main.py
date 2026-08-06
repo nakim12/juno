@@ -8,7 +8,7 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import analysis, chat, samples, session
+from app.api import analysis, chat, evaluation, samples, session
 from app.core.config import settings
 
 app = FastAPI(
@@ -29,6 +29,7 @@ app.include_router(analysis.router)
 app.include_router(chat.router)
 app.include_router(session.router)
 app.include_router(samples.router)
+app.include_router(evaluation.router)
 
 
 @app.get("/health", tags=["meta"])

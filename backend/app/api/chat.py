@@ -24,10 +24,22 @@ async def chat(req: ChatRequest) -> StreamingResponse:
     session.history.append(ChatMessage(role="user", content=req.message))
 
     async def event_gen():
-        question_type, token_stream = await chat_router.route_and_stream(
+        question_type, chunks, token_stream = await chat_router.route_and_stream(
             session, req.message
         )
         yield f"event: meta\ndata: {json.dumps({'question_type': question_type})}\n\n"
+
+        if chunks:
+            sources = [
+                {
+                    "chunk_id": c.chunk_id,
+                    "topic": c.topic,
+                    "source": c.source,
+                    "snippet": (c.text[:220] + "…") if len(c.text) > 220 else c.text,
+                }
+                for c in chunks
+            ]
+            yield f"event: sources\ndata: {json.dumps({'sources': sources})}\n\n"
 
         collected: list[str] = []
         try:

@@ -6,8 +6,10 @@ import json
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 
 from app.agents import initial_analysis
+from app.api.analysis import analysis_stream_response
 from app.models.mmm_output import MMMOutput
 from app.session.store import session_store
 
@@ -51,3 +53,11 @@ async def load_sample(sample_id: str) -> dict:
     session.summary = summary
     session.report = report
     return {"session_id": session.session_id, "report": report.model_dump()}
+
+
+@router.post("/{sample_id}/load/stream")
+async def load_sample_stream(sample_id: str) -> StreamingResponse:
+    """Streaming variant of :func:`load_sample` for a live report-building UX."""
+    mmm = _load_sample_file(sample_id)
+    session = session_store.create(mmm)
+    return analysis_stream_response(session)

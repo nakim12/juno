@@ -6,9 +6,11 @@ from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Resolve backend/.env relative to this file so the key loads regardless of the
-# process working directory (e.g. when uvicorn is started with --app-dir).
-_ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
+# Anchor everything to the backend/ directory so files (the .env key, the Chroma
+# index, the eval db) resolve identically no matter what working directory the
+# process is launched from (e.g. uvicorn started with --app-dir, or from frontend/).
+_BACKEND_ROOT = Path(__file__).resolve().parents[2]
+_ENV_FILE = _BACKEND_ROOT / ".env"
 
 
 class Settings(BaseSettings):
@@ -31,10 +33,13 @@ class Settings(BaseSettings):
     # Model selection (see design doc section 6)
     agent_model: str = "claude-sonnet-4-5"
     judge_model: str = "claude-opus-4-5"
+
+    # Embeddings: "local" (free MiniLM via Chroma) or "openai" (text-embedding-3-small)
+    embedding_backend: Literal["local", "openai"] = "local"
     embedding_model: str = "text-embedding-3-small"
 
     # RAG
-    chroma_persist_dir: str = "./data/chroma"
+    chroma_persist_dir: str = str(_BACKEND_ROOT / "data" / "chroma")
     rag_top_k: int = 8
     rag_rerank_candidates: int = 20
 
@@ -42,7 +47,7 @@ class Settings(BaseSettings):
     session_ttl_seconds: int = 60 * 60 * 2  # 2 hours (design doc 5.7)
 
     # Evaluation
-    eval_db_path: str = "./data/eval.db"
+    eval_db_path: str = str(_BACKEND_ROOT / "data" / "eval.db")
 
 
 @lru_cache
