@@ -8,6 +8,7 @@ from app.agents import prompts
 from app.agents.handlers import get_handler
 from app.core.llm import LLMClient, LLMNotConfigured, get_agent_llm
 from app.models.chat_message import QuestionType, RouterDecision
+from app.rag.retriever import RetrievedChunk
 from app.session.store import Session
 
 PROMPT_NAME = "router"
@@ -42,7 +43,8 @@ async def classify(message: str, llm: LLMClient | None = None) -> RouterDecision
 
 async def route_and_stream(
     session: Session, message: str
-) -> tuple[QuestionType, AsyncIterator[str]]:
+) -> tuple[QuestionType, list[RetrievedChunk], AsyncIterator[str]]:
     decision = await classify(message)
     handler = get_handler(decision.question_type)
-    return decision.question_type, handler.stream(session, message)
+    chunks = handler.retrieve(session, message)
+    return decision.question_type, chunks, handler.stream(session, message, chunks)

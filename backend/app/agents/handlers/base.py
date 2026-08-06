@@ -13,7 +13,7 @@ from collections.abc import AsyncIterator
 from app.agents import prompts
 from app.core.llm import LLMClient, get_agent_llm
 from app.models.chat_message import QuestionType
-from app.rag.retriever import retriever
+from app.rag.retriever import RetrievedChunk, retriever
 from app.session.store import Session
 
 PROMPT_NAME = "chat"
@@ -31,15 +31,27 @@ class BaseHandler:
         """Hook for subclasses to add question-type-specific grounding."""
         return ""
 
-    def _knowledge_base(self, message: str) -> str:
-        if not self.uses_knowledge_base:
-            return ""
-        chunks = retriever.retrieve(message)
-        if not chunks:
-            return ""
-        return "\n\n".join(f"[{c.chunk_id}] {c.text}" for c in chunks)
+    def _retrieval_query(self, session: Session, message: str) -> str:
+        """Enrich the raw question with model context to improve recall."""
+        if session.summary is None:
+            return message
+        channels = ", ".join(c.name for c in session.summary.channels)
+        issues = ", ".join(i.code for i in session.summary.detected_issues)
+        return (
+            f"{message}\n"
+            f"(context: {session.summary.model_type} MMM, channels: {channels}; "
+            f"detected features: {issues or 'none'})"
+        )
 
-    def _build_user_prompt(self, session: Session, message: str) -> str:
+    def retrieve(self, session: Session, message: str) -> list[RetrievedChunk]:
+        """Retrieve grounding chunks for this turn (empty if KB disabled)."""
+        if not self.uses_knowledge_base:
+            return []
+        return retriever.retrieve(self._retrieval_query(session, message))
+
+    def _build_user_prompt(
+        self, session: Session, message: str, chunks: list[RetrievedChunk]
+    ) -> str:
         report_json = (
             session.report.model_dump_json(indent=2) if session.report else "(no report)"
         )
@@ -50,8 +62,8 @@ class BaseHandler:
             f"MMM_OUTPUT:\n{session.mmm_output.model_dump_json(indent=2)}",
             f"CONVERSATION (recent):\n{convo}",
         ]
-        kb = self._knowledge_base(message)
-        if kb:
+        if chunks:
+            kb = "\n\n".join(f"[{c.chunk_id}] {c.text}" for c in chunks)
             parts.append(f"KNOWLEDGE_BASE:\n{kb}")
         extra = self.extra_grounding(session, message)
         if extra:
@@ -59,8 +71,10 @@ class BaseHandler:
         parts.append(f"USER_QUESTION:\n{message}")
         return "\n\n".join(parts)
 
-    async def stream(self, session: Session, message: str) -> AsyncIterator[str]:
+    async def stream(
+        self, session: Session, message: str, chunks: list[RetrievedChunk]
+    ) -> AsyncIterator[str]:
         system = prompts.load(PROMPT_NAME).replace("{question_type}", self.question_type)
-        user = self._build_user_prompt(session, message)
+        user = self._build_user_prompt(session, message, chunks)
         async for token in self.llm.stream(system, user):
             yield token
