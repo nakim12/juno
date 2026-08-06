@@ -1,0 +1,74 @@
+{
+  "available": true,
+  "run": {
+    "run_id": "3a5325ba41404aa78336f4e539626116",
+    "created_at": "2026-07-16T20:49:32.219554+00:00",
+    "n_cases": 100,
+    "agent_model": "claude-sonnet-4-5",
+    "judge_model": "claude-opus-4-5",
+    "prompt_version": "analysis.v5",
+    "used_llm": 1,
+    "used_judge": 1,
+    "accuracy": 0.875,
+    "calibration_ece": 0.0928,
+    "groundedness": 0.9034,
+    "actionability": 4.4045,
+    "failure_mode_recall": 0.9397,
+    "hallucination_rate": 0.1034,
+    "weighted_total": 0.8966,
+    "scenario_breakdown": {
+      "accuracy_by_channel_count": {
+        "3-5": 0.8381,
+        "6-8": 0.8797,
+        "9-10": 0.9435
+      },
+      "recall_by_failure_mode": {
+        "high_adstock": 0.8882,
+        "saturation_extrapolation": 0.8895,
+        "low_contribution": 0.9417,
+        "wide_ci": 0.9635,
+        "multicollinearity": 0.9066
+      }
+    }
+  },
+  "failures": {
+    "total": 9,
+    "by_category": {
+      "agent_error": 5,
+      "actionability": 3,
+      "hallucination": 1
+    }
+  },
+  "judge_validation": {
+    "n_cases": 3,
+    "k_repetitions": 3,
+    "overall_test_retest_kappa": 0.808,
+    "per_dimension": {
+      "accuracy": {
+        "test_retest_kappa": 1.0,
+        "all_identical_rate": 1.0
+      },
+      "calibration": {
+        "test_retest_kappa": 1.0,
+        "all_identical_rate": 1.0
+      },
+      "groundedness": {
+        "test_retest_kappa": 1.0,
+        "all_identical_rate": 1.0
+      },
+      "actionability": {
+        "test_retest_kappa": 0.8,
+        "all_identical_rate": 0.67
+      },
+      "failure_mode_detection": {
+        "test_retest_kappa": 0.4,
+        "all_identical_rate": 0.67
+      },
+      "hallucination": {
+        "test_retest_kappa": 0.4,
+        "all_identical_rate": 0.33
+      }
+    }
+  },
+  "note": "Live run: 100 ground-truth scenarios scored with the real agent (claude-sonnet-4-5, prompt analysis.v5) and LLM judge (claude-opus-4-5). v5 fixed calibration: after the reliability report showed the agent was under-confident (right ~88% but labeling channels medium/low), v5 redefined confidence as rank-certainty and defaults to 'high'. ECE fell from 0.263 (v4) to 0.093 \u2014 now passing \u2014 with the composite rising to 0.897 and 5 of 6 targets met. Accuracy = agent's own channel ranking vs. ground-truth ROI (Spearman); calibration = ECE of per-channel confidence against within-one-position rank correctness; groundedness/actionability/hallucination are Opus-judged against cached gold-standard references."
+}

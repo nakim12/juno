@@ -15,6 +15,7 @@ from app.core.config import settings
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS failure_modes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT,
     case_id TEXT NOT NULL,
     category TEXT,
     agent_response TEXT NOT NULL,
@@ -32,6 +33,7 @@ class FailureEntry:
     judge_reasoning: str
     score: float
     category: str | None = None
+    run_id: str | None = None
 
 
 def _connect() -> sqlite3.Connection:
@@ -45,9 +47,10 @@ def log_failure(entry: FailureEntry) -> None:
     conn = _connect()
     try:
         conn.execute(
-            "INSERT INTO failure_modes (case_id, category, agent_response, judge_reasoning, score)"
-            " VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO failure_modes (run_id, case_id, category, agent_response,"
+            " judge_reasoning, score) VALUES (?, ?, ?, ?, ?, ?)",
             (
+                entry.run_id,
                 entry.case_id,
                 entry.category,
                 entry.agent_response,

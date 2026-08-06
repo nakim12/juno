@@ -1,0 +1,1423 @@
+{
+  "case_0000": {
+    "session_id": "case_0000",
+    "overview": "This Bayesian MMM analyzed 26 weeks of data across four channels (Display, Social, Podcast, TV) totaling $4.47M in spend. The model suggests positive returns for all channels, with Podcast (ROI 1.79) and Social (ROI 1.73) showing the strongest point estimates, followed by TV (1.71) and Display (1.25). Overall fit is reasonable (R\u00b2 0.81, MAPE 9.2%). However, confidence in these estimates is constrained by several structural issues: the data span is short (only 26 weeks, insufficient to reliably separate seasonality from media effects), Display has extremely high adstock decay (0.94) that is difficult to identify with limited data, and TV contributes less than 2% of attributed outcomes despite moderate spend and ROI. All credible intervals are moderately wide, reflecting genuine uncertainty. The model provides directional guidance but should not be treated as precise measurements without experimental validation.",
+    "per_channel": [
+      {
+        "channel_name": "Display",
+        "interpretation": "Display shows an ROI of 1.25 [1.1, 1.4], meaning each dollar spent returns approximately $1.25 in incremental outcome. It accounts for 21.5% of attributed conversions on 27.7% of total spend. The model estimates very high adstock decay (0.94), suggesting Display effects persist for many weeks. However, this high decay is flagged as a detected issue: such long carryover is hard to identify from only 26 weeks of data, and the estimate may be unreliable. The credible interval width of 0.30 is the narrowest among channels but still reflects meaningful uncertainty. Half-saturation is estimated at $457K, suggesting Display may be approaching diminishing returns at current spend levels (~$1.24M total over 26 weeks).",
+        "confidence": "medium",
+        "confidence_reasoning": "The CI is relatively tight compared to other channels, and contribution percentage is substantial. However, the extremely high adstock decay (0.94) flagged in detected_issues undermines confidence: with only 26 weeks of data, such long carryover effects are difficult to reliably estimate and may be overstated.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Display",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Social",
+        "interpretation": "Social delivers an ROI of 1.73 [1.52, 1.94], the second-highest point estimate. It contributes 29.1% of attributed outcomes on 27.0% of spend. Adstock decay is moderate (0.38), indicating effects are concentrated in the weeks shortly after spend. Half-saturation is estimated at $874K; with total spend at $1.21M over the period, Social may be operating in a moderately saturated regime but not severely. The credible interval width (0.42) reflects non-trivial uncertainty.",
+        "confidence": "medium",
+        "confidence_reasoning": "The ROI estimate is positive and the CI does not include values below 1.5, which is encouraging. However, the CI width of 0.42 is substantial (roughly 24% of the point estimate), and the 26-week data span limits ability to separate seasonal confounding from true media effects. Moderate confidence is warranted pending experimental validation.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Social",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "seasonality_baseline::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Podcast",
+        "interpretation": "Podcast shows the highest point ROI at 1.79 [1.57, 2.01], contributing 26.6% of outcomes on 23.9% of spend. Adstock decay is 0.54, indicating moderate carryover. Half-saturation is $685K; current spend is $1.07M, suggesting Podcast may be experiencing some diminishing returns but is not fully saturated. The CI width of 0.44 is the widest among channels in absolute terms, reflecting meaningful uncertainty in the estimate.",
+        "confidence": "medium",
+        "confidence_reasoning": "Podcast has the highest ROI point estimate and a reasonable contribution share, which is promising. However, the credible interval is the widest (0.44, spanning roughly 25% of the point estimate), and the 26-week data span makes it difficult to rule out confounding from unmodeled seasonality or promotional activity. Medium confidence is appropriate; experimental validation would significantly strengthen trust in this estimate.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Podcast",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "TV",
+        "interpretation": "TV shows an ROI of 1.71 [1.5, 1.92], similar to Social and Podcast in point estimate. However, TV contributes only 1.6% of attributed outcomes despite $960K in spend (21.5% of total). This low contribution is flagged as a detected issue. Adstock is relatively high (0.78), and half-saturation is $548K, below total spend. The combination of positive ROI, low contribution percentage, and high adstock suggests either that TV's effects are being absorbed into baseline/seasonality, or that the observational data cannot reliably identify TV's incremental impact. The CI width of 0.42 reflects substantial uncertainty.",
+        "confidence": "low",
+        "confidence_reasoning": "The low contribution (< 2%) despite moderate spend and a seemingly positive ROI is a red flag. This pattern often indicates baseline leakage or identifiability issues: the model may be attributing pre-existing demand to TV, or it may struggle to separate TV's effect from correlated drivers. The 26-week data span and lack of experimental calibration make it difficult to trust this estimate. Low confidence is warranted; a geo lift test on TV is the highest validation priority.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "TV",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "seasonality_baseline::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "structural_risks": [
+      {
+        "title": "Short data span limits seasonality control",
+        "description": "The model is trained on only 26 weeks of data, which is insufficient to reliably estimate annual seasonality patterns. With less than half a year of observations, the model cannot confidently separate a seasonal demand peak from media-driven lift. Any channel whose spend correlates with a seasonal pattern risks having baseline demand incorrectly attributed to it, inflating ROI. This is a fundamental threat to causal validity in the current model.",
+        "severity": "high",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "data_span_weeks",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "seasonality_baseline::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Display: extremely high adstock decay is hard to identify",
+        "description": "Display has an adstock decay parameter of 0.94, meaning 94% of each week's effect carries into the next week. This implies effects persist for many weeks, smearing the signal across time. With only 26 weeks of data, such long carryover is difficult to estimate reliably because the model has limited independent variation to learn from. The detected_issues flag confirms this: high adstock estimates are often overstated when data are sparse. The Display coefficient and ROI should be treated with caution.",
+        "severity": "high",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Display",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "TV: low contribution suggests possible baseline leakage or weak identifiability",
+        "description": "TV contributes less than 2% of attributed outcomes despite accounting for 21.5% of spend and showing a positive ROI point estimate. This pattern is suspicious: it suggests either that TV's true incremental effect is very small (in which case the positive ROI may reflect baseline demand mistakenly attributed to TV), or that the model struggles to identify TV's effect due to collinearity or lack of variation. The low contribution is flagged in detected_issues and should be considered a structural risk rather than a confident finding.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "TV",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "causal_inference::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Wide credible intervals reflect genuine uncertainty",
+        "description": "All four channels have credible interval widths between 0.30 and 0.44, representing roughly 20\u201325% of their point ROI estimates. In a Bayesian framework, these intervals express genuine uncertainty about the true parameter values. They are wider than ideal, likely due to the short data span, collinearity among channels, and the difficulty of separating media effects from baseline demand. Decisions based on point estimates alone risk ignoring this uncertainty. Any high-stakes budget reallocation should account for the possibility that true ROIs fall anywhere within these intervals.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "channels",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "action": "Prioritize a geo lift test on TV to resolve the low-contribution anomaly and validate its true incremental ROI.",
+        "priority": "high",
+        "rationale": "TV's combination of moderate spend, positive estimated ROI, and extremely low contribution (< 2%) is the model's most suspicious finding. A geo-based incrementality test will directly measure TV's causal lift and either confirm the model's estimate or reveal that the positive ROI is spurious, driven by baseline leakage or confounding. This test will provide the highest-value calibration input because it targets the channel where observational data are least informative. If TV's true incremental effect is near zero, reallocating that budget could materially improve overall efficiency.",
+        "confidence": "high",
+        "dependencies": [
+          "Budget and operational capacity to run a multi-week geo experiment"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "TV",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "lift_tests::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Run a lift test on Podcast to validate its high estimated ROI before increasing spend.",
+        "priority": "high",
+        "rationale": "Podcast shows the highest point ROI (1.79) and a substantial contribution share, making it an attractive candidate for budget growth. However, its credible interval is the widest (0.44), and the 26-week data span limits confidence that this estimate is free from seasonal or promotional confounding. Before committing additional budget, a conversion lift study or geo test will provide causal confirmation of Podcast's true incrementality. If validated, Podcast becomes a high-confidence growth lever; if not, the model's estimate was optimistic and the budget is better deployed elsewhere.",
+        "confidence": "high",
+        "dependencies": [
+          "Experimental budget",
+          "Ability to hold out or vary Podcast spend in a controlled way"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Podcast",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "lift_tests::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Extend data collection to at least 52 weeks (ideally 104 weeks) and refit the model to improve seasonality identification.",
+        "priority": "high",
+        "rationale": "The current 26-week span is too short to reliably separate annual seasonality from media effects, which is a fundamental threat to the validity of all channel estimates. Marketing mix models require at least one full year of data to estimate seasonal patterns confidently, and two years is preferable. Extending the data window will reduce confounding, tighten credible intervals, and allow the model to distinguish true media lift from baseline demand fluctuations. This is a prerequisite for trusting any channel's ROI at a decision-making level.",
+        "confidence": "high",
+        "dependencies": [
+          "Time to accumulate additional weeks of data",
+          "Consistent data collection and measurement practices"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "data_span_weeks",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "seasonality_baseline::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Investigate Display's extremely high adstock estimate (0.94) with holdout validation or alternative model specifications.",
+        "priority": "medium",
+        "rationale": "An adstock decay of 0.94 is very high and may be overstated given the short data span. To test whether this estimate is reliable, fit the model on an earlier subset of the 26 weeks and validate on a held-out later period, checking whether Display's long-carryover assumption improves or degrades forecast accuracy. Alternatively, try constraining Display's adstock to a more moderate prior (e.g., 0.6\u20130.8) and observe whether model fit or channel estimates change materially. If the high adstock is not well-supported, the current Display ROI may be biased.",
+        "confidence": "medium",
+        "dependencies": [
+          "Technical capability to refit model with alternative priors or validation splits"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Display",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Use credible intervals, not point estimates, in budget allocation decisions to account for uncertainty.",
+        "priority": "medium",
+        "rationale": "All channel ROIs have credible intervals spanning roughly 20\u201325% of their point values, reflecting genuine parameter uncertainty. Basing budget decisions on point estimates alone is risky: if the true ROI is at the lower bound of the interval, an aggressive reallocation could underperform. Instead, consider scenarios at the lower and upper CI bounds when modeling budget shifts, or use a Bayesian decision framework that integrates over the posterior distribution. This approach hedges against the model's uncertainty and leads to more robust strategies.",
+        "confidence": "medium",
+        "dependencies": [
+          "Stakeholder buy-in for probabilistic budget planning"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "channels",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Test whether channels are collinear by examining pairwise spend correlations and refitting with one channel held out.",
+        "priority": "low",
+        "rationale": "Wide credible intervals can result from multicollinearity: if two channels' spends move together, the model struggles to attribute credit between them, producing unstable estimates. Calculate correlation matrices for the four channels' weekly spends. If any pair has correlation above 0.7, consider a sensitivity check where one channel is excluded from the model to see whether the other's coefficient changes materially. If so, the current attribution between those channels is uncertain and should be flagged when presenting results.",
+        "confidence": "medium",
+        "dependencies": [
+          "Access to raw weekly spend data",
+          "Technical capability to refit model iteratively"
+        ],
+        "citations": [
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "validation_suggestions": [
+      {
+        "step": "Conduct a geo-based incrementality test on TV to measure its true causal lift.",
+        "rationale": "TV's low contribution percentage despite positive estimated ROI is the model's most suspicious finding. A geo experiment will provide direct causal evidence and either validate the model's estimate or reveal that it is biased by baseline leakage, resolving the highest-priority uncertainty in the current output."
+      },
+      {
+        "step": "Run a conversion lift study on Podcast to confirm its high ROI before scaling spend.",
+        "rationale": "Podcast has the highest estimated ROI but also the widest credible interval. Validating this estimate experimentally will provide the confidence needed to justify increased investment, or will prevent over-allocation if the observational estimate is optimistic."
+      },
+      {
+        "step": "Perform a holdout validation by training the model on weeks 1\u201320 and forecasting weeks 21\u201326, checking forecast accuracy by channel.",
+        "rationale": "Holdout validation tests whether the model's fitted relationships generalize to unseen data. If holdout MAPE is substantially higher than in-sample MAPE, or if certain channels' contributions are unstable across splits, it suggests overfitting or weak identifiability and should lower confidence in those channels' estimates."
+      },
+      {
+        "step": "Extend data collection to at least 52 weeks and refit the model to improve seasonal identification.",
+        "rationale": "The current 26-week span cannot reliably separate annual seasonality from media effects. One full year of data is the minimum for confident seasonal modeling; two years is preferable. This is a prerequisite for trust in the model's attribution."
+      }
+    ],
+    "knowledge_sources": [
+      {
+        "chunk_id": "bayesian_priors::0",
+        "title": null,
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "attribution_mmm_vs_mta::0",
+        "title": null,
+        "topic": "attribution",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data \u2014 weekly spend and outcomes across channe\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "title": null,
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "title": null,
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "title": null,
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "seasonality_baseline::0",
+        "title": null,
+        "topic": "seasonality",
+        "source": "juno_kb",
+        "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m\u2026"
+      },
+      {
+        "chunk_id": "lift_tests::0",
+        "title": null,
+        "topic": "lift_tests",
+        "source": "juno_kb",
+        "snippet": "Incrementality tests measure the causal lift of advertising by creating a\ncontrolled contrast between exposed and unexposed groups. The most common design\nin a marketing context is a geo experiment: a set of matched geog\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "title": null,
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      }
+    ],
+    "metadata": {
+      "agent_model": "claude-sonnet-4-5",
+      "prompt_version": "analysis.v2",
+      "generated_at": "2026-07-04T19:14:06.410771+00:00"
+    }
+  },
+  "case_0001": {
+    "session_id": "case_0001",
+    "overview": "This Bayesian MMM covers 52 weeks across 6 channels with total spend of $9.6M. The model explains 78% of variance (R\u00b2 = 0.784) with moderate forecasting error (MAPE = 22.6%). Search and OOH emerge as the strongest performers with ROIs above 3.5, jointly driving 65% of attributed conversions. Radio shows high efficiency (ROI 3.67) despite low absolute spend. Affiliate and Social deliver positive but modest returns (0.85 and 1.71), while Podcast carries substantial uncertainty (ROI CI: 0.22\u20132.50). Two structural issues are flagged: Radio's very high adstock decay (0.92) makes its effect hard to identify reliably, and Podcast's wide credible interval signals low confidence in its estimate. The 52-week span supports seasonal control, but collinearity between channels may still compress intervals. Recommendations prioritize validating Podcast and Radio via lift tests, reallocating budget toward Search and OOH where marginal returns remain attractive, and monitoring saturation thresholds as spend scales.",
+    "per_channel": [
+      {
+        "channel_name": "Radio",
+        "interpretation": "Radio shows a strong point ROI of 3.67 (CI: 2.75\u20134.59) on modest spend ($281K), contributing 4.3% of attributed conversions. The credible interval is reasonably tight (width 1.84), suggesting the data support a positive return. However, the adstock decay of 0.92 is extremely high, meaning Radio's effect persists across many weeks. High decay makes the parameter difficult to identify from a single year of data, as the influence of any spend increment smears over a long horizon. The half-saturation point ($100K) is well below observed spend, indicating Radio is operating in the saturated portion of its response curve; further spend increases will yield diminishing returns. The detected issue confirms this risk: the model flags Radio's adstock as unusually high and warns that effects may be hard to isolate.",
+        "confidence": "medium",
+        "confidence_reasoning": "The ROI interval is moderately narrow, but the very high adstock decay (0.92) and the explicit model warning lower confidence. High decay parameters are known to be poorly identified when data spans are limited, and 52 weeks may not provide enough independent variation to pin down Radio's true carryover precisely.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Radio",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Affiliate",
+        "interpretation": "Affiliate represents the second-largest spend ($2.3M) but delivers a below-breakeven point ROI of 0.85 (CI: 0.64\u20131.06), meaning each dollar spent returns only 85 cents in attributed conversions. The channel contributes 8.2% of total attributed revenue. The credible interval is narrow (width 0.42), reflecting relatively high precision\u2014the model is confident that Affiliate's return is modest. Adstock decay is low (0.34), typical of performance-oriented channels where effects are realized quickly. The half-saturation point ($1.3M) sits well below observed spend, indicating Affiliate is deep into saturation; incremental spend is unlikely to improve efficiency and may further depress ROI. The low ROI combined with high spend signals Affiliate is either over-invested or includes non-incremental conversions that would have occurred anyway.",
+        "confidence": "high",
+        "confidence_reasoning": "The narrow credible interval (0.64\u20131.06) provides strong statistical precision. Affiliate's low adstock and performance-channel profile make the estimate more identifiable. The sub-1.0 ROI is a clear signal, though observational models can conflate correlation with incrementality, so experimental validation is recommended.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Affiliate",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "causal_inference::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Podcast",
+        "interpretation": "Podcast shows a point ROI of 1.36 on $739K spend, contributing 4.2% of conversions. However, the credible interval is extremely wide (0.22\u20132.50, width 2.28), spanning from near-zero to highly positive returns. This wide interval indicates the model has very limited information to distinguish Podcast's true effect from noise or confounding. Adstock decay is moderate (0.62), and the half-saturation point ($623K) is close to observed spend, suggesting Podcast is near the inflection of its saturation curve. The model explicitly flags Podcast's wide CI as a detected issue, cautioning that the ROI estimate should be treated with low confidence. The uncertainty likely stems from limited spend variation, collinearity with other channels, or insufficient data to identify the adstock-saturation interaction reliably.",
+        "confidence": "low",
+        "confidence_reasoning": "The credible interval width (2.28) is enormous relative to the point estimate (1.36), and the model's own diagnostic flags this as a structural concern. Wide intervals mean the data cannot distinguish between vastly different ROI scenarios, so any strategic decision based on Podcast's point estimate alone would be risky.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Podcast",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Search",
+        "interpretation": "Search is the standout performer: ROI of 5.41 (CI: 4.05\u20136.77) on $1.16M spend, driving 26.3% of attributed conversions\u2014the largest single-channel contribution. The credible interval is moderately wide (width 2.72) but remains strongly positive throughout, reflecting high confidence in Search's effectiveness. Adstock decay is 0.75, indicating meaningful carryover (effects persist several weeks), and the half-saturation point ($1.53M) lies above observed spend, suggesting Search has room to scale before hitting diminishing returns. This combination\u2014high ROI, large contribution share, and headroom to saturation\u2014makes Search the most attractive candidate for incremental investment. The interval width suggests some uncertainty in the exact magnitude, but the directional signal is clear.",
+        "confidence": "high",
+        "confidence_reasoning": "The ROI point estimate is strong, the lower bound of the CI (4.05) is well above breakeven, and Search's large contribution share (26.3%) grounds the estimate in substantial observed variation. While the interval is not narrow, the model's confidence in a positive, high-return outcome is robust.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Search",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Social",
+        "interpretation": "Social has the highest absolute spend ($2.51M) and delivers a moderate ROI of 1.71 (CI: 1.28\u20132.14), contributing 17.9% of conversions. The credible interval is reasonably tight (width 0.86), indicating the estimate is statistically precise. Adstock decay is low (0.34), consistent with Social's performance-oriented, short-feedback-loop nature. However, the half-saturation point ($2.74M) is only slightly above observed spend, meaning Social is approaching the flat portion of its response curve. Incremental spend is likely to yield diminishing returns. While Social is profitable (ROI > 1), its marginal efficiency is likely lower than Search or OOH, making it a hold rather than a scale candidate unless targeting or creative can shift the saturation curve.",
+        "confidence": "high",
+        "confidence_reasoning": "The narrow credible interval (1.28\u20132.14) and large spend base provide strong statistical grounding. Social's low adstock makes the parameter easier to identify. The saturation position is clear from the half-saturation metric, and the ROI signal is stable.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Social",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "OOH",
+        "interpretation": "Out-of-home (OOH) is the largest contributor to attributed conversions (39.2%) and delivers a strong ROI of 3.54 (CI: 2.65\u20134.43) on $2.65M spend. The credible interval is moderately wide (width 1.78) but remains well above breakeven throughout. Adstock decay is 0.68, reflecting persistent brand-building effects typical of OOH. The half-saturation point ($2.05M) sits below observed spend, suggesting OOH is operating in the saturated region; however, the gap is not extreme, so modest incremental spend may still be viable. OOH's combination of high ROI, dominant contribution share, and moderate saturation makes it a strong strategic asset, though the marginal return is likely lower than Search's. The interval width introduces some uncertainty around the exact ROI magnitude, but the directional conclusion\u2014OOH is highly effective\u2014is robust.",
+        "confidence": "high",
+        "confidence_reasoning": "The large contribution share (39.2%) and substantial spend base give the model ample data to identify OOH's effect. The credible interval, while not narrow, stays strongly positive (lower bound 2.65). The adstock and saturation parameters are within plausible ranges for a brand-oriented channel.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "OOH",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "structural_risks": [
+      {
+        "title": "Radio: Very High Adstock Decay",
+        "description": "Radio's adstock decay parameter is 0.92, meaning 92% of each week's effect carries into the next week, so the impact of a single spend event persists for many periods. High decay parameters are difficult to identify reliably from limited data because the effect smears across a long horizon, reducing the independent variation available to the model. With only 52 weeks of data, the model may struggle to separate Radio's true carryover from trend or seasonality, and the estimate may be overstated. This is flagged as a detected issue in the model output. Treat Radio's adstock and ROI estimates with caution; they are plausible but not confidently pinned down.",
+        "severity": "high",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "detected_issues",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Podcast: Extreme Credible Interval Width",
+        "description": "Podcast's ROI credible interval spans 0.22 to 2.50, a range so wide it includes near-zero and strongly positive returns. This extreme uncertainty means the model cannot reliably distinguish Podcast's true effect from noise. The width likely reflects limited spend variation, collinearity with other channels, or insufficient data to identify the adstock-saturation interaction. The model explicitly flags this as a detected issue. Any recommendation or budget decision based on Podcast's point estimate (1.36) alone would be high-risk. Podcast requires experimental validation\u2014ideally a geo lift test\u2014to establish a causal ground truth before making strategic commitments.",
+        "severity": "high",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "detected_issues",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Potential Collinearity Among Channels",
+        "description": "Several channels show moderate-to-wide credible intervals (Radio: 1.84, Search: 2.72, OOH: 1.78), which may indicate that their spends are partially collinear\u2014moving together over time\u2014making it difficult for the model to isolate each channel's independent effect. Collinearity does not bias point estimates on average in a Bayesian model with proper priors, but it inflates uncertainty and can cause the model to split credit between correlated channels somewhat arbitrarily. While none of the intervals overlap zero, the widths suggest the data provide less independent leverage on each channel than ideal. This is a mild structural concern rather than a fatal flaw, but it means the exact attribution split should be taken as an informed estimate rather than a precise measurement.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "channels",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Saturation: Multiple Channels Operating Beyond Half-Saturation",
+        "description": "Four of six channels (Radio, Affiliate, Social, OOH) are spending at or above their estimated half-saturation points, meaning they are operating in the region of diminishing returns. Incremental spend on these channels will yield lower marginal ROI than the average ROI reported. The model's saturation curves are estimated from historical data and may not extrapolate reliably if spend is pushed significantly beyond observed levels. Reallocation recommendations should account for the fact that the marginal dollar into a saturated channel is less productive than the average dollar. Search, which is spending below its half-saturation point, is the clearest exception and the most attractive target for incremental investment.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "channels",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Observational Model: Causal Validity Depends on Controls and Calibration",
+        "description": "This model is fit to observational data, so the ROI estimates rest on the assumption that all major confounders (seasonality, trend, promotions, pricing, competitor actions) are adequately controlled. If an unobserved driver moved both spend and sales, the model may attribute demand to media that is not truly incremental. The 52-week data span supports seasonal control, but short-term shocks or promotional activity could still introduce bias. Bayesian priors help regularize estimates, but without experimental calibration (lift tests), we cannot rule out confounding or reverse causality. The model's estimates should be interpreted as correlational attribution, not causal proof. Incrementality tests on high-impact or uncertain channels (Podcast, Radio, Search) are the gold standard for validation.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "knowledge_base",
+            "reference": "causal_inference::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "action": "Run a geo lift test on Podcast to resolve extreme uncertainty",
+        "priority": "high",
+        "rationale": "Podcast's credible interval (0.22\u20132.50) is so wide that the model provides no actionable signal on its true effectiveness. A geo experiment will produce a causal, ground-truth ROI estimate that can calibrate the model and inform whether Podcast merits continued or increased investment. This is the single most valuable validation step because it converts the channel with the highest uncertainty into a trusted estimate. Podcast's moderate spend ($739K) and moderate contribution (4.2%) make it strategically material but not dominant, so a lift test is feasible without major business disruption.",
+        "confidence": "high",
+        "dependencies": [
+          "Identify matched geo pairs with sufficient Podcast spend variation",
+          "Secure stakeholder buy-in for a 4\u20136 week holdout or spend increase in treatment geos"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Podcast",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "lift_tests::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Run a geo lift test on Radio to validate high-adstock estimate",
+        "priority": "high",
+        "rationale": "Radio's adstock decay of 0.92 is flagged as a structural concern because high decay parameters are difficult to identify from a single year of data, and the estimate may be overstated. A geo lift test will measure Radio's true incremental effect and carryover pattern, providing a causal anchor for the model. This is particularly important because Radio's reported ROI (3.67) is strong, and if the adstock is overstated, the model may be overattributing long-term baseline demand to Radio. Validating Radio will also inform whether its current spend level ($281K) should be maintained or adjusted.",
+        "confidence": "high",
+        "dependencies": [
+          "Design a geo experiment with sufficient radio coverage variation across treatment and control regions",
+          "Plan for a multi-week measurement window to capture carryover effects"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Radio",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "lift_tests::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Reallocate budget from Affiliate to Search",
+        "priority": "high",
+        "rationale": "Affiliate delivers a sub-breakeven ROI of 0.85 and is deep into saturation (half-saturation $1.3M vs. spend $2.3M), meaning incremental Affiliate spend is likely to yield even lower returns. Search, by contrast, has a strong ROI of 5.41 and is spending below its half-saturation point ($1.16M vs. $1.53M), indicating room to scale before hitting diminishing returns. Shifting $200K\u2013$500K from Affiliate to Search is expected to improve aggregate portfolio ROI. The confidence in Search's high effectiveness is strong (CI: 4.05\u20136.77), while Affiliate's modest performance is precisely estimated (CI: 0.64\u20131.06). This reallocation directly follows from the marginal efficiency signals in the model.",
+        "confidence": "high",
+        "dependencies": [
+          "Confirm with stakeholders that Affiliate contracts permit flexible spend adjustment",
+          "Monitor Search performance closely during ramp to detect any unexpected saturation"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Affiliate",
+            "snippet": null
+          },
+          {
+            "source_type": "mmm_output",
+            "reference": "Search",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Hold or modestly increase OOH spend, pending saturation check",
+        "priority": "medium",
+        "rationale": "OOH is the largest contributor (39.2%) and delivers a strong ROI of 3.54 (CI: 2.65\u20134.43). However, OOH is spending above its half-saturation point ($2.65M vs. $2.05M), so marginal returns are likely declining. A modest increase (e.g., $100K\u2013$200K) may still be viable given the gap between spend and saturation is not extreme, but large incremental investment risks pushing deep into diminishing returns. Before scaling OOH significantly, validate the saturation curve via a geo lift test or monitor in-market response to a small spend increase. OOH's high adstock (0.68) means effects build over time, so any test should run for at least 6\u20138 weeks.",
+        "confidence": "medium",
+        "dependencies": [
+          "Validate OOH saturation curve via a geo lift test or controlled spend increase",
+          "Assess whether OOH creative refresh or geographic expansion can shift the saturation threshold"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "OOH",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Maintain Social spend; explore targeting or creative optimization",
+        "priority": "medium",
+        "rationale": "Social delivers a positive ROI of 1.71 (CI: 1.28\u20132.14) on high spend ($2.51M), but it is near saturation (half-saturation $2.74M vs. spend $2.51M), so marginal efficiency is likely low. Incremental spend increases are unlikely to be as productive as reallocating to Search. However, Social's low adstock (0.34) and short feedback loop make it a good candidate for tactical optimization: improved targeting, audience segmentation, or creative testing may shift the saturation curve upward without requiring additional spend. Hold Social's budget steady and invest in optimization experiments rather than scale.",
+        "confidence": "medium",
+        "dependencies": [
+          "Partner with Social platform teams to design audience or creative A/B tests",
+          "Track incremental lift from optimization initiatives separately from baseline performance"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Social",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Reduce or pause Affiliate spend if validation confirms low incrementality",
+        "priority": "medium",
+        "rationale": "Affiliate's ROI of 0.85 suggests it is unprofitable at current spend levels. However, observational models can conflate correlation with causation, and Affiliate's reported conversions may include a large share of non-incremental demand (conversions that would have occurred anyway). Before making a large budget cut, validate Affiliate's true incrementality via a geo holdout test or platform-based conversion lift study. If the test confirms low incrementality, reduce Affiliate spend by 30\u201350% and monitor baseline sales for any drop. Affiliate's low adstock (0.34) means effects are realized quickly, so a spend reduction will show immediate impact.",
+        "confidence": "medium",
+        "dependencies": [
+          "Run a geo holdout or conversion lift test on Affiliate",
+          "Negotiate with Affiliate partners to allow flexible spend adjustments based on test results"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Affiliate",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "causal_inference::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Extend data collection to 104 weeks for next model refresh",
+        "priority": "low",
+        "rationale": "The current model uses 52 weeks of data, which is sufficient for seasonal control but marginal for reliably identifying high-adstock channels and complex saturation interactions. Adding a second year of data will improve the model's ability to separate carryover effects from trend and seasonality, narrow credible intervals, and strengthen the identification of collinear channels. This is especially valuable for Radio (high adstock) and Podcast (wide CI). Plan the next model refresh once 104 weeks of data are available, and incorporate any lift test results as priors or calibration constraints.",
+        "confidence": "high",
+        "dependencies": [
+          "Continue consistent data collection across all channels",
+          "Archive lift test results for use as calibration priors in the next model iteration"
+        ],
+        "citations": [
+          {
+            "source_type": "knowledge_base",
+            "reference": "seasonality_baseline::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "validation_suggestions": [
+      {
+        "step": "Geo lift test on Podcast",
+        "rationale": "Podcast's extremely wide credible interval (0.22\u20132.50) means the observational model cannot reliably estimate its true ROI. A geo experiment will provide a causal, ground-truth estimate by randomly assigning matched regions to treatment (Podcast on or increased) and control (Podcast held out or flat) and measuring the difference in conversions. This is the highest-priority validation because it converts the least certain channel into a trusted estimate."
+      },
+      {
+        "step": "Geo lift test on Radio",
+        "rationale": "Radio's very high adstock decay (0.92) is flagged as a structural risk and may be overestimated given the 52-week data span. A geo lift test will measure Radio's true incremental effect and carryover pattern, validating whether the observed long-term attribution is genuine or an artifact of confounding with trend. This test should run for 6\u20138 weeks to capture Radio's estimated long carryover."
+      },
+      {
+        "step": "Conversion lift study or geo holdout on Affiliate",
+        "rationale": "Affiliate's sub-breakeven ROI (0.85) suggests low incrementality, but observational models can be biased by last-touch attribution effects where Affiliate captures credit for conversions that would have occurred anyway. A platform-based conversion lift study or a geo holdout will measure Affiliate's true causal lift. If the test confirms low incrementality, it provides a rigorous basis for reducing spend."
+      },
+      {
+        "step": "Holdout validation on the full model",
+        "rationale": "Reserve the most recent 8\u201312 weeks of data as a holdout set and refit the model on the earlier period. Compare the model's out-of-sample predictions against actual sales in the holdout window. Strong holdout performance (low MAPE, stable channel coefficients) indicates the model generalizes well and is not overfitting. Weak holdout performance signals that channel attribution or saturation curves may not be reliable and that more data or stronger priors are needed."
+      },
+      {
+        "step": "Controlled spend increase experiment on Search",
+        "rationale": "Search shows strong ROI (5.41) and appears to have headroom to saturation (spend $1.16M vs. half-saturation $1.53M), but the saturation curve is estimated from historical data and may not extrapolate perfectly. Before committing to a large budget reallocation, run a controlled experiment: increase Search spend by 20\u201330% in a subset of geos or time periods and measure the incremental lift. This validates that Search's marginal ROI remains attractive at higher spend levels."
+      }
+    ],
+    "knowledge_sources": [
+      {
+        "chunk_id": "bayesian_priors::0",
+        "title": null,
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "attribution_mmm_vs_mta::0",
+        "title": null,
+        "topic": "attribution",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data \u2014 weekly spend and outcomes across channe\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "title": null,
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "title": null,
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "title": null,
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "seasonality_baseline::0",
+        "title": null,
+        "topic": "seasonality",
+        "source": "juno_kb",
+        "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "title": null,
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      },
+      {
+        "chunk_id": "lift_tests::0",
+        "title": null,
+        "topic": "lift_tests",
+        "source": "juno_kb",
+        "snippet": "Incrementality tests measure the causal lift of advertising by creating a\ncontrolled contrast between exposed and unexposed groups. The most common design\nin a marketing context is a geo experiment: a set of matched geog\u2026"
+      }
+    ],
+    "metadata": {
+      "agent_model": "claude-sonnet-4-5",
+      "prompt_version": "analysis.v2",
+      "generated_at": "2026-07-04T19:16:33.962723+00:00"
+    }
+  },
+  "case_0002": {
+    "session_id": "case_0002",
+    "overview": "The model explains 87.2% of variance with 14.8% mean absolute percentage error across 52 weeks and 9 channels totaling $10.6M in spend. TV drives the largest share of attributed outcomes (38.9%) with strong ROI (3.74, CI: 3.03\u20134.45), followed by Video (24.4%, ROI 2.61) and Affiliate (7.1%, ROI 4.09). The model flags structural risks including very high adstock on Podcast (0.91 decay), wide credible intervals on Radio (0.17\u20132.75), and low contribution shares for Radio, OOH, and Display (each <2%). While the fit is solid, several channels show sufficient uncertainty or identifiability challenges that recommendations should be treated as directional rather than precise.",
+    "per_channel": [
+      {
+        "channel_name": "TV",
+        "interpretation": "TV is the top contributor at 38.9% of attributed outcomes, with an ROI of 3.74 (CI: 3.03\u20134.45) on $2.85M spend. The credible interval is moderately tight (width 1.42), suggesting stable identification. Adstock decay is low (0.22), meaning most impact occurs within the spend week and the following 1\u20132 weeks. The half-saturation point ($3.32M) is above current spend, indicating the channel has not yet reached steep diminishing returns, though marginal returns will decline as spend increases.",
+        "confidence": "high",
+        "confidence_reasoning": "The combination of high contribution share, tight CI relative to the point estimate, and a full year of data supports high confidence in the ROI range.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "TV",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Video",
+        "interpretation": "Video contributes 24.4% of outcomes with an ROI of 2.61 (CI: 2.11\u20133.11) on $2.56M spend. The CI width (1.0) is moderate. Adstock is low (0.35), so effects concentrate within a few weeks. The half-saturation point ($3.16M) is above current spend, suggesting room to scale before hitting severe diminishing returns, though the channel is closer to its saturation threshold than TV.",
+        "confidence": "high",
+        "confidence_reasoning": "Substantial spend, meaningful contribution share, and a reasonably tight CI justify high confidence, though slightly lower than TV due to marginally wider interval.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Video",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Affiliate",
+        "interpretation": "Affiliate shows the highest point ROI at 4.09 (CI: 3.31\u20134.87) on $475K spend, contributing 7.1% of outcomes. The CI width (1.56) is wider than TV or Video in relative terms, but still suggests a genuinely efficient channel. Adstock decay is moderate (0.56), so effects persist for several weeks. The half-saturation point ($693K) is above current spend but within reach, meaning scaling too aggressively may encounter diminishing returns.",
+        "confidence": "medium",
+        "confidence_reasoning": "While the ROI is attractive, the relatively wide CI and moderate spend base make the estimate less stable than top-spend channels; additional validation via a lift test would strengthen confidence.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Affiliate",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Display",
+        "interpretation": "Display has a strong point ROI of 3.62 (CI: 2.93\u20134.31) but contributes only 0.84% of outcomes on $399K spend. The CI width (1.38) is moderate. Adstock decay (0.51) suggests multi-week carryover. The half-saturation point ($479K) is close to current spend, indicating the channel may already be near its efficient frontier. The low contribution share raises the question of whether the high ROI is stable or partly a result of limited scale and identifiability challenges.",
+        "confidence": "medium",
+        "confidence_reasoning": "The low contribution flag and proximity to saturation point temper confidence despite a seemingly strong ROI; the estimate may be uncertain due to limited spend variation or baseline leakage.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Display",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Podcast",
+        "interpretation": "Podcast contributes 7.0% of outcomes with an ROI of 2.49 (CI: 2.01\u20132.97) on $769K spend. The CI is tight (width 0.96), suggesting stable identification. However, the adstock decay is very high (0.91), meaning effects persist across many weeks. The half-saturation point ($913K) is above current spend. The high adstock makes the parameter hard to identify from one year of data, and the model flags this as a structural risk.",
+        "confidence": "medium",
+        "confidence_reasoning": "While the CI is narrow, the very high adstock decay introduces identifiability concerns and suggests the effect may be overestimated or smeared across time; validation via a holdout or lift test is recommended.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Podcast",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Social",
+        "interpretation": "Social contributes 9.8% of outcomes with an ROI of 1.23 (CI: 0.99\u20131.47) on $2.19M spend, the second-largest budget. The CI width (0.48) is relatively tight, but the point estimate is modest. Adstock decay is high (0.81), so effects carry over multiple weeks. The half-saturation point ($2.62M) is only slightly above current spend, suggesting the channel is operating near or at its efficient range and further scaling may yield diminishing returns.",
+        "confidence": "medium",
+        "confidence_reasoning": "The proximity to saturation and the modest ROI relative to other channels suggest that while the estimate is stable, upside is limited without strategic shifts or creative refresh.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Social",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Search",
+        "interpretation": "Search has an ROI of 1.30 (CI: 1.05\u20131.55) on $885K spend, contributing 4.2% of outcomes. The CI width (0.5) is moderate. Adstock decay is low (0.36), so effects are concentrated in-week and the following 1\u20132 weeks. The half-saturation point ($965K) is slightly above current spend. The modest ROI may reflect attribution challenges common to search (e.g., capturing existing demand rather than creating new demand), or it may indicate the channel is correctly identified but operating near its efficient limit.",
+        "confidence": "medium",
+        "confidence_reasoning": "The estimate is stable, but the inherent attribution challenge with search\u2014distinguishing incremental from non-incremental conversions\u2014warrants caution; a brand-search holdout test would clarify true incrementality.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Search",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "attribution_mmm_vs_mta::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "OOH",
+        "interpretation": "Out-of-home contributes 2.0% of outcomes with an ROI of 2.47 (CI: 2.0\u20132.94) on $218K spend. The CI width (0.94) is moderate. Adstock decay is moderate (0.54). The low contribution flag indicates the channel has limited scale. The half-saturation point ($216K) is almost exactly at current spend, suggesting the channel is operating at or near its efficient threshold and scaling further may encounter steep diminishing returns immediately.",
+        "confidence": "low",
+        "confidence_reasoning": "The low contribution share and saturation point at current spend suggest the estimate may be unstable or sensitive to modeling assumptions; the channel's small scale makes it hard to identify robustly, and the high apparent ROI should be treated cautiously.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "OOH",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "channel_name": "Radio",
+        "interpretation": "Radio has a point ROI of 1.46 but an extremely wide credible interval (0.17\u20132.75, width 2.58) on $259K spend, contributing only 1.4% of outcomes. Adstock decay is moderate (0.46). The wide interval and low contribution both flag this as a poorly identified channel. The model cannot reliably distinguish Radio's effect from noise or from correlated baseline demand. The ROI could be anywhere from near-zero to quite strong; the data do not resolve this.",
+        "confidence": "low",
+        "confidence_reasoning": "The CI spans nearly the entire plausible range, and the low contribution share compounds identifiability issues; any recommendation for Radio should be contingent on experimental validation.",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Radio",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "bayesian_priors::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "structural_risks": [
+      {
+        "title": "Very high adstock on Podcast (0.91 decay)",
+        "description": "Podcast's adstock decay of 0.91 implies effects persist across many weeks, making the parameter difficult to identify from 52 weeks of data. The model may be overstating persistence or conflating long carryover with other slow-moving trends. High adstock interacts with saturation in non-obvious ways, so the ROI estimate should be treated as less certain than the narrow CI suggests.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Podcast",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Extreme credible interval width on Radio",
+        "description": "Radio's ROI credible interval (0.17\u20132.75) is so wide it provides almost no actionable guidance. This indicates the observational data cannot separate Radio's effect from noise or confounding. The low contribution share (<2%) exacerbates the issue. Any decision about Radio should be conditional on running a geo lift test to obtain a causal estimate.",
+        "severity": "high",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Radio",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "lift_tests::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Low contribution channels may have unstable estimates",
+        "description": "Radio (1.4%), OOH (2.0%), and Display (0.84%) each contribute less than 2% of attributed outcomes. Channels with limited contribution are harder to identify reliably because the model has less signal to learn from. Their estimates may be sensitive to prior choices, baseline specification, or collinearity with other channels. Treat their ROI point estimates as uncertain even when CIs appear moderate.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "detected_issues",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "Potential baseline or seasonality confounding",
+        "description": "The model has one full year of data, which is the minimum to estimate annual seasonality reliably. If seasonal or promotional patterns are not fully captured, unmodeled baseline demand may leak into channel attribution, inflating ROI estimates\u2014especially for channels whose spend correlates with peak seasons. This is a standard risk in observational MMM and should be disclosed.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "knowledge_base",
+            "reference": "seasonality_baseline::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "title": "No experimental calibration is evident",
+        "description": "The analysis does not indicate that any channel estimates have been calibrated against lift tests or geo experiments. All ROI estimates are purely observational and therefore subject to confounding, collinearity, and specification risk. A mature measurement program would anchor at least the highest-spend or highest-uncertainty channels to causal ground truth from experiments.",
+        "severity": "medium",
+        "citations": [
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "causal_inference::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "action": "Run a geo lift test on Radio to resolve extreme uncertainty",
+        "priority": "high",
+        "rationale": "Radio's credible interval (0.17\u20132.75) spans nearly the entire plausible ROI range, making any budget decision unjustifiable without causal validation. A geo holdout experiment will provide a stable, causal estimate and either justify continued investment or enable reallocation. Given the low spend ($259K), a short holdout test is low-cost and high-value.",
+        "confidence": "high",
+        "dependencies": [
+          "Geo matching and randomization infrastructure"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Radio",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "lift_tests::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Validate Podcast's high adstock estimate via a holdout or extended post-campaign analysis",
+        "priority": "high",
+        "rationale": "A 0.91 decay parameter implies implausibly long carryover (effects lingering 10+ weeks at material levels) and is difficult to identify from one year of data. The model may be conflating true adstock with trend or other slow-moving factors. A holdout test or a creative rotation experiment can confirm whether Podcast effects truly persist this long or whether the parameter is overfit.",
+        "confidence": "medium",
+        "dependencies": [
+          "Podcast campaign with clean on/off periods or holdout design"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Podcast",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Scale TV and Video incrementally toward their saturation thresholds, monitoring marginal ROI",
+        "priority": "high",
+        "rationale": "TV and Video are the two largest contributors with strong, stable ROI estimates and half-saturation points above current spend. Marginal returns are still positive but will decline as spend approaches saturation. Incremental budget tests (e.g., 10\u201315% increases) can empirically map the saturation curve and confirm the model's predictions before committing to large reallocations.",
+        "confidence": "high",
+        "dependencies": [
+          "Budget flexibility and in-flight measurement to track marginal performance"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "TV",
+            "snippet": null
+          },
+          {
+            "source_type": "mmm_output",
+            "reference": "Video",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Consider modest scaling of Affiliate, but monitor saturation closely",
+        "priority": "medium",
+        "rationale": "Affiliate has the highest point ROI (4.09) but a moderately wide CI (3.31\u20134.87) and a half-saturation point ($693K) only ~46% above current spend. This suggests room to grow, but diminishing returns may arrive quickly. A 20\u201330% spend increase with close tracking of incremental conversions will test whether the high ROI holds at scale or reflects an efficient but limited channel.",
+        "confidence": "medium",
+        "dependencies": [
+          "Affiliate partner capacity and incrementality tracking"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Affiliate",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Hold or reduce Social spend unless creative refresh or targeting shifts are planned",
+        "priority": "medium",
+        "rationale": "Social operates near its half-saturation point ($2.62M vs. $2.19M current spend) with a modest ROI of 1.23. Further scaling is unlikely to be efficient under current conditions. If budget must be freed for higher-ROI channels, Social is a candidate for modest reduction. Alternatively, a creative or audience strategy shift could unlock headroom, but that would require testing before committing incremental budget.",
+        "confidence": "medium",
+        "dependencies": [
+          "Creative or targeting experimentation to validate a different response curve"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Social",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "calibration::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Test Search incrementality with a brand-keyword holdout to clarify true causal lift",
+        "priority": "medium",
+        "rationale": "Search has a modest ROI (1.30) and inherent attribution challenges, as it often captures demand that would convert organically. A brand-search holdout test will measure how much Search spend is truly incremental versus protective. This will inform whether to maintain, reduce, or reallocate budget. The test is straightforward and low-risk given search's short adstock.",
+        "confidence": "medium",
+        "dependencies": [
+          "Platform cooperation for controlled brand-keyword holdout"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Search",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "attribution_mmm_vs_mta::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "lift_tests::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Treat Display and OOH as-is pending further evidence; avoid large reallocations without validation",
+        "priority": "low",
+        "rationale": "Both channels have low contribution shares (<2%), which makes their ROI estimates less stable. Display's half-saturation point is near current spend, and OOH's is at current spend, so neither has clear room to scale efficiently. Their apparently strong ROIs should be treated cautiously. Maintain current levels unless a lift test or creative test justifies a change.",
+        "confidence": "low",
+        "dependencies": [
+          "Lift tests if reallocation or scaling is considered"
+        ],
+        "citations": [
+          {
+            "source_type": "mmm_output",
+            "reference": "Display",
+            "snippet": null
+          },
+          {
+            "source_type": "mmm_output",
+            "reference": "OOH",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "failure_modes::0",
+            "snippet": null
+          }
+        ]
+      },
+      {
+        "action": "Extend data collection to at least 2 full years to strengthen seasonality and adstock identification",
+        "priority": "medium",
+        "rationale": "One year of data is the minimum to estimate annual seasonality but leaves little room to validate the pattern or to robustly identify high-adstock channels. Collecting another year will improve parameter stability, reduce confounding risk, and enable stronger holdout validation. This is a foundational investment for model credibility.",
+        "confidence": "high",
+        "dependencies": [
+          "Data pipeline continuity"
+        ],
+        "citations": [
+          {
+            "source_type": "knowledge_base",
+            "reference": "seasonality_baseline::0",
+            "snippet": null
+          },
+          {
+            "source_type": "knowledge_base",
+            "reference": "adstock::0",
+            "snippet": null
+          }
+        ]
+      }
+    ],
+    "validation_suggestions": [
+      {
+        "step": "Geo lift test on Radio",
+        "rationale": "Radio's extreme CI width (0.17\u20132.75) makes it the highest-priority candidate for experimental validation. A geo holdout will provide a causal ROI estimate and resolve whether the channel merits continued investment."
+      },
+      {
+        "step": "Holdout validation on a 10\u201315% time slice to assess out-of-sample fit",
+        "rationale": "A temporal holdout (e.g., the final 6 weeks) will test whether the model's attribution generalizes or is overfit to the training period. Weak holdout performance would indicate structural issues and lower confidence in all channel estimates."
+      },
+      {
+        "step": "Podcast adstock validation via creative rotation or flight-level analysis",
+        "rationale": "The 0.91 decay estimate for Podcast is unusually high and difficult to identify. A controlled experiment varying Podcast on/off timing, or a post-campaign decay analysis, can confirm whether long carryover is real or an artifact of model specification."
+      },
+      {
+        "step": "Search brand-keyword holdout test",
+        "rationale": "Search's modest ROI may partly reflect non-incremental conversions. A brand-keyword holdout will measure the causal lift of Search spend and inform whether current investment levels are justified."
+      },
+      {
+        "step": "Incremental spend tests on TV and Video",
+        "rationale": "Both channels show room to scale based on their saturation curves. Small incremental budget increases (10\u201315%) with close tracking will empirically validate the model's saturation predictions and guide further allocation decisions."
+      },
+      {
+        "step": "Convergence diagnostics review (R-hat, divergences) for the Bayesian sampler",
+        "rationale": "Bayesian models should report convergence statistics. Poor convergence (R-hat > 1.01, or divergences) would indicate the posterior is unreliable, and all estimates should be treated with much lower confidence. This is a basic quality check that should be standard."
+      }
+    ],
+    "knowledge_sources": [
+      {
+        "chunk_id": "bayesian_priors::0",
+        "title": null,
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "attribution_mmm_vs_mta::0",
+        "title": null,
+        "topic": "attribution",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data \u2014 weekly spend and outcomes across channe\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "title": null,
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "title": null,
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "title": null,
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "seasonality_baseline::0",
+        "title": null,
+        "topic": "seasonality",
+        "source": "juno_kb",
+        "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "title": null,
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      },
+      {
+        "chunk_id": "lift_tests::0",
+        "title": null,
+        "topic": "lift_tests",
+        "source": "juno_kb",
+        "snippet": "Incrementality tests measure the causal lift of advertising by creating a\ncontrolled contrast between exposed and unexposed groups. The most common design\nin a marketing context is a geo experiment: a set of matched geog\u2026"
+      }
+    ],
+    "metadata": {
+      "agent_model": "claude-sonnet-4-5",
+      "prompt_version": "analysis.v2",
+      "generated_at": "2026-07-04T19:18:21.998671+00:00"
+    }
+  }
+}

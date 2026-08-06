@@ -1,0 +1,108 @@
+[
+  {
+    "case_id": "case_0000",
+    "agent_overview": "This Bayesian MMM analyzed 26 weeks of data across four channels (Display, Social, Podcast, TV) totaling $4.47M in spend. The model suggests positive returns for all channels, with Podcast (ROI 1.79) and Social (ROI 1.73) showing the strongest point estimates, followed by TV (1.71) and Display (1.25). Overall fit is reasonable (R\u00b2 0.81, MAPE 9.2%). However, confidence in these estimates is constrained by several structural issues: the data span is short (only 26 weeks, insufficient to reliably separate seasonality from media effects), Display has extremely high adstock decay (0.94) that is difficult to identify with limited data, and TV contributes less than 2% of attributed outcomes despite moderate spend and ROI. All credible intervals are moderately wide, reflecting genuine uncertainty. The model provides directional guidance but should not be treated as precise measurements without experimental validation.",
+    "known_failure_modes": [
+      "high_adstock",
+      "low_contribution",
+      "saturation_extrapolation"
+    ],
+    "scores": {
+      "accuracy": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "calibration": {
+        "judge_score": 5,
+        "human_score": null
+      },
+      "groundedness": {
+        "judge_score": 5,
+        "human_score": null
+      },
+      "actionability": {
+        "judge_score": 5,
+        "human_score": null
+      },
+      "failure_mode_detection": {
+        "judge_score": 5,
+        "human_score": null
+      },
+      "hallucination": {
+        "judge_score": 5,
+        "human_score": null
+      }
+    }
+  },
+  {
+    "case_id": "case_0001",
+    "agent_overview": "This Bayesian MMM covers 52 weeks across 6 channels with total spend of $9.6M. The model explains 78% of variance (R\u00b2 = 0.784) with moderate forecasting error (MAPE = 22.6%). Search and OOH emerge as the strongest performers with ROIs above 3.5, jointly driving 65% of attributed conversions. Radio shows high efficiency (ROI 3.67) despite low absolute spend. Affiliate and Social deliver positive but modest returns (0.85 and 1.71), while Podcast carries substantial uncertainty (ROI CI: 0.22\u20132.50). Two structural issues are flagged: Radio's very high adstock decay (0.92) makes its effect hard to identify reliably, and Podcast's wide credible interval signals low confidence in its estimate. The 52-week span supports seasonal control, but collinearity between channels may still compress intervals. Recommendations prioritize validating Podcast and Radio via lift tests, reallocating budget toward Search and OOH where marginal returns remain attractive, and monitoring saturation thresholds as spend scales.",
+    "known_failure_modes": [
+      "high_adstock",
+      "saturation_extrapolation",
+      "wide_ci"
+    ],
+    "scores": {
+      "accuracy": {
+        "judge_score": 3,
+        "human_score": null
+      },
+      "calibration": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "groundedness": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "actionability": {
+        "judge_score": 3,
+        "human_score": null
+      },
+      "failure_mode_detection": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "hallucination": {
+        "judge_score": 4,
+        "human_score": null
+      }
+    }
+  },
+  {
+    "case_id": "case_0002",
+    "agent_overview": "The model explains 87.2% of variance with 14.8% mean absolute percentage error across 52 weeks and 9 channels totaling $10.6M in spend. TV drives the largest share of attributed outcomes (38.9%) with strong ROI (3.74, CI: 3.03\u20134.45), followed by Video (24.4%, ROI 2.61) and Affiliate (7.1%, ROI 4.09). The model flags structural risks including very high adstock on Podcast (0.91 decay), wide credible intervals on Radio (0.17\u20132.75), and low contribution shares for Radio, OOH, and Display (each <2%). While the fit is solid, several channels show sufficient uncertainty or identifiability challenges that recommendations should be treated as directional rather than precise.",
+    "known_failure_modes": [
+      "high_adstock",
+      "low_contribution",
+      "multicollinearity",
+      "wide_ci"
+    ],
+    "scores": {
+      "accuracy": {
+        "judge_score": 3,
+        "human_score": null
+      },
+      "calibration": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "groundedness": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "actionability": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "failure_mode_detection": {
+        "judge_score": 4,
+        "human_score": null
+      },
+      "hallucination": {
+        "judge_score": 4,
+        "human_score": null
+      }
+    }
+  }
+]
