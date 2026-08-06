@@ -39,11 +39,16 @@ class Retriever:
         try:
             import chromadb
 
+            from app.rag.embeddings import get_embedding_function
+
             client = chromadb.PersistentClient(path=settings.chroma_persist_dir)
-            self._collection = client.get_or_create_collection("mmm_methodology")
+            self._collection = client.get_or_create_collection(
+                "mmm_methodology",
+                embedding_function=get_embedding_function(),
+            )
             return self._collection
         except Exception:
-            # Index not built yet (Phase 2). Degrade gracefully.
+            # Index not built yet, or embeddings unavailable. Degrade gracefully.
             return None
 
     def retrieve(
