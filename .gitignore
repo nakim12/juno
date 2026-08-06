@@ -17,6 +17,7 @@ backend/data/chroma/
 backend/data/eval.db
 *.sqlite
 *.db
+*.log
 
 # Node / Next.js
 node_modules/
