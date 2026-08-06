@@ -25,19 +25,22 @@
 body {
   background: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 /* ---- Typographic helpers ---- */
 .mono {
-  font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", monospace;
+  font-family: var(--font-mono), ui-monospace, "SF Mono", "JetBrains Mono", "Menlo",
+    monospace;
   font-feature-settings: "ss01";
 }
 
 .eyebrow {
-  font-family: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", monospace;
+  font-family: var(--font-mono), ui-monospace, "SF Mono", "JetBrains Mono", "Menlo",
+    monospace;
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -45,7 +48,8 @@ body {
 }
 
 .display {
-  letter-spacing: -0.03em;
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+  letter-spacing: -0.02em;
   line-height: 1.02;
 }
 
@@ -87,4 +91,163 @@ body {
 
 .hairline {
   border-top: 1px solid hsl(var(--border));
+}
+
+/* ---- Motion ---- */
+.shiny-text {
+  background: linear-gradient(
+    110deg,
+    hsl(var(--muted-foreground)) 42%,
+    hsl(var(--accent-3)) 50%,
+    hsl(var(--muted-foreground)) 58%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine var(--shine-duration, 4s) linear infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+/* Keeps the wordmark bright while a warm gold highlight sweeps across it. */
+.wordmark-sheen {
+  background: linear-gradient(
+    110deg,
+    hsl(var(--foreground)) 38%,
+    hsl(var(--accent)) 50%,
+    hsl(var(--foreground)) 62%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shine var(--wordmark-sheen-duration, 7s) linear infinite;
+}
+
+.spotlight-card {
+  isolation: isolate;
+}
+
+/* ---- Ambient page backdrop: slow drifting gold glows ---- */
+.ambient-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  opacity: 0.5;
+  will-change: transform;
+}
+.ambient-blob--1 {
+  width: 46rem;
+  height: 46rem;
+  top: -10rem;
+  left: -8rem;
+  background: radial-gradient(
+    circle,
+    hsl(var(--accent) / 0.16) 0%,
+    transparent 62%
+  );
+  animation: drift-1 34s ease-in-out infinite;
+}
+.ambient-blob--2 {
+  width: 40rem;
+  height: 40rem;
+  bottom: -12rem;
+  right: -10rem;
+  background: radial-gradient(
+    circle,
+    hsl(var(--accent-2) / 0.14) 0%,
+    transparent 62%
+  );
+  animation: drift-2 42s ease-in-out infinite;
+}
+
+@keyframes drift-1 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(6vw, 5vh, 0) scale(1.12);
+  }
+}
+@keyframes drift-2 {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-7vw, -4vh, 0) scale(0.95);
+  }
+}
+
+/* ---- Living product panel: a slow scan sweep + breathing confidence pills ---- */
+.scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 40%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    hsl(var(--accent) / 0.08) 45%,
+    hsl(var(--accent-3) / 0.14) 50%,
+    hsl(var(--accent) / 0.08) 55%,
+    transparent 100%
+  );
+  animation: scan 6.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-105%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(255%);
+    opacity: 0;
+  }
+}
+
+.pill-pulse {
+  animation: pill-breathe 3.6s ease-in-out infinite;
+}
+@keyframes pill-breathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--accent) / 0);
+  }
+  50% {
+    box-shadow: 0 0 10px 0 currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text {
+    animation: none;
+    color: hsl(var(--muted-foreground));
+  }
+  .wordmark-sheen {
+    animation: none;
+    color: hsl(var(--foreground));
+  }
+  .ambient-blob,
+  .scan-line,
+  .pill-pulse {
+    animation: none;
+  }
+  .scan-line {
+    display: none;
+  }
 }

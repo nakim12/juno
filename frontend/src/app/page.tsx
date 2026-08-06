@@ -1,4 +1,12 @@
 import Link from "next/link";
+import { HeroSection } from "@/components/motion/HeroSection";
+import { Navbar } from "@/components/motion/Navbar";
+import { Intro } from "@/components/motion/Intro";
+import { Reveal } from "@/components/motion/Reveal";
+import { SpotlightCard } from "@/components/motion/SpotlightCard";
+import { ShinyText } from "@/components/motion/ShinyText";
+import { CountUp } from "@/components/motion/CountUp";
+import { AmbientBackdrop } from "@/components/motion/AmbientBackdrop";
 
 const GITHUB_URL = "https://github.com/nakim12/juno";
 
@@ -61,12 +69,12 @@ const steps = [
 ];
 
 const dimensions = [
-  { label: "Accuracy", target: "> 0.85" },
-  { label: "Calibration", target: "ECE < 0.10" },
-  { label: "Groundedness", target: "> 0.90" },
-  { label: "Actionability", target: "> 4.0 / 5" },
-  { label: "Failure recall", target: "> 0.75" },
-  { label: "Hallucination", target: "< 0.05" },
+  { label: "Accuracy", prefix: "> ", value: 0.85, decimals: 2, suffix: "" },
+  { label: "Calibration", prefix: "ECE < ", value: 0.1, decimals: 2, suffix: "" },
+  { label: "Groundedness", prefix: "> ", value: 0.9, decimals: 2, suffix: "" },
+  { label: "Actionability", prefix: "> ", value: 4.0, decimals: 1, suffix: " / 5" },
+  { label: "Failure recall", prefix: "> ", value: 0.75, decimals: 2, suffix: "" },
+  { label: "Hallucination", prefix: "< ", value: 0.05, decimals: 2, suffix: "" },
 ];
 
 function SectionMarker({ index, label }: { index: string; label: string }) {
@@ -82,92 +90,50 @@ function SectionMarker({ index, label }: { index: string; label: string }) {
 export default function Landing() {
   return (
     <div className="relative overflow-hidden">
-      {/* Nav */}
-      <nav className="sticky top-0 z-20 border-b border-border/70 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="mono flex items-center gap-2 text-sm font-medium">
-            <span className="grid h-6 w-6 place-items-center rounded-md bg-gradient-to-br from-accent to-accent-2 text-xs font-semibold text-background">
-              J
-            </span>
-            juno<span className="text-accent">.</span>
-          </div>
-          <div className="mono flex items-center gap-7 text-xs">
-            <a href="#how" className="text-muted-foreground transition hover:text-foreground">
-              how it works
-            </a>
-            <a href="#eval" className="text-muted-foreground transition hover:text-foreground">
-              evaluation
-            </a>
-            <a
-              href={GITHUB_URL}
-              className="text-muted-foreground transition hover:text-foreground"
-              target="_blank"
-              rel="noreferrer"
-            >
-              github
-            </a>
-            <Link
-              href="/analyze"
-              className="rounded-md border border-border bg-muted px-3 py-1.5 font-medium text-foreground transition hover:border-accent"
-            >
-              try the demo →
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <Intro />
 
-      {/* Hero */}
-      <section className="hero-glow relative">
-        <div className="grid-bg absolute inset-0 -z-10" aria-hidden />
-        <div className="mx-auto grid max-w-6xl items-center gap-14 px-6 py-24 lg:grid-cols-[1.1fr_0.9fr] lg:py-32">
-          <div>
-            <div className="mono mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-muted/60 px-3 py-1 text-[0.7rem] tracking-wider text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent-3" />
-              Marketing Mix Modeling · Agentic AI · LLM Evaluation
+      <AmbientBackdrop />
+
+      <Navbar />
+
+      {/* Hero — full screen with scroll-linked parallax + scale */}
+      <HeroSection githubUrl={GITHUB_URL} />
+
+      {/* Showcase — the tool in action */}
+      <section id="showcase" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-24">
+        <div className="grid items-center gap-14 lg:grid-cols-[0.95fr_1.05fr]">
+          <Reveal>
+            <div>
+              <div className="eyebrow mb-4">the copilot</div>
+              <h2 className="display text-4xl font-semibold">
+                Grounded reads, <span className="gradient-text">not guesses</span>
+              </h2>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
+                Juno is an agentic copilot that interprets MMM outputs, recommends what to
+                do next, and — uniquely — ships with an evaluation framework that quantifies
+                whether its advice can actually be trusted.
+              </p>
             </div>
-            <h1 className="display text-5xl font-semibold sm:text-6xl">
-              Turn Marketing Mix Model outputs into{" "}
-              <span className="gradient-text">decisions you can trust</span>
-            </h1>
-            <p className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground">
-              Juno is an agentic copilot that interprets MMM outputs, recommends what to
-              do next, and — uniquely — ships with an evaluation framework that quantifies
-              whether its advice can actually be trusted.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link
-                href="/analyze"
-                className="rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 text-sm font-semibold text-background shadow-lg shadow-accent/25 transition hover:opacity-90"
-              >
-                Try the live demo →
-              </Link>
-              <a
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="mono rounded-xl border border-border px-6 py-3 text-sm font-medium transition hover:border-accent"
-              >
-                View the code
-              </a>
-            </div>
-          </div>
+          </Reveal>
 
           {/* Illustrative product panel */}
-          <div className="card overflow-hidden shadow-2xl shadow-black/40">
+          <Reveal delay={0.15} className="card relative overflow-hidden shadow-2xl shadow-black/40">
+            <div className="scan-line pointer-events-none z-10" />
             <div className="flex items-center gap-2 border-b border-border bg-muted/50 px-4 py-3">
               <span className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
               <span className="h-2.5 w-2.5 rounded-full bg-amber-400/70" />
               <span className="h-2.5 w-2.5 rounded-full bg-green-400/70" />
-              <span className="mono ml-2 text-[0.7rem] text-muted-foreground">
-                analysis · six_channel_with_saturation
-              </span>
+              <ShinyText
+                text="analysis · six_channel_with_saturation"
+                className="mono ml-2 text-[0.7rem]"
+              />
             </div>
             <div className="space-y-3 p-5">
               {[
                 { name: "Affiliate", roi: "4.5x", conf: "high", tone: "text-success border-[hsl(var(--success)/0.4)] bg-[hsl(var(--success)/0.14)]" },
                 { name: "Search", roi: "2.9x", conf: "high", tone: "text-success border-[hsl(var(--success)/0.4)] bg-[hsl(var(--success)/0.14)]" },
                 { name: "TikTok", roi: "1.7x", conf: "low", tone: "text-error border-[hsl(var(--error)/0.4)] bg-[hsl(var(--error)/0.14)]" },
-              ].map((c) => (
+              ].map((c, i) => (
                 <div
                   key={c.name}
                   className="flex items-center justify-between rounded-lg border border-border bg-background/50 px-4 py-3"
@@ -176,7 +142,10 @@ export default function Landing() {
                     <span className="font-medium">{c.name}</span>
                     <span className="mono text-xs text-muted-foreground">ROI {c.roi}</span>
                   </div>
-                  <span className={`mono rounded-full border px-2 py-0.5 text-[0.65rem] ${c.tone}`}>
+                  <span
+                    className={`pill-pulse mono rounded-full border px-2 py-0.5 text-[0.65rem] ${c.tone}`}
+                    style={{ animationDelay: `${i * 1.2}s` }}
+                  >
                     {c.conf}
                   </span>
                 </div>
@@ -189,7 +158,7 @@ export default function Landing() {
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
@@ -198,21 +167,20 @@ export default function Landing() {
         <SectionMarker index="01" label="Two pieces of equal weight" />
         <div className="grid gap-6 md:grid-cols-2">
           {pillars.map((p, i) => (
-            <div
-              key={p.tag}
-              className="card group p-8 transition hover:border-accent/60"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <span className="mono text-xs uppercase tracking-widest text-accent">
-                  {p.tag}
-                </span>
-                <span className="mono text-xs text-muted-foreground">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-              </div>
-              <h3 className="display text-2xl font-semibold">{p.title}</h3>
-              <p className="mt-4 leading-relaxed text-muted-foreground">{p.body}</p>
-            </div>
+            <Reveal key={p.tag} delay={i * 0.08}>
+              <SpotlightCard className="card h-full p-8 transition hover:border-accent/60">
+                <div className="mb-4 flex items-center justify-between">
+                  <span className="mono text-xs uppercase tracking-widest text-accent">
+                    {p.tag}
+                  </span>
+                  <span className="mono text-xs text-muted-foreground">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <h3 className="display text-2xl font-semibold">{p.title}</h3>
+                <p className="mt-4 leading-relaxed text-muted-foreground">{p.body}</p>
+              </SpotlightCard>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -227,9 +195,9 @@ export default function Landing() {
           Not a cool demo — a system with the guardrails that separate a copilot from a
           confident guesser.
         </p>
-        <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
+        <Reveal className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
-            <div
+            <SpotlightCard
               key={f.title}
               className="bg-background p-7 transition hover:bg-surface"
             >
@@ -238,23 +206,25 @@ export default function Landing() {
               </span>
               <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.body}</p>
-            </div>
+            </SpotlightCard>
           ))}
-        </div>
+        </Reveal>
       </section>
 
       {/* How it works */}
       <section id="how" className="mx-auto max-w-6xl px-6 py-20">
         <SectionMarker index="03" label="How it works" />
         <div className="grid gap-6 md:grid-cols-3">
-          {steps.map((s) => (
-            <div key={s.n} className="card p-7">
-              <div className="mono display text-4xl font-bold text-transparent [-webkit-text-stroke:1px_hsl(var(--accent))]">
-                {s.n}
-              </div>
-              <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
-            </div>
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 0.08}>
+              <SpotlightCard className="card h-full p-7">
+                <div className="mono display text-4xl font-bold text-transparent [-webkit-text-stroke:1px_hsl(var(--accent))]">
+                  {s.n}
+                </div>
+                <h3 className="mt-4 text-lg font-semibold">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.body}</p>
+              </SpotlightCard>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -262,7 +232,7 @@ export default function Landing() {
       {/* Evaluation strip */}
       <section id="eval" className="mx-auto max-w-6xl px-6 py-20">
         <SectionMarker index="04" label="Evaluation" />
-        <div className="card hero-glow overflow-hidden p-10">
+        <Reveal className="card hero-glow block overflow-hidden p-10">
           <h2 className="display max-w-2xl text-4xl font-semibold">
             Measured on six defensible dimensions
           </h2>
@@ -274,16 +244,29 @@ export default function Landing() {
             {dimensions.map((d) => (
               <div key={d.label} className="bg-background p-5 text-center">
                 <div className="text-sm font-semibold">{d.label}</div>
-                <div className="mono mt-2 text-xs text-accent">{d.target}</div>
+                <CountUp
+                  to={d.value}
+                  decimals={d.decimals}
+                  prefix={d.prefix}
+                  suffix={d.suffix}
+                  className="mono mt-2 block text-xs text-accent"
+                />
               </div>
             ))}
           </div>
-        </div>
+          <Link
+            href="/evaluation"
+            className="mono mt-8 inline-flex items-center gap-2 text-sm text-accent transition hover:opacity-80"
+          >
+            See the latest benchmark results →
+          </Link>
+        </Reveal>
       </section>
 
       {/* CTA */}
       <section className="mx-auto max-w-6xl px-6 pb-24">
-        <div className="card hero-glow p-14 text-center">
+        <Reveal>
+        <SpotlightCard className="card hero-glow block p-14 text-center">
           <h2 className="display text-4xl font-semibold">
             See what your MMM is really saying
           </h2>
@@ -296,7 +279,8 @@ export default function Landing() {
           >
             Launch the demo →
           </Link>
-        </div>
+        </SpotlightCard>
+        </Reveal>
       </section>
 
       {/* Footer */}

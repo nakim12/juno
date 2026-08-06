@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { streamChat } from "@/lib/api";
-import type { ChatTurn } from "@/types";
+import type { ChatTurn, KnowledgeSource } from "@/types";
 
 export function ChatPanel({ sessionId }: { sessionId: string }) {
   const [turns, setTurns] = useState<ChatTurn[]>([]);
@@ -28,6 +28,12 @@ export function ChatPanel({ sessionId }: { sessionId: string }) {
               ...copy[assistantIndex],
               questionType: questionType as ChatTurn["questionType"],
             };
+            return copy;
+          }),
+        onSources: (sources: KnowledgeSource[]) =>
+          setTurns((t) => {
+            const copy = [...t];
+            copy[assistantIndex] = { ...copy[assistantIndex], sources };
             return copy;
           }),
         onToken: (text) =>
@@ -72,6 +78,9 @@ export function ChatPanel({ sessionId }: { sessionId: string }) {
               )}
               {turn.content || "…"}
             </div>
+            {turn.role === "assistant" && turn.sources && turn.sources.length > 0 && (
+              <ChatSources sources={turn.sources} />
+            )}
           </div>
         ))}
       </div>
@@ -93,6 +102,32 @@ export function ChatPanel({ sessionId }: { sessionId: string }) {
           Send
         </button>
       </div>
+    </div>
+  );
+}
+
+function ChatSources({ sources }: { sources: KnowledgeSource[] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-1.5 text-left">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="mono text-[0.7rem] text-muted-foreground transition hover:text-accent"
+      >
+        {open ? "▾" : "▸"} {sources.length} source{sources.length > 1 ? "s" : ""} consulted
+      </button>
+      {open && (
+        <ul className="mt-2 space-y-2 border-l border-border pl-3">
+          {sources.map((s) => (
+            <li key={s.chunk_id} className="text-xs">
+              <span className="mono text-accent">{s.topic ?? s.chunk_id}</span>
+              {s.snippet && (
+                <p className="mt-0.5 text-muted-foreground">{s.snippet}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
