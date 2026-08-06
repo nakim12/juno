@@ -32,6 +32,8 @@ from app.evaluation.results_store import (
     save_calibration_points,
     save_run,
 )
+from app.models.analysis_report import AnalysisReport
+from app.parsers import mmm_parser
 
 FAILURE_THRESHOLD = 3.0  # judge dimensions below this get catalogued
 # Judge dimensions we trust the LLM for; accuracy/calibration/failure detection
@@ -63,7 +65,20 @@ async def run_case(
     run_id: str,
     use_llm: bool,
     use_judge: bool,
+    cached_report: AnalysisReport | None = None,
 ) -> CaseResult:
+    # When a cached agent report is supplied we skip the (expensive) agent call
+    # and only re-score it. The summary is a deterministic parse of the model
+    # output, so all non-judge metrics are recomputed for free; only the judge
+    # (Opus) incurs cost. This powers cheap re-judge runs after a scoring change.
+    if cached_report is not None:
+        summary = mmm_parser.parse(case.mmm_output)
+        report = cached_report
+        initial_analysis._ensure_ranking(report, summary)
+        return await _score_case(
+            case, summary, report, reference, run_id, use_judge
+        )
+
     agent_llm = None if use_llm else _unconfigured_llm()
     try:
         summary, report = await initial_analysis.run(
@@ -92,6 +107,22 @@ async def run_case(
             error=f"{type(exc).__name__}: {exc}",
         )
 
+    return await _score_case(case, summary, report, reference, run_id, use_judge)
+
+
+async def _score_case(
+    case: BenchmarkCase,
+    summary,
+    report: AnalysisReport,
+    reference: str,
+    run_id: str,
+    use_judge: bool,
+) -> CaseResult:
+    """Compute all dimensions for a (summary, report) pair.
+
+    Shared by the fresh-agent path and the cached-report re-judge path so both
+    score identically. Only the judge call (when ``use_judge``) costs money.
+    """
     # Accuracy measures the AGENT'S ranking judgment (report.channel_ranking),
     # not the raw parsed ROI ordering — the pipeline guarantees the ranking is
     # complete over exactly the model's channels.
@@ -173,12 +204,18 @@ async def run_suite(
     version: str = "v1",
     persist: bool = True,
     concurrency: int = 4,
+    cached_reports: dict[str, AnalysisReport] | None = None,
 ) -> RunRecord:
     """Run the full benchmark suite and return the aggregated run record.
 
     Cases are independent, so up to ``concurrency`` run in parallel (the LLM
     client retries rate limits, so parallelism speeds wall-clock without wasting
     spend). Set ``concurrency=1`` for strictly sequential execution.
+
+    If ``cached_reports`` is supplied ({case_id: AnalysisReport}), the agent is
+    not called for those cases — the reports are re-scored in place. Combined
+    with ``use_judge=True`` this performs a cheap judge-only re-run (only Opus
+    judge calls cost money), used to refresh the snapshot after a scoring change.
     """
     references = (
         await get_references(cases, version, concurrency=concurrency) if use_judge else {}
@@ -213,6 +250,7 @@ async def run_suite(
                 run_id=record.run_id,
                 use_llm=use_llm,
                 use_judge=use_judge,
+                cached_report=(cached_reports or {}).get(case.case_id),
             )
             completed += 1
             status = f"ERROR ({result.error})" if result.error else (
@@ -248,10 +286,17 @@ async def run_suite(
         scores.actionability = _mean(
             [r.judge_scores["actionability"] for r in results if "actionability" in r.judge_scores]
         )
-        hall = _mean(
-            [r.judge_scores["hallucination"] for r in results if "hallucination" in r.judge_scores]
+        # Hallucination is a response-level RATE: the fraction of responses the
+        # judge flags as containing a material (invented/unsupported) claim —
+        # not 1 - mean_score/5, which penalized ordinary imperfection.
+        hall_scores = [
+            r.judge_scores["hallucination"]
+            for r in results
+            if "hallucination" in r.judge_scores
+        ]
+        scores.hallucination_rate = metrics.material_hallucination_rate(
+            hall_scores, floor=int(FAILURE_THRESHOLD)
         )
-        scores.hallucination_rate = 1.0 - hall / 5.0
 
     record.accuracy = round(scores.accuracy, 4)
     record.calibration_ece = round(scores.calibration, 4)

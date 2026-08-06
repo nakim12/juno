@@ -199,6 +199,20 @@ def calibration_points(
     return [r.prob for r in recs], [r.correct for r in recs]
 
 
+def material_hallucination_rate(scores: list[int], floor: int = 3) -> float:
+    """Fraction of judged responses that contain a *material* hallucination.
+
+    A response "hallucinates" when its judge hallucination score falls below
+    ``floor`` — i.e. it invents a number, channel, or claim absent from the
+    input (see the judge rubric). This is a true response-level rate, unlike the
+    earlier ``1 - mean_score/5`` which conflated ordinary imperfection (a 4/5)
+    with fabrication. Returns 0.0 when there are no judged responses.
+    """
+    if not scores:
+        return 0.0
+    return sum(1 for s in scores if s < floor) / len(scores)
+
+
 @dataclass
 class DimensionScores:
     accuracy: float = 0.0

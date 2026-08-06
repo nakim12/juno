@@ -19,7 +19,7 @@ import argparse
 import asyncio
 
 from app.evaluation import benchmark_generator as bg
-from app.evaluation import runner
+from app.evaluation import reports_cache, runner
 from app.evaluation.results_store import RunRecord
 
 _TARGETS = {
@@ -72,6 +72,11 @@ def main() -> None:
         "--concurrency", type=int, default=4,
         help="number of cases to run in parallel (rate limits are retried)",
     )
+    parser.add_argument(
+        "--use-cached-reports", action="store_true",
+        help="re-score cached agent reports instead of re-running the agent "
+             "(cheap judge-only run; only the Opus judge costs money)",
+    )
     args = parser.parse_args()
 
     try:
@@ -86,6 +91,12 @@ def main() -> None:
         path = bg.save_benchmark(cases, args.version)
         print(f"Generated {len(cases)} cases -> {path}")
 
+    cached_reports = None
+    if args.use_cached_reports:
+        cached_reports = reports_cache.load_reports(args.version)
+        hits = sum(1 for c in cases if c.case_id in cached_reports)
+        print(f"Re-scoring {hits}/{len(cases)} cases from cached reports (no agent calls).")
+
     record = asyncio.run(
         runner.run_suite(
             cases,
@@ -94,6 +105,7 @@ def main() -> None:
             version=args.version,
             persist=not args.no_persist,
             concurrency=args.concurrency,
+            cached_reports=cached_reports,
         )
     )
     _print_report(record, used_judge=not args.no_judge)

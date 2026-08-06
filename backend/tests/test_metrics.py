@@ -2,6 +2,7 @@ from app.evaluation.metrics import (
     calibration_points,
     calibration_records,
     expected_calibration_error,
+    material_hallucination_rate,
     spearman_rank_correlation,
     true_ranking_from_roi,
 )
@@ -68,6 +69,17 @@ def test_calibration_flags_confident_but_misranked_channel():
     _, correct = calibration_points(report, true_roi)
     by_channel = dict(zip(["A", "B", "C"], correct, strict=True))
     assert by_channel["C"] is False
+
+
+def test_material_hallucination_rate_counts_fabrications_not_imperfection():
+    # 8 clean (5), 1 slightly loose (4), 1 fabricated (2). Only the fabrication
+    # should count: rate = 1/10. The old 1-mean/5 formula would report ~0.14.
+    scores = [5, 5, 5, 5, 5, 5, 5, 4, 4, 2]
+    assert material_hallucination_rate(scores, floor=3) == 0.1
+    # A 4/5 ("imperfect but grounded") must never count as a hallucination.
+    assert material_hallucination_rate([4, 4, 4], floor=3) == 0.0
+    # No judged responses -> defined as zero, not a divide-by-zero.
+    assert material_hallucination_rate([], floor=3) == 0.0
 
 
 def test_calibration_records_carry_ranks_and_labels():
