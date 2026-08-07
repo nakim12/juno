@@ -29,7 +29,8 @@ Dimension rubrics (anchor your score to these):
   5 = confident when right, hedged when uncertain; 0 = confident-and-wrong, or hedges everything.
 
 - groundedness: is every claim traceable to the model output or a cited methodology source?
-  5 = all claims grounded, citations valid; 3 = mostly grounded, a citation weak/missing; 0 = ungrounded.
+  5 = all claims grounded, citations valid; 3 = mostly grounded, a citation weak/missing;
+  0 = ungrounded.
 
 - actionability: are recommendations specific, prioritized, and decision-ready?
   5 = concrete, prioritized, with dependencies; 3 = generic but usable; 0 = vague or absent.
@@ -43,7 +44,8 @@ Dimension rubrics (anchor your score to these):
     5 = no unsupported content; every number and named entity traces to the input.
     4 = no fabrication; only slightly loose wording of an otherwise supported fact.
     3 = one unsupported *qualitative* generalization, but no invented numbers or entities.
-    2 = contains an invented number, channel, or claim absent from the input (a MATERIAL hallucination).
+    2 = contains an invented number, channel, or claim absent from the input
+        (a MATERIAL hallucination).
     1 = several fabricated claims.
     0 = largely fabricated.
   Do NOT lower this score for being terse, generic, or imperfect — only for
