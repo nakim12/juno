@@ -179,7 +179,7 @@ export default function EvaluationPage() {
                   ["Groundedness", "Does every claim trace back to the model output or a cited source? Judged by an independent model."],
                   ["Actionability", "Is the recommendation specific and executable, not 'consider testing'? Judged 0–5."],
                   ["Failure-mode recall", "Of the structural risks we injected (multicollinearity, saturation, wide CIs…), how many did the agent flag? Deterministic."],
-                  ["Hallucination", "Rate of claims unsupported by the output or sources. Judged."],
+                  ["Hallucination", "Share of responses that make a material fabrication — an invented number, channel, or claim absent from the model output or sources. Judged 0–5 on an anchored rubric; grounded-but-imperfect answers don't count."],
                 ].map(([label, body]) => (
                   <div key={label} className="bg-background p-6">
                     <h3 className="text-sm font-semibold text-accent">{label}</h3>

@@ -68,9 +68,13 @@ def summary() -> dict:
     if data is None:
         # No live DB rows — serve the committed snapshot (e.g. in production).
         data = snapshot or {"available": False}
-    elif snapshot and "judge_validation" in snapshot:
-        # Reliability isn't stored in the DB; merge it from the snapshot.
-        data.setdefault("judge_validation", snapshot["judge_validation"])
+    elif snapshot:
+        # These aren't stored per-run in the DB; merge them from the snapshot so
+        # the page shows the judge-reliability block and any correction note.
+        if "judge_validation" in snapshot:
+            data.setdefault("judge_validation", snapshot["judge_validation"])
+        if "note" in snapshot:
+            data.setdefault("note", snapshot["note"])
 
     data["targets"] = TARGETS
     return data
