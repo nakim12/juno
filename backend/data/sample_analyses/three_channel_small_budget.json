@@ -1,0 +1,407 @@
+{
+  "session_id": "0e1947dfbf9e400c942d52f14b94048d",
+  "overview": "The model estimates Search as the clear top performer with a well-identified ROI of 3.2 (CI: 2.8–3.6), contributing 45% of attributed outcomes from 53% of total spend. Social appears second with a point estimate of 1.8 ROI, but its wide credible interval (0.9–2.7) means the model is genuinely uncertain whether it is a strong performer or barely profitable. Display sits last with a point estimate of 0.9 ROI and an even wider interval (0.2–1.6), spanning from unprofitable to moderately effective. The ranking of Search is confident; the ordering of Social and Display is less certain due to their overlapping intervals, though Social's higher point estimate and greater contribution make it the more likely second-place channel. All three channels are operating near or above their half-saturation points, which limits marginal return headroom. The model fit is solid (R² = 0.82, MAPE = 11%), but the detected wide credible intervals on Social and Display signal that the data struggle to pin down their true effects.",
+  "channel_ranking": [
+    "Search",
+    "Social",
+    "Display"
+  ],
+  "per_channel": [
+    {
+      "channel_name": "Search",
+      "interpretation": "Search shows the highest ROI at 3.2 with a tight credible interval (2.8–3.6), indicating the model is confident in this estimate. The channel contributes 45% of attributed outcomes from $40,500 in spend. However, current spend ($40,500) sits slightly above the half-saturation point ($40,000), meaning the channel is entering diminishing returns territory. The low adstock decay of 0.3 implies Search effects are largely realized within the same week, typical of direct-response channels. While the average ROI is strong, marginal ROI is likely lower than 3.2 given the saturation position, so large budget increases may not be as productive as the point estimate suggests.",
+      "confidence": "high",
+      "confidence_reasoning": "Search's ROI is well separated from both Social and Display, with a narrow credible interval that does not overlap with either competitor. Even accounting for saturation effects, its position at the top of the ranking is unambiguous. The model clearly identifies Search as the most effective channel.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Search",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "saturation::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "channel_name": "Social",
+      "interpretation": "Social's point ROI estimate is 1.8, contributing 33% of attributed outcomes from $24,300 in spend. However, the credible interval is wide (0.9–2.7), spanning from barely profitable to quite strong. The interval width (1.8) equals the point estimate itself, which signals low confidence in the specific value. Social also shows high adstock decay (0.6), meaning effects carry over multiple weeks, which can make the coefficient harder to identify with limited data. Current spend is near the half-saturation point ($25,000), so the channel is approaching diminishing returns. The wide interval may also reflect correlation with other channels or limited independent variation in the data.",
+      "confidence": "medium",
+      "confidence_reasoning": "Social's point estimate (1.8) and contribution (33%) place it clearly above Display (0.9 ROI, 22% contribution), and its credible interval lower bound (0.9) just touches Display's upper bound (1.6). While a swap is theoretically possible if Social's true ROI sits at the low end of its range and Display's at the high end, the combination of Social's higher point estimate and substantially greater contribution makes second place the most probable position. There is realistic ambiguity with Display, but not enough to warrant low confidence.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Social",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "saturation::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "channel_name": "Display",
+      "interpretation": "Display's estimated ROI is 0.9 with a very wide credible interval (0.2–1.6), which spans from unprofitable to moderately effective. The channel contributes 22% of attributed outcomes from $12,250 in spend, the smallest share of the three. Current spend sits just above the half-saturation point ($12,000), indicating the channel is at or past its most productive range. The moderate adstock decay (0.5) suggests some carryover but not enough to explain the wide interval on its own. The uncertainty likely stems from limited spend variation, possible correlation with other channels, or weak signal in the data.",
+      "confidence": "high",
+      "confidence_reasoning": "Despite Display's wide credible interval, its position at the bottom of the ranking is clear. Its point estimate (0.9) is well below Social's (1.8), and even if Display's true ROI were at the top of its range (1.6) and Social's at the bottom (0.9), Display's much smaller contribution (22% vs. 33%) and lower spend would still make it the weakest channel. The rank is unambiguous even though the ROI value itself is uncertain.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "saturation::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        }
+      ]
+    }
+  ],
+  "structural_risks": [
+    {
+      "title": "Wide credible intervals on Social and Display undermine budget recommendations",
+      "description": "Social's ROI credible interval (0.9–2.7) is as wide as its point estimate (1.8), and Display's interval (0.2–1.6) is even wider relative to its point (0.9). These wide intervals mean the model cannot confidently distinguish whether Social is highly profitable or marginal, and whether Display is break-even or a poor investment. Any budget shift recommendation between these channels rests on fragile evidence. The intervals may reflect limited independent variation in spend, collinearity between channels, or the difficulty of identifying effects with high adstock decay from only 52 weeks of data.",
+      "severity": "high",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Social",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "multicollinearity::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "title": "All channels at or above half-saturation, limiting marginal upside",
+      "description": "Search is spending $40,500 against a half-saturation point of $40,000, Social $24,300 against $25,000, and Display $12,250 against $12,000. Each channel is operating in or entering the diminishing-returns portion of its saturation curve. This means marginal ROI is lower than average ROI for all three channels, and budget increases are likely to be less productive than the point estimates suggest. The model may also be extrapolating beyond the observed spend range if budgets are pushed significantly higher, which reduces reliability.",
+      "severity": "high",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Search",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Social",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "saturation::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "title": "Social's high adstock decay complicates identification",
+      "description": "Social's adstock decay parameter is 0.6, meaning 60% of one week's effect carries into the next, smearing the impact across multiple weeks. High adstock values are harder to identify from limited data because they reduce the amount of independent week-to-week variation the model can learn from. With only 52 weeks of data, the uncertainty around Social's true effect is elevated, which likely contributes to the wide credible interval. This parameter should be treated with caution and validated if possible.",
+      "severity": "medium",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Social",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "title": "No experimental calibration reported",
+      "description": "The model output does not indicate whether any channel estimates have been calibrated to incrementality tests or lift studies. Without experimental ground truth, the ROI estimates rest entirely on observational data, which is vulnerable to confounding, reverse causality, and the attribution of non-incremental conversions. Calibration anchors the model to causal evidence and is especially valuable for channels with wide credible intervals, where the observational model is least certain.",
+      "severity": "medium",
+      "citations": [
+        {
+          "source_type": "knowledge_base",
+          "reference": "calibration::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "causal_inference::0",
+          "snippet": null
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "action": "Run conversion lift tests on Social and Display to resolve uncertainty and calibrate the model",
+      "priority": "high",
+      "rationale": "Social and Display have credible intervals wide enough to span from unprofitable to strong performers. Observational data alone cannot resolve this ambiguity. Geo-based holdout experiments or platform lift studies will measure incremental ROI directly, providing causal ground truth to anchor the model's estimates. Prioritize Social first given its larger spend and contribution share. Use the experimental results as informative priors in the next model iteration to tighten credible intervals and improve budget allocation confidence.",
+      "confidence": "high",
+      "dependencies": [
+        "Requires experimental design capacity and willingness to pause or vary spend in test cells"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Social",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "calibration::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Do not increase Search budget without testing marginal returns",
+      "priority": "high",
+      "rationale": "Search has the highest ROI (3.2), but current spend ($40,500) already exceeds the half-saturation point ($40,000), meaning the channel is in diminishing returns. The average ROI of 3.2 does not reflect the marginal ROI of the next dollar spent, which will be lower. Before shifting more budget to Search, run a small incremental spend test to measure actual marginal return at current saturation levels. Extrapolating the model beyond observed spend introduces unreliability.",
+      "confidence": "high",
+      "dependencies": [
+        "Requires ability to incrementally increase Search spend in a controlled way and measure outcomes"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Search",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "saturation::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Introduce deliberate variation in Social and Display spend timing to reduce collinearity in future data",
+      "priority": "medium",
+      "rationale": "The wide credible intervals on Social and Display may partly reflect correlated spend patterns that the model cannot disentangle. If these channels are always flighted together or move in lockstep with seasonal pushes, the regression distributes credit between them arbitrarily. Staggering flight timing or varying spend independently in some periods will create the independent signal needed to identify their individual effects more precisely. This is a prospective fix that improves future model fits rather than the current one.",
+      "confidence": "medium",
+      "dependencies": [
+        "Requires media planning flexibility to vary flight schedules independently across channels"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Social",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "multicollinearity::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Consider reducing or reallocating Display spend, but validate with a holdout test first",
+      "priority": "medium",
+      "rationale": "Display's point ROI estimate is 0.9, below break-even, and it operates at saturation. However, the credible interval (0.2–1.6) means the true ROI could range from deeply unprofitable to moderately positive. Given the uncertainty, do not cut Display budget based solely on the model's point estimate. Instead, run a geo holdout experiment where Display is turned off in a subset of markets to measure true incrementality. If the test confirms low or negative ROI, reallocate the $12,250 to other opportunities or new channels. If it shows the true ROI is in the upper part of the range, the current allocation may be appropriate.",
+      "confidence": "medium",
+      "dependencies": [
+        "Requires experimental design capacity and stakeholder buy-in to risk pausing Display in test regions"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "calibration::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "saturation::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Investigate whether Social and Display spend patterns are correlated and separate them if feasible",
+      "priority": "low",
+      "rationale": "If Social and Display budgets move together over time (for example, both ramping for seasonal events or both managed by the same team with linked budgets), the model cannot cleanly attribute their individual contributions, which inflates credible intervals. Check the historical spend correlation. If they are highly correlated, consider grouping them into a single 'Digital Prospecting' variable in the model to get a stable combined estimate, or introduce independent variation as recommended above. This is a diagnostic and prospective modeling improvement rather than an immediate budget action.",
+      "confidence": "low",
+      "dependencies": [
+        "Requires access to historical spend data and potential re-modeling or media planning changes"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Social",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "multicollinearity::0",
+          "snippet": null
+        }
+      ]
+    }
+  ],
+  "validation_suggestions": [
+    {
+      "step": "Run a geo-based conversion lift test on Social to measure incremental ROI and narrow the credible interval",
+      "rationale": "Social's ROI estimate has a credible interval (0.9–2.7) wide enough that the model cannot distinguish whether it is highly profitable or marginal. A geo holdout or platform lift study will measure the true incremental effect, providing causal ground truth independent of the correlational model. Use the experimental result as an informative prior in the next Bayesian model fit to anchor the estimate and reduce uncertainty."
+    },
+    {
+      "step": "Run a geo-based holdout test on Display to confirm whether its ROI is near the point estimate or at one of the interval extremes",
+      "rationale": "Display's point estimate of 0.9 ROI sits below break-even, but the wide interval (0.2–1.6) means it could be unprofitable or moderately effective. A holdout experiment where Display is paused in some geographies will measure true incrementality and determine whether current spend should be cut, maintained, or reallocated. This is especially important because the channel is at saturation and additional spend is unlikely to be productive regardless of the true ROI."
+    },
+    {
+      "step": "Test marginal returns on Search with a small incremental budget increase in a subset of markets",
+      "rationale": "Search is spending above its half-saturation point, so marginal ROI is lower than the average ROI of 3.2. Before shifting significant new budget to Search, run a controlled test increasing spend by 10–20% in select geographies and measure the incremental lift. This validates whether the saturation curve is accurate and whether marginal returns justify further investment, or whether budget should be capped near current levels."
+    },
+    {
+      "step": "Check Bayesian sampler diagnostics (R-hat, divergences) to confirm the posterior is trustworthy",
+      "rationale": "The model is Bayesian, so the credible intervals and point estimates are only meaningful if the sampler converged properly. Review R-hat statistics for all parameters (values should be very close to 1.0, ideally below 1.01) and check for divergent transitions in the Hamiltonian Monte Carlo sampler. If convergence is poor, the posterior distributions are unreliable and the model should be refit with adjusted priors, reparameterization, or more samples before making budget decisions."
+    },
+    {
+      "step": "Examine historical spend correlation between Social and Display to assess multicollinearity risk",
+      "rationale": "Both Social and Display have wide credible intervals, which may indicate that their spend patterns are correlated and the model struggles to separate their individual contributions. Calculate the Pearson correlation of their weekly spend series. If correlation is high (above 0.7), this is evidence of multicollinearity. Consider introducing independent variation in future flight timing or grouping the channels in the model to get a stable combined estimate."
+    }
+  ],
+  "knowledge_sources": [
+    {
+      "chunk_id": "bayesian_priors::0",
+      "title": null,
+      "topic": "bayesian_priors",
+      "source": "juno_kb",
+      "snippet": "Bayesian marketing mix models treat the unknown parameters — channel\ncoefficients, adstock decays, saturation shapes — as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein…"
+    },
+    {
+      "chunk_id": "calibration::0",
+      "title": null,
+      "topic": "calibration",
+      "source": "juno_kb",
+      "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa…"
+    },
+    {
+      "chunk_id": "attribution_mmm_vs_mta::0",
+      "title": null,
+      "topic": "attribution",
+      "source": "juno_kb",
+      "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data — weekly spend and outcomes across channe…"
+    },
+    {
+      "chunk_id": "credible_intervals::0",
+      "title": null,
+      "topic": "credible_intervals",
+      "source": "juno_kb",
+      "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi…"
+    },
+    {
+      "chunk_id": "causal_inference::0",
+      "title": null,
+      "topic": "causal_inference",
+      "source": "juno_kb",
+      "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m…"
+    },
+    {
+      "chunk_id": "adstock::0",
+      "title": null,
+      "topic": "adstock",
+      "source": "juno_kb",
+      "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar…"
+    },
+    {
+      "chunk_id": "multicollinearity::0",
+      "title": null,
+      "topic": "multicollinearity",
+      "source": "juno_kb",
+      "snippet": "Multicollinearity arises when two or more media channels have spend patterns\nthat move together over time. If Meta and Instagram are always flighted in\nlockstep, or if all upper-funnel channels ramp together for a season…"
+    },
+    {
+      "chunk_id": "saturation::0",
+      "title": null,
+      "topic": "saturation",
+      "source": "juno_kb",
+      "snippet": "Saturation describes how a channel's incremental effect flattens as spend\nincreases. The first dollars spent on a channel tend to be the most productive;\nas spend grows, each additional dollar buys less incremental outco…"
+    }
+  ],
+  "metadata": {
+    "agent_model": "claude-sonnet-4-5",
+    "prompt_version": "analysis.v5",
+    "generated_at": "2026-08-08T02:48:50.403615+00:00"
+  }
+}

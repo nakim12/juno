@@ -1,0 +1,451 @@
+{
+  "session_id": "a0ca5bd4daea459c8c636238ba3f15be",
+  "overview": "The model covers 78 weeks across 6 channels with total spend of $155,000 and explains 88% of sales variance (R² = 0.88, MAPE = 9%). Three channels stand out: Search delivers steady, well-identified returns (ROI 2.9, tight CI 2.6–3.2); Affiliate shows the highest point ROI at 4.5 but from a very small spend base ($6k) and is nearing saturation; Meta contributes substantially (22% of attributed sales) with reasonable ROI (2.1) but wider uncertainty. TikTok, YouTube, and Display all face meaningful identification challenges — TikTok and Display have very wide credible intervals spanning breakeven to strong performance, and YouTube has extremely high adstock (0.92) that makes its effect hard to pin down. The ranking below reflects these trade-offs: channels are ordered by the return the business should expect, accounting for both ROI magnitude and how confidently we can identify it. Most channels can be ranked with high confidence because their positions are clear even when individual estimates are uncertain; only TikTok sits in a genuine gray zone where its rank could shift.",
+  "channel_ranking": [
+    "Affiliate",
+    "Search",
+    "Meta",
+    "YouTube",
+    "TikTok",
+    "Display"
+  ],
+  "per_channel": [
+    {
+      "channel_name": "Affiliate",
+      "interpretation": "Affiliate shows the strongest point ROI at 4.5 (CI 3.9–5.1) with a tight credible interval, indicating well-identified high returns. However, it operates at very low scale ($6k spend, 5% contribution) and is nearing saturation: current spend of $6k is 75% of the half-saturation point ($8k), meaning marginal returns are already declining steeply. The low adstock (0.15) means effects are realized quickly with minimal carryover. While the ROI is excellent, there is limited headroom for expansion before hitting sharply diminishing returns.",
+      "confidence": "high",
+      "confidence_reasoning": "The combination of tight CI, highest ROI by a wide margin, and clear saturation constraints makes Affiliate's rank unambiguous. Even accounting for its small scale and saturation proximity, it clearly outperforms all other channels on current efficiency. No other channel could plausibly displace it from the top position.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Affiliate",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "channel_name": "Search",
+      "interpretation": "Search is the most reliable workhorse: ROI of 2.9 with a narrow CI (2.6–3.2), contributing 30% of attributed sales from $48.5k spend. The tight interval reflects strong identification — the model is confident about Search's effect. Adstock is low (0.25), typical of direct-response channels where conversions happen quickly. Current spend ($48.5k) is about 54% of half-saturation ($90k), leaving room for expansion before hitting steep diminishing returns, though marginal ROI will decline as spend increases. This channel combines high certainty, substantial scale, and proven effectiveness.",
+      "confidence": "high",
+      "confidence_reasoning": "Search's tight CI, large contribution, and clear separation from Meta (next highest at 2.1 ROI) make its rank secure. The gap between Search and Meta is wide enough that even the edges of their credible intervals do not overlap in a way that would swap their positions. Search is definitively second.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Search",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "channel_name": "Meta",
+      "interpretation": "Meta shows an ROI of 2.1 (CI 1.4–2.8) with moderate uncertainty — the interval width of 1.4 is substantial but not as extreme as TikTok or Display. It drives 22% of attributed sales from $36.2k spend. The adstock of 0.55 indicates meaningful carryover, with effects persisting several weeks beyond initial exposure. Current spend is about 52% of half-saturation ($70k), suggesting room for expansion. The wider CI reflects some identification challenge, likely from correlation with other digital channels, but the estimate is still usable for decisions given the channel's scale and contribution.",
+      "confidence": "high",
+      "confidence_reasoning": "Meta's position is clear: its ROI point estimate and lower CI bound both exceed YouTube's point estimate, and it substantially outperforms TikTok and Display. While its upper CI reaches 2.8 (into Search territory), the point estimates are separated enough that Meta reliably sits third. YouTube could not realistically overtake it given the data.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Meta",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "channel_name": "YouTube",
+      "interpretation": "YouTube estimates an ROI of 1.4 (CI 0.8–2.0), contributing 18% of sales from $28k spend. The defining characteristic is extremely high adstock (0.92): effects persist across many weeks, creating a long memory. High adstock values are difficult to identify from limited data because the effect smears across time, reducing independent variation. This makes the estimate inherently uncertain even though the CI width (1.2) is not the widest. Current spend is near half-saturation ($30k), so the channel is operating in a zone of moderate diminishing returns. The high adstock also means YouTube's full effect takes many weeks to materialize, complicating short-term optimization.",
+      "confidence": "high",
+      "confidence_reasoning": "YouTube's rank is secure despite its identification challenges. Its point estimate clearly exceeds TikTok's and Display's, and its lower CI bound (0.8) is well above Display's point estimate (0.7). While the high adstock creates measurement uncertainty, it does not create positional ambiguity — YouTube is definitively fourth.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "YouTube",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "channel_name": "TikTok",
+      "interpretation": "TikTok shows an ROI point estimate of 1.7 (CI 0.6–2.8), but the extremely wide credible interval — spanning from barely breakeven to strong performance — means this estimate has low informational value. The interval width of 2.2 is larger than the point estimate itself, a clear signal of poor identification. The model assigns 15% of sales to TikTok from $24.2k spend. Adstock is high (0.7), indicating long carryover, which compounds the identification problem. Current spend is about 54% of half-saturation ($45k), so there is theoretical room to scale, but the wide CI makes any such recommendation fragile. The data cannot confidently distinguish whether TikTok is moderately effective or nearly ineffective.",
+      "confidence": "medium",
+      "confidence_reasoning": "TikTok's wide CI creates genuine positional uncertainty. Its upper bound (2.8) overlaps with Meta, and its lower bound (0.6) falls below Display's point estimate. However, the point estimate of 1.7 is separated enough from Display (0.7) that TikTok more likely sits fifth than sixth. It could plausibly swap with Display if the true value is near the lower CI, but the point estimate provides weak directional guidance toward fifth place.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "TikTok",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "channel_name": "Display",
+      "interpretation": "Display shows the lowest point ROI at 0.7 (CI 0.1–1.3), contributing 10% of sales from $12k spend. The credible interval is wide (width 1.2), spanning from nearly zero return to modest profitability, indicating poor identification. The lower bound of 0.1 suggests Display may be barely breaking even or operating at a loss. Moderate adstock (0.5) and low half-saturation ($20k) mean the channel has some carryover but is already well into diminishing returns (current spend is 60% of half-saturation). The combination of low ROI point estimate, wide uncertainty, and unfavorable saturation position makes Display the clear laggard.",
+      "confidence": "high",
+      "confidence_reasoning": "Display's rank is unambiguous despite its wide CI. Its point estimate is the lowest by a substantial margin, and even its upper CI bound (1.3) does not reach TikTok's or YouTube's point estimates. While there is uncertainty about whether Display is merely weak or actually unprofitable, there is no uncertainty about it ranking last among the six channels.",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    }
+  ],
+  "structural_risks": [
+    {
+      "title": "Wide credible intervals on TikTok and Display undermine actionability",
+      "description": "TikTok's ROI interval (0.6–2.8) and Display's (0.1–1.3) are so wide that the point estimates provide limited decision support. TikTok could be anywhere from barely profitable to highly effective; Display could be losing money or modestly profitable. These intervals are wider than the point estimates themselves, a clear signal of poor identification. Any budget recommendation for these channels is fragile. The width likely stems from limited data variation, collinearity with other channels, or both. A 78-week span should be sufficient for annual seasonality, but if these channels' spends are correlated with others or with unmodeled demand drivers, the model cannot confidently separate their effects.",
+      "severity": "high",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "TikTok",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "failure_modes::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "title": "YouTube's very high adstock (0.92) is difficult to identify and may be overstated",
+      "description": "An adstock decay of 0.92 implies that 92% of each week's effect carries into the next, creating extremely long carryover — a single week of spend influences sales for months. Such high adstock values are inherently hard to identify from observational data because the effect smears across many periods, reducing the independent variation the model can learn from. This is a known failure mode: high-adstock estimates are often overstated, especially when the data span is limited or the channel's spend pattern is irregular. While 78 weeks is a reasonable span, the model flags this as a detected issue. Treat YouTube's adstock and its resulting ROI with caution; the true carryover may be shorter, which would change budget allocation recommendations.",
+      "severity": "medium",
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "YouTube",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "failure_modes::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "title": "Potential collinearity among digital channels",
+      "description": "Meta, TikTok, YouTube, and Display are all digital channels whose budgets may move together in response to seasonal demand, campaign cycles, or shared optimization rules. When spend patterns are correlated, the model struggles to assign credit uniquely, leading to wide credible intervals and unstable coefficient estimates. The wide CIs on TikTok and Display, and to a lesser extent Meta, suggest this may be occurring. Collinearity does not bias the aggregate digital contribution but does make individual channel ROIs unreliable. This is a classic identifiability failure in MMM. Without experimental variation (for example, a holdout or geo test that isolates one channel), the model's split of credit among correlated channels is partly arbitrary.",
+      "severity": "medium",
+      "citations": [
+        {
+          "source_type": "knowledge_base",
+          "reference": "failure_modes::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "title": "No experimental calibration cited",
+      "description": "The model output does not reference any lift tests or incrementality experiments used to calibrate channel estimates. Marketing mix models are correlational and vulnerable to confounding, reverse causality, and baseline leakage. Experiments provide causal ground truth that can anchor the model's priors or validate its outputs. Without calibration, the model's ROI estimates rest entirely on observational data, which may conflate correlation with incrementality (for example, if budgets rise with anticipated demand). This is not a fatal flaw, but it means the estimates should be treated as suggestive rather than definitive, and any high-stakes decision should be informed by an incrementality test.",
+      "severity": "medium",
+      "citations": [
+        {
+          "source_type": "knowledge_base",
+          "reference": "calibration::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "causal_inference::0",
+          "snippet": null
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "action": "Run incrementality tests on TikTok and Display to resolve uncertainty",
+      "priority": "high",
+      "rationale": "TikTok and Display have the widest credible intervals, meaning the model cannot confidently say whether they are effective or not. TikTok's interval spans 0.6 to 2.8; Display's spans 0.1 to 1.3. These ranges include breakeven and loss-making scenarios. A geo-based holdout or conversion lift test will measure their true incremental impact and either confirm they are worth investing in or reveal they should be cut. Prioritize these two channels for experiments because the observational model is least informative about them, and decisions (scale, hold, or cut) hinge on resolving this uncertainty. The test results can also be fed back as priors to tighten future model estimates.",
+      "confidence": "high",
+      "dependencies": [
+        "Secure budget and stakeholder buy-in for a multi-week geo test or platform lift study",
+        "Ensure sufficient volume in test and control groups for statistical power"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "TikTok",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "calibration::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "credible_intervals::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Reallocate budget from Display to Search or Meta",
+      "priority": "high",
+      "rationale": "Display has the lowest ROI (0.7) with a wide interval that includes near-zero returns, and it is already operating at 60% of half-saturation, meaning marginal returns are declining. Search (ROI 2.9, tight CI, 54% of saturation) and Meta (ROI 2.1, 52% of saturation) both have higher expected returns and room to scale before hitting steep diminishing returns. Shifting $5k–$8k from Display to Search or Meta is likely to improve overall portfolio efficiency. This is a relatively safe move even given Display's uncertainty: its upper bound (1.3) is still well below Search's lower bound (2.6), so the expected gain from reallocation is robust. Monitor performance closely and validate with a test if feasible.",
+      "confidence": "high",
+      "dependencies": [
+        "Confirm that Display reduction will not harm other objectives (e.g., brand awareness, remarketing)",
+        "Ensure Search and Meta can absorb incremental budget without operational constraints (creative, targeting capacity)"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Display",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Search",
+          "snippet": null
+        },
+        {
+          "source_type": "mmm_output",
+          "reference": "Meta",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Maintain or modestly grow Search spend, but monitor saturation",
+      "priority": "medium",
+      "rationale": "Search is the most reliable channel with a tight CI (2.6–3.2) and substantial contribution (30%). Current spend ($48.5k) is 54% of half-saturation ($90k), so there is headroom before marginal returns decline sharply. However, Search's low adstock (0.25) means effects are immediate with little carryover, so returns will compress as spend rises. A modest increase of 10–20% is defensible, but moving Search spend dramatically higher risks hitting saturation. Track marginal ROAS closely as you scale, and consider a holdout test at higher spend levels to confirm incremental returns remain acceptable.",
+      "confidence": "high",
+      "dependencies": [
+        "Monitor marginal performance weekly to detect saturation onset",
+        "Ensure sufficient high-intent keyword inventory and competitive position to absorb higher budgets"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Search",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Test expansion of Meta, but expect declining marginal returns",
+      "priority": "medium",
+      "rationale": "Meta's ROI of 2.1 (CI 1.4–2.8) is solid, and current spend ($36.2k) is 52% of half-saturation ($70k), suggesting room to grow. However, the CI is wider than Search's, reflecting some identification uncertainty, and saturation will compress returns as spend increases. A controlled expansion — perhaps 15–25% over several weeks — can test whether marginal ROAS remains acceptable. Meta's adstock of 0.55 means effects persist for several weeks, so evaluate performance over a longer window rather than week-to-week. If marginal returns drop sharply, hold or reduce rather than chasing scale.",
+      "confidence": "medium",
+      "dependencies": [
+        "Validate that incremental spend can access new high-quality audiences (not just bid inflation on existing reach)",
+        "Track marginal ROAS over a multi-week window to account for carryover"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Meta",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Hold Affiliate at current spend; do not scale aggressively",
+      "priority": "high",
+      "rationale": "Affiliate has the highest ROI (4.5, CI 3.9–5.1), but current spend ($6k) is already 75% of half-saturation ($8k), meaning the channel is operating deep into diminishing returns. Marginal ROI at this level is likely well below the average ROI, and pushing spend higher will hit a wall quickly. The low adstock (0.15) means no carryover cushion. Affiliate is maximally efficient at its current small scale; attempts to scale it will erode returns sharply. Keep spend stable and treat Affiliate as a high-efficiency niche rather than a growth lever.",
+      "confidence": "high",
+      "dependencies": [
+        "None; this is a hold recommendation"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "Affiliate",
+          "snippet": null
+        }
+      ]
+    },
+    {
+      "action": "Investigate YouTube's high adstock estimate with a carryover study or shorter-window analysis",
+      "priority": "medium",
+      "rationale": "YouTube's adstock of 0.92 implies effects persist for months, but high adstock values are difficult to identify and often overstated, especially in observational models. If the true carryover is shorter, the current ROI estimate may be inflated (because the model is attributing long-delayed conversions to YouTube that are really driven by other factors). A dedicated analysis — such as fitting a model on shorter weekly lags or running a holdout test to measure decay empirically — can validate or correct the estimate. This is not urgent but would improve confidence in YouTube's budget allocation and inform pacing decisions (high adstock means effects are delayed, so changes in spend take weeks to show up in sales).",
+      "confidence": "medium",
+      "dependencies": [
+        "Access to granular weekly data to test alternative adstock specifications",
+        "Optionally, run a short holdout or on-off test to measure YouTube's decay empirically"
+      ],
+      "citations": [
+        {
+          "source_type": "mmm_output",
+          "reference": "YouTube",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "adstock::0",
+          "snippet": null
+        },
+        {
+          "source_type": "knowledge_base",
+          "reference": "failure_modes::0",
+          "snippet": null
+        }
+      ]
+    }
+  ],
+  "validation_suggestions": [
+    {
+      "step": "Run geo-based incrementality tests on TikTok and Display",
+      "rationale": "These two channels have the widest credible intervals and the most uncertain ROI estimates. A geo holdout or lift test will directly measure their causal impact, resolving the uncertainty that the observational model cannot. Prioritize them because decisions (scale vs. cut) are most sensitive to resolving their true effectiveness. Use the test results to calibrate future model runs by incorporating them as informative priors."
+    },
+    {
+      "step": "Conduct a holdout validation on the most recent 8–12 weeks",
+      "rationale": "The model reports strong in-sample fit (R² = 0.88, MAPE = 9%), but in-sample fit does not guarantee the attribution is correct — a model can predict well while crediting the wrong channels. Withhold the last 8–12 weeks of data, refit the model, and check whether the channel coefficients remain stable and whether the model's out-of-sample predictions are accurate. Large shifts in channel ROI or poor holdout performance would signal overfitting or structural instability, raising the risk that the current estimates are fragile."
+    },
+    {
+      "step": "Test reduced Display spend in a subset of geos or time periods",
+      "rationale": "Display has the lowest ROI and the recommendation is to cut or reallocate its budget. Before making a portfolio-wide change, test the reduction in a controlled subset (a few regions or a 4-week window) and measure whether total sales drop by the amount the model predicts. This provides a real-world check on Display's incrementality and limits downside risk if the model has underestimated its contribution."
+    },
+    {
+      "step": "Validate YouTube's adstock with a short-term on-off test or decay analysis",
+      "rationale": "The adstock estimate of 0.92 is flagged as a structural risk because very high decay values are hard to identify and may be overstated. Running YouTube dark in a few geos for 2–4 weeks and observing how quickly the effect decays will empirically measure carryover. Alternatively, fit a model variant with constrained adstock or weekly lag analysis to see if the estimate is stable. This validation would either confirm the long carryover or reveal that it is shorter, which would change budget pacing and ROI interpretation."
+    }
+  ],
+  "knowledge_sources": [
+    {
+      "chunk_id": "bayesian_priors::0",
+      "title": null,
+      "topic": "bayesian_priors",
+      "source": "juno_kb",
+      "snippet": "Bayesian marketing mix models treat the unknown parameters — channel\ncoefficients, adstock decays, saturation shapes — as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein…"
+    },
+    {
+      "chunk_id": "attribution_mmm_vs_mta::0",
+      "title": null,
+      "topic": "attribution",
+      "source": "juno_kb",
+      "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data — weekly spend and outcomes across channe…"
+    },
+    {
+      "chunk_id": "calibration::0",
+      "title": null,
+      "topic": "calibration",
+      "source": "juno_kb",
+      "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa…"
+    },
+    {
+      "chunk_id": "adstock::0",
+      "title": null,
+      "topic": "adstock",
+      "source": "juno_kb",
+      "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar…"
+    },
+    {
+      "chunk_id": "causal_inference::0",
+      "title": null,
+      "topic": "causal_inference",
+      "source": "juno_kb",
+      "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m…"
+    },
+    {
+      "chunk_id": "credible_intervals::0",
+      "title": null,
+      "topic": "credible_intervals",
+      "source": "juno_kb",
+      "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi…"
+    },
+    {
+      "chunk_id": "failure_modes::0",
+      "title": null,
+      "topic": "failure_modes",
+      "source": "juno_kb",
+      "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability…"
+    },
+    {
+      "chunk_id": "seasonality_baseline::0",
+      "title": null,
+      "topic": "seasonality",
+      "source": "juno_kb",
+      "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m…"
+    }
+  ],
+  "metadata": {
+    "agent_model": "claude-sonnet-4-5",
+    "prompt_version": "analysis.v5",
+    "generated_at": "2026-08-08T02:40:17.030900+00:00"
+  }
+}

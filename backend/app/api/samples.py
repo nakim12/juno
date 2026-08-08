@@ -8,9 +8,10 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
-from app.agents import initial_analysis
+from app.agents import initial_analysis, sample_cache
 from app.api.analysis import analysis_stream_response
 from app.models.mmm_output import MMMOutput
+from app.parsers import mmm_parser
 from app.session.store import session_store
 
 router = APIRouter(prefix="/api/samples", tags=["samples"])
@@ -46,18 +47,43 @@ def list_samples() -> list[dict]:
 
 @router.post("/{sample_id}/load")
 async def load_sample(sample_id: str) -> dict:
-    """Load a sample into a fresh session and run the initial analysis."""
+    """Load a sample into a fresh session and run the initial analysis.
+
+    Sample reports are cached to disk after the first (paid) run and reused on
+    subsequent loads to avoid repeat LLM calls.
+    """
     mmm = _load_sample_file(sample_id)
     session = session_store.create(mmm)
+
+    cached = sample_cache.get(sample_id)
+    if cached is not None:
+        report = cached.model_copy(deep=True)
+        report.session_id = session.session_id
+        session.summary = mmm_parser.parse(mmm)
+        session.report = report
+        return {"session_id": session.session_id, "report": report.model_dump()}
+
     summary, report = await initial_analysis.run(mmm, session.session_id)
     session.summary = summary
     session.report = report
+    sample_cache.put(sample_id, report)
     return {"session_id": session.session_id, "report": report.model_dump()}
 
 
 @router.post("/{sample_id}/load/stream")
 async def load_sample_stream(sample_id: str) -> StreamingResponse:
-    """Streaming variant of :func:`load_sample` for a live report-building UX."""
+    """Streaming variant of :func:`load_sample` for a live report-building UX.
+
+    On a cache hit the stored report is replayed (no LLM call); otherwise the
+    live run is streamed and its report is written to the cache on completion.
+    """
     mmm = _load_sample_file(sample_id)
     session = session_store.create(mmm)
-    return analysis_stream_response(session)
+
+    cached = sample_cache.get(sample_id)
+    if cached is not None:
+        return analysis_stream_response(session, cached_report=cached)
+
+    return analysis_stream_response(
+        session, on_report=lambda r: sample_cache.put(sample_id, r)
+    )

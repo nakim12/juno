@@ -12,6 +12,7 @@ report so the end-to-end skeleton is demoable before wiring the API key.
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from typing import Any
@@ -123,6 +124,41 @@ async def run_streaming(
 
     _ensure_ranking(report, summary)
     report.knowledge_sources = sources
+    yield "report", report
+
+
+# Simulated generation pacing for cached replays: total ~= STEPS * DELAY seconds,
+# enough for the scanline to sweep and the character counter to climb visibly.
+_REPLAY_STEPS = 44
+_REPLAY_DELAY_S = 0.09
+
+
+async def replay_streaming(
+    mmm_output, session_id: str, report: AnalysisReport
+) -> AsyncIterator[tuple[str, Any]]:
+    """Replay a cached ``report`` through the same staged events as a live run.
+
+    Emits the (free, deterministic) summary and knowledge sources, then fakes
+    generation ``token`` progress so the live-building UI is identical, then the
+    cached report — without making any LLM call.
+    """
+    summary = mmm_parser.parse(mmm_output)
+    yield "summary", summary
+
+    chunks = retriever.retrieve(_retrieval_query(summary))
+    sources = _knowledge_sources(chunks)
+    yield "sources", sources
+
+    report = report.model_copy(deep=True)
+    report.session_id = session_id
+    report.knowledge_sources = sources
+
+    payload = report.model_dump_json()
+    step = max(1, len(payload) // _REPLAY_STEPS)
+    for start in range(0, len(payload), step):
+        await asyncio.sleep(_REPLAY_DELAY_S)
+        yield "token", payload[start : start + step]
+
     yield "report", report
 
 

@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.agents import initial_analysis
+from app.models.analysis_report import AnalysisReport
 from app.models.mmm_output import MMMOutput
 from app.session.store import Session, session_store
 
@@ -18,19 +20,35 @@ def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
-def analysis_stream_response(session: Session) -> StreamingResponse:
+def analysis_stream_response(
+    session: Session,
+    *,
+    cached_report: AnalysisReport | None = None,
+    on_report: Callable[[AnalysisReport], None] | None = None,
+) -> StreamingResponse:
     """Run the analysis pipeline for ``session`` and stream progress over SSE.
 
     Emits fast stages first (parsed channels, retrieved knowledge sources), then
     generation progress, then the final report. The summary and report are
     persisted on the session as they are produced.
+
+    If ``cached_report`` is given, it is replayed (no LLM call) through the same
+    staged events. ``on_report`` is invoked with the final report once produced
+    (used to populate the sample cache after a live run).
     """
 
     async def event_gen():
         chars = 0
-        async for kind, payload in initial_analysis.run_streaming(
-            session.mmm_output, session.session_id
-        ):
+        stream = (
+            initial_analysis.replay_streaming(
+                session.mmm_output, session.session_id, cached_report
+            )
+            if cached_report is not None
+            else initial_analysis.run_streaming(
+                session.mmm_output, session.session_id
+            )
+        )
+        async for kind, payload in stream:
             if kind == "summary":
                 session.summary = payload
                 yield _sse(
@@ -53,6 +71,8 @@ def analysis_stream_response(session: Session) -> StreamingResponse:
                 yield _sse("progress", {"chars": chars})
             elif kind == "report":
                 session.report = payload
+                if on_report is not None:
+                    on_report(payload)
                 yield _sse(
                     "report",
                     {
