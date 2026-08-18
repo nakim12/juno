@@ -40,6 +40,11 @@ PROMPT_NAME = "analysis"
 # and truncate the JSON mid-token, so give the model ample room.
 MAX_ANALYSIS_TOKENS = 16000
 
+# Parsing and retrieval are near-instant, which makes those pipeline steps flash
+# by imperceptibly. A short deliberate dwell lets each step register as its own
+# beat in the live-building UI. Negligible against the ~2-min generation step.
+STAGE_DWELL_S = 0.45
+
 
 def _now() -> str:
     return datetime.now(UTC).isoformat()
@@ -102,11 +107,14 @@ async def run_streaming(
     session and for translating events into the wire format.
     """
     summary = mmm_parser.parse(mmm_output)
+    await asyncio.sleep(STAGE_DWELL_S)  # let the "parsing" step register
     yield "summary", summary
 
+    await asyncio.sleep(STAGE_DWELL_S)  # brief "consulting knowledge base" beat
     chunks = retriever.retrieve(_retrieval_query(summary))
     sources = _knowledge_sources(chunks)
     yield "sources", sources
+    await asyncio.sleep(STAGE_DWELL_S)  # let the KB chips read before generating
 
     llm = llm or get_agent_llm()
     try:
@@ -143,11 +151,14 @@ async def replay_streaming(
     cached report — without making any LLM call.
     """
     summary = mmm_parser.parse(mmm_output)
+    await asyncio.sleep(STAGE_DWELL_S)  # let the "parsing" step register
     yield "summary", summary
 
+    await asyncio.sleep(STAGE_DWELL_S)  # brief "consulting knowledge base" beat
     chunks = retriever.retrieve(_retrieval_query(summary))
     sources = _knowledge_sources(chunks)
     yield "sources", sources
+    await asyncio.sleep(STAGE_DWELL_S)  # let the KB chips read before generating
 
     report = report.model_copy(deep=True)
     report.session_id = session_id
