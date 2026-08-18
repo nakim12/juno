@@ -17,7 +17,7 @@ export function AmbientBackdrop() {
       <div className="ambient-blob ambient-blob--1" />
       <div className="ambient-blob ambient-blob--2" />
       <div className="absolute inset-0 opacity-60">
-        <ContourLines lines={12} />
+        <ContourLines lines={14} />
       </div>
     </div>
   );

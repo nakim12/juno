@@ -17,19 +17,22 @@ export function ContourLines({ lines = 16 }: { lines?: number }) {
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+    // Render at 1x regardless of device pixel ratio. These are slow, soft,
+    // very-low-alpha curves, so retina backing gains nothing visible while
+    // costing 4x the fill rate on a full-viewport canvas.
+    const DPR = 1;
+
     let width = 0;
     let height = 0;
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
     let raf = 0;
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      canvas.width = Math.floor(width * DPR);
+      canvas.height = Math.floor(height * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     };
 
     const drawLine = (i: number, t: number) => {
@@ -59,25 +62,41 @@ export function ContourLines({ lines = 16 }: { lines?: number }) {
       ctx.stroke();
     };
 
+    // A calm background doesn't need 60fps; cap to ~24 and pause off-screen so
+    // it doesn't compete with the compositor while scrolling elsewhere.
+    const FPS = 24;
+    const FRAME_MS = 1000 / FPS;
+    let last = 0;
+    let visible = true;
     let t = 0;
-    const render = () => {
-      t += 0.016;
+
+    const render = (now: number) => {
+      raf = requestAnimationFrame(render);
+      if (!visible) return;
+      if (now - last < FRAME_MS) return;
+      last = now;
+      t += 0.04;
       ctx.clearRect(0, 0, width, height);
       for (let i = 0; i < lines; i++) drawLine(i, t);
-      raf = requestAnimationFrame(render);
     };
 
     resize();
+    let io: IntersectionObserver | null = null;
     if (reduced) {
       for (let i = 0; i < lines; i++) drawLine(i, 0);
     } else {
-      render();
+      io = new IntersectionObserver(([e]) => (visible = e.isIntersecting), {
+        threshold: 0,
+      });
+      io.observe(canvas);
+      raf = requestAnimationFrame(render);
     }
     window.addEventListener("resize", resize);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      io?.disconnect();
     };
   }, [lines]);
 

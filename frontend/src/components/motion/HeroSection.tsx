@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { LaurelWreath } from "@/components/motion/LaurelWreath";
+import { SignatureLaurel } from "@/components/motion/SignatureLaurel";
+import { Magnetic } from "@/components/motion/Magnetic";
 import { Reveal } from "@/components/motion/Reveal";
 import { DustMotes } from "@/components/motion/DustMotes";
-import { ContourLines } from "@/components/motion/ContourLines";
 
 export function HeroSection({ githubUrl }: { githubUrl: string }) {
   const ref = useRef<HTMLElement>(null);
@@ -17,34 +18,39 @@ export function HeroSection({ githubUrl }: { githubUrl: string }) {
     offset: ["start start", "end start"],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
-  const y = useTransform(scrollYProgress, [0, 1], [0, -60]);
-  const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  // Backdrop drifts up slowly and fades as you scroll — a slow parallax layer.
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.94]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  // Backdrop drifts up slowly as you scroll — a slow parallax layer.
   const bgY = useTransform(scrollYProgress, [0, 1], [0, -80]);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+  // Only the scroll cue fades on scroll. The hero content's opacity is NOT tied
+  // to scroll: an element-scroll value can lag/stick for a beat when the hero
+  // re-enters on a fast scroll-to-top, which would flash "juno" invisible.
+  const cueOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
 
-  const contentStyle = reduced ? undefined : { scale, y, opacity };
+  const contentStyle = reduced ? undefined : { scale, y };
   const bgStyle = reduced ? undefined : { y: bgY, scale: bgScale };
-  const cueStyle = reduced ? undefined : { opacity };
+  const cueStyle = reduced ? undefined : { opacity: cueOpacity };
 
   return (
     <section
       ref={ref}
       className="relative flex min-h-[100svh] flex-col overflow-hidden"
     >
-      {/* Abstract backdrop — flowing gold contour lines */}
+      {/* Abstract backdrop. The flowing contour lines come from the page-wide
+          AmbientBackdrop underneath; a second hero-local canvas just painted
+          the same effect twice over the most expensive area of the page. */}
       <motion.div style={bgStyle} className="absolute inset-0 -z-10" aria-hidden>
-        <ContourLines />
-        {/* ambient breathing bloom */}
+        {/* ambient breathing bloom (no mix-blend: screen blending forces an
+            expensive backdrop read that spikes the compositor on hero re-entry) */}
         {!reduced && (
           <motion.div
-            className="absolute inset-0 mix-blend-screen"
+            className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(38% 40% at 50% 42%, hsl(var(--accent) / 0.4) 0%, hsl(var(--accent) / 0.08) 45%, transparent 72%)",
+                "radial-gradient(38% 40% at 50% 42%, hsl(var(--accent) / 0.28) 0%, hsl(var(--accent) / 0.06) 45%, transparent 72%)",
             }}
-            animate={{ opacity: [0.5, 0.9, 0.5], scale: [1, 1.06, 1] }}
+            animate={{ opacity: [0.5, 0.85, 0.5], scale: [1, 1.06, 1] }}
             transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           />
         )}
@@ -72,7 +78,10 @@ export function HeroSection({ githubUrl }: { githubUrl: string }) {
         />
 
         <Reveal>
-          <LaurelWreath className="mx-auto mb-4 h-16 w-16 text-accent" />
+          <SignatureLaurel
+            wrapperClassName="mb-4"
+            className="h-16 w-16 text-accent"
+          />
         </Reveal>
 
         <Reveal delay={0.06}>
@@ -99,20 +108,24 @@ export function HeroSection({ githubUrl }: { githubUrl: string }) {
 
         <Reveal delay={0.28}>
           <div className="mt-7 flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/analyze"
-              className="rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 text-sm font-semibold text-background shadow-lg shadow-accent/25 transition hover:opacity-90"
-            >
-              Try the live demo →
-            </Link>
-            <a
-              href={githubUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mono rounded-xl border border-border bg-background/40 px-6 py-3 text-sm font-medium backdrop-blur-sm transition hover:border-accent"
-            >
-              View the code
-            </a>
+            <Magnetic>
+              <Link
+                href="/analyze"
+                className="inline-block rounded-xl bg-gradient-to-br from-accent to-accent-2 px-6 py-3 text-sm font-semibold text-background shadow-lg shadow-accent/25 transition hover:opacity-90"
+              >
+                Try the live demo →
+              </Link>
+            </Magnetic>
+            <Magnetic strength={0.25}>
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mono inline-block rounded-xl border border-border bg-background/40 px-6 py-3 text-sm font-medium backdrop-blur-sm transition hover:border-accent"
+              >
+                View the code
+              </a>
+            </Magnetic>
           </div>
         </Reveal>
       </motion.div>
