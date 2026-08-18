@@ -5,15 +5,25 @@ import type {
   SampleInfo,
 } from "@/types";
 
+// Base URL for API calls. In dev we hit the backend directly (localhost:8000)
+// rather than through Next's /api rewrite, because that proxy BUFFERS streaming
+// responses — which breaks the SSE analysis/chat streaming (everything would
+// arrive at once at the end). The backend enables CORS for the dev origin.
+// In prod this is same-origin ("") unless NEXT_PUBLIC_API_BASE is set.
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE ??
+  (process.env.NODE_ENV === "development" ? "http://localhost:8000" : "");
+
+const api = (path: string) => `${API_BASE}${path}`;
+
 export async function getEvaluationSummary(): Promise<EvaluationSummary> {
-  const res = await fetch("/api/evaluation/summary", { cache: "no-store" });
+  const res = await fetch(api("/api/evaluation/summary"), { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load evaluation summary");
   return res.json();
 }
 
-// Requests are proxied to the FastAPI backend via next.config rewrites.
 export async function listSamples(): Promise<SampleInfo[]> {
-  const res = await fetch("/api/samples", { cache: "no-store" });
+  const res = await fetch(api("/api/samples"), { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to load samples");
   return res.json();
 }
@@ -21,7 +31,7 @@ export async function listSamples(): Promise<SampleInfo[]> {
 export async function loadSample(
   id: string
 ): Promise<{ session_id: string; report: AnalysisReport }> {
-  const res = await fetch(`/api/samples/${id}/load`, { method: "POST" });
+  const res = await fetch(api(`/api/samples/${id}/load`), { method: "POST" });
   if (!res.ok) throw new Error("Failed to load sample");
   return res.json();
 }
@@ -29,7 +39,7 @@ export async function loadSample(
 export async function analyzeUpload(
   mmmOutput: unknown
 ): Promise<{ session_id: string; report: AnalysisReport }> {
-  const res = await fetch("/api/analyze", {
+  const res = await fetch(api("/api/analyze"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(mmmOutput),
@@ -95,7 +105,7 @@ export async function streamLoadSample(
   id: string,
   handlers: AnalysisStreamHandlers
 ): Promise<void> {
-  const res = await fetch(`/api/samples/${id}/load/stream`, { method: "POST" });
+  const res = await fetch(api(`/api/samples/${id}/load/stream`), { method: "POST" });
   if (!res.ok) throw new Error("Failed to load sample");
   await readSSE(res, (t, d) => dispatchAnalysisEvent(handlers, t, d));
 }
@@ -127,7 +137,7 @@ export async function streamAnalyzeUpload(
   mmmOutput: unknown,
   handlers: AnalysisStreamHandlers
 ): Promise<void> {
-  const res = await fetch("/api/analyze/stream", {
+  const res = await fetch(api("/api/analyze/stream"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(mmmOutput),
@@ -154,7 +164,7 @@ export async function streamChat(
     onDone?: () => void;
   }
 ): Promise<void> {
-  const res = await fetch("/api/chat", {
+  const res = await fetch(api("/api/chat"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ session_id: sessionId, message }),
