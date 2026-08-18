@@ -7,6 +7,8 @@ import { SpotlightCard } from "@/components/motion/SpotlightCard";
 import { ShinyText } from "@/components/motion/ShinyText";
 import { CountUp } from "@/components/motion/CountUp";
 import { AmbientBackdrop } from "@/components/motion/AmbientBackdrop";
+import { WordReveal } from "@/components/motion/WordReveal";
+import { Magnetic } from "@/components/motion/Magnetic";
 
 const GITHUB_URL = "https://github.com/nakim12/juno";
 
@@ -106,7 +108,12 @@ export default function Landing() {
             <div>
               <div className="eyebrow mb-4">the copilot</div>
               <h2 className="display text-4xl font-semibold">
-                Grounded reads, <span className="gradient-text">not guesses</span>
+                <WordReveal
+                  parts={[
+                    { text: "Grounded reads," },
+                    { text: "not guesses", className: "gradient-text" },
+                  ]}
+                />
               </h2>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
                 Juno is an agentic copilot that interprets MMM outputs, recommends what to
@@ -189,7 +196,7 @@ export default function Landing() {
       <section className="mx-auto max-w-6xl px-6 py-16">
         <SectionMarker index="02" label="Capabilities" />
         <h2 className="display max-w-2xl text-4xl font-semibold">
-          Built like a production AI system
+          <WordReveal parts="Built like a production AI system" />
         </h2>
         <p className="mt-4 max-w-2xl text-muted-foreground">
           Not a cool demo — a system with the guardrails that separate a copilot from a
@@ -234,7 +241,7 @@ export default function Landing() {
         <SectionMarker index="04" label="Evaluation" />
         <Reveal className="card hero-glow block overflow-hidden p-10">
           <h2 className="display max-w-2xl text-4xl font-semibold">
-            Measured on six defensible dimensions
+            <WordReveal parts="Measured on six defensible dimensions" />
           </h2>
           <p className="mt-4 max-w-2xl text-muted-foreground">
             A benchmark suite generated from ground-truth MMM scenarios grades every
@@ -268,17 +275,19 @@ export default function Landing() {
         <Reveal>
         <SpotlightCard className="card hero-glow block p-14 text-center">
           <h2 className="display text-4xl font-semibold">
-            See what your MMM is really saying
+            <WordReveal parts="See what your MMM is really saying" />
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
             Load a sample model and start a grounded conversation in under 30 seconds.
           </p>
-          <Link
-            href="/analyze"
-            className="mt-9 inline-block rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3.5 text-sm font-semibold text-background shadow-lg shadow-accent/25 transition hover:opacity-90"
-          >
-            Launch the demo →
-          </Link>
+          <Magnetic className="mt-9">
+            <Link
+              href="/analyze"
+              className="inline-block rounded-xl bg-gradient-to-br from-accent to-accent-2 px-7 py-3.5 text-sm font-semibold text-background shadow-lg shadow-accent/25 transition hover:opacity-90"
+            >
+              Launch the demo →
+            </Link>
+          </Magnetic>
         </SpotlightCard>
         </Reveal>
       </section>
