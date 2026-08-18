@@ -1,5 +1,41 @@
-import type { AnalysisReport, Citation } from "@/types";
+"use client";
+
+import { motion, useReducedMotion, type Variants } from "framer-motion";
+import type { AnalysisReport, Citation, Confidence } from "@/types";
 import { ConfidenceBadge } from "./ConfidenceBadge";
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.16, delayChildren: 0.1 } },
+};
+
+// A slightly quicker rhythm for lists nested inside a section, so cards cascade
+// visibly without dragging the whole report out too long.
+const listContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12 } },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+};
+
+/** A confidence badge that "settles" into place — a small spring on mount. */
+function SettlingBadge({ level }: { level: Confidence }) {
+  const reduced = useReducedMotion();
+  if (reduced) return <ConfidenceBadge level={level} />;
+  return (
+    <motion.span
+      initial={{ opacity: 0, scale: 0.6 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: "spring", stiffness: 420, damping: 18, delay: 0.15 }}
+      className="inline-block"
+    >
+      <ConfidenceBadge level={level} />
+    </motion.span>
+  );
+}
 
 function citationLabel(c: Citation): string {
   if (c.source_type === "knowledge_base") {
@@ -33,54 +69,68 @@ function Citations({ items }: { items: Citation[] }) {
 
 export function ReportView({ report }: { report: AnalysisReport }) {
   return (
-    <div className="space-y-6">
-      <section>
+    <motion.div
+      className="space-y-6"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.section variants={item}>
         <h2 className="mb-2 text-lg font-semibold">Overview</h2>
         <p className="text-sm leading-relaxed opacity-90">{report.overview}</p>
-      </section>
+      </motion.section>
 
-      <section>
+      <motion.section variants={item}>
         <h2 className="mb-3 text-lg font-semibold">Per-Channel Analysis</h2>
-        <div className="space-y-3">
+        <motion.div className="space-y-3" variants={listContainer}>
           {report.per_channel.map((c) => (
-            <div
+            <motion.div
               key={c.channel_name}
+              variants={item}
               className="rounded-lg border border-border bg-[hsl(var(--muted))] p-4"
             >
               <div className="mb-1 flex items-center justify-between">
                 <h3 className="font-medium">{c.channel_name}</h3>
-                <ConfidenceBadge level={c.confidence} />
+                <SettlingBadge level={c.confidence} />
               </div>
               <p className="text-sm opacity-90">{c.interpretation}</p>
               <p className="mt-1 text-xs italic opacity-60">{c.confidence_reasoning}</p>
               <Citations items={c.citations} />
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {report.structural_risks.length > 0 && (
-        <section>
+        <motion.section variants={item}>
           <h2 className="mb-3 text-lg font-semibold">Structural Risks</h2>
-          <ul className="space-y-2">
+          <motion.ul className="space-y-2" variants={listContainer}>
             {report.structural_risks.map((r, i) => (
-              <li key={i} className="rounded-lg border border-border p-3 text-sm">
+              <motion.li
+                key={i}
+                variants={item}
+                className="rounded-lg border border-border p-3 text-sm"
+              >
                 <span className="font-medium">{r.title}</span> — {r.description}
                 <Citations items={r.citations} />
-              </li>
+              </motion.li>
             ))}
-          </ul>
-        </section>
+          </motion.ul>
+        </motion.section>
       )}
 
-      <section>
+      <motion.section variants={item}>
         <h2 className="mb-3 text-lg font-semibold">Recommendations</h2>
-        <div className="space-y-3">
+        <motion.div className="space-y-3" variants={listContainer}>
           {report.recommendations.map((rec, i) => (
-            <div key={i} className="rounded-lg border border-border p-4">
+            <motion.div
+              key={i}
+              variants={item}
+              className="rounded-lg border border-border p-4"
+            >
               <div className="mb-1 flex items-center justify-between">
                 <span className="font-medium">{rec.action}</span>
-                <ConfidenceBadge level={rec.confidence} />
+                <SettlingBadge level={rec.confidence} />
               </div>
               <p className="text-sm opacity-90">{rec.rationale}</p>
               {rec.dependencies.length > 0 && (
@@ -89,13 +139,13 @@ export function ReportView({ report }: { report: AnalysisReport }) {
                 </p>
               )}
               <Citations items={rec.citations} />
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       {report.knowledge_sources && report.knowledge_sources.length > 0 && (
-        <section>
+        <motion.section variants={item}>
           <h2 className="mb-1 text-lg font-semibold">Knowledge base sources consulted</h2>
           <p className="mb-3 text-xs text-muted-foreground">
             Methodology chunks retrieved and provided to the agent to ground its
@@ -116,13 +166,13 @@ export function ReportView({ report }: { report: AnalysisReport }) {
               </details>
             ))}
           </div>
-        </section>
+        </motion.section>
       )}
 
-      <p className="text-xs opacity-40">
+      <motion.p variants={item} className="text-xs opacity-40">
         Generated by {report.metadata.agent_model} · prompt{" "}
         {report.metadata.prompt_version}
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }

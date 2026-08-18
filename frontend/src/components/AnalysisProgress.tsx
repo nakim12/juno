@@ -33,9 +33,18 @@ function StepIcon({ status }: { status: StepStatus }) {
   );
 }
 
-function Chip({ children }: { children: React.ReactNode }) {
+function Chip({
+  children,
+  index = 0,
+}: {
+  children: React.ReactNode;
+  index?: number;
+}) {
   return (
-    <span className="mono rounded-full border border-border bg-surface px-2 py-0.5 text-[0.65rem] text-muted-foreground">
+    <span
+      className="pop-in mono rounded-full border border-border bg-surface px-2 py-0.5 text-[0.65rem] text-muted-foreground"
+      style={{ animationDelay: `${index * 0.08}s` }}
+    >
       {children}
     </span>
   );
@@ -57,7 +66,8 @@ export function AnalysisProgress({ progress }: { progress: ProgressState }) {
       : "pending";
 
   return (
-    <div className="card max-w-xl p-6">
+    <div className="card relative max-w-xl overflow-hidden p-6">
+      {generateStatus === "active" && <div className="scan-line pointer-events-none" />}
       <div className="eyebrow mb-5">Analyzing MMM output</div>
 
       <ol className="space-y-5">
@@ -67,10 +77,12 @@ export function AnalysisProgress({ progress }: { progress: ProgressState }) {
             <div className="text-sm font-medium">Parsing model output</div>
             {summary ? (
               <div className="mt-2 flex flex-wrap gap-1.5">
-                <Chip>{summary.n_channels} channels</Chip>
-                <Chip>{summary.model_type}</Chip>
-                {summary.detected_issues.map((code) => (
-                  <Chip key={code}>{code}</Chip>
+                <Chip index={0}>{summary.n_channels} channels</Chip>
+                <Chip index={1}>{summary.model_type}</Chip>
+                {summary.detected_issues.map((code, i) => (
+                  <Chip key={code} index={2 + i}>
+                    {code}
+                  </Chip>
                 ))}
               </div>
             ) : (
@@ -87,9 +99,11 @@ export function AnalysisProgress({ progress }: { progress: ProgressState }) {
             <div className="text-sm font-medium">Consulting knowledge base</div>
             {sources ? (
               <div className="mt-2 flex flex-wrap gap-1.5">
-                <Chip>{sources.length} sources</Chip>
-                {sources.slice(0, 6).map((s) => (
-                  <Chip key={s.chunk_id}>{s.topic ?? s.chunk_id}</Chip>
+                <Chip index={0}>{sources.length} sources</Chip>
+                {sources.slice(0, 6).map((s, i) => (
+                  <Chip key={s.chunk_id} index={1 + i}>
+                    {s.topic ?? s.chunk_id}
+                  </Chip>
                 ))}
               </div>
             ) : (
