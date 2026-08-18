@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { getEvaluationSummary } from "@/lib/api";
 import { CountUp } from "@/components/motion/CountUp";
-import { LaurelWreath } from "@/components/motion/LaurelWreath";
 import { Reveal } from "@/components/motion/Reveal";
+import { InnerNav } from "@/components/motion/InnerNav";
+import { AmbientBackdrop } from "@/components/motion/AmbientBackdrop";
 import type { EvaluationSummary } from "@/types";
 
 const DIMENSION_ORDER = [
@@ -61,27 +62,10 @@ export default function EvaluationPage() {
 
   return (
     <div className="relative overflow-hidden">
-      <nav className="sticky top-0 z-20 border-b border-border/70 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <Link href="/" className="mono flex items-center gap-2 text-sm font-medium">
-            <LaurelWreath className="h-7 w-7 text-accent" />
-            juno<span className="text-accent">.</span>
-          </Link>
-          <div className="mono flex items-center gap-6 text-xs">
-            <Link href="/" className="text-muted-foreground transition hover:text-foreground">
-              home
-            </Link>
-            <Link
-              href="/analyze"
-              className="rounded-md border border-border bg-muted px-3 py-1.5 font-medium text-foreground transition hover:border-accent"
-            >
-              try the demo →
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <AmbientBackdrop />
+      <InnerNav active="evaluation" />
 
-      <main className="mx-auto max-w-5xl px-6 py-16">
+      <main className="relative mx-auto max-w-5xl px-6 py-16">
         <Reveal>
           <div className="eyebrow mb-4">Trust &amp; Evaluation</div>
           <h1 className="display max-w-3xl text-4xl font-semibold sm:text-5xl">

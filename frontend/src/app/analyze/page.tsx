@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   listSamples,
@@ -13,7 +12,8 @@ import { ReportView } from "@/components/ReportView";
 import { ChatPanel } from "@/components/ChatPanel";
 import { UploadPanel } from "@/components/UploadPanel";
 import { AnalysisProgress, type ProgressState } from "@/components/AnalysisProgress";
-import { LaurelWreath } from "@/components/motion/LaurelWreath";
+import { InnerNav } from "@/components/motion/InnerNav";
+import { AmbientBackdrop } from "@/components/motion/AmbientBackdrop";
 import type { AnalysisReport, KnowledgeSource, SampleInfo } from "@/types";
 
 const EMPTY_PROGRESS: ProgressState = {
@@ -82,24 +82,19 @@ export default function Analyze() {
     runAnalysis((h) => streamAnalyzeUpload(data, h), "Failed to analyze upload.");
 
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-6 py-10">
-      <header className="mb-10 flex items-center justify-between">
-        <div>
-          <Link
-            href="/"
-            className="mono text-xs text-muted-foreground transition hover:text-foreground"
-          >
-            ← back
-          </Link>
-          <h1 className="mono mt-2 flex items-center gap-2 text-2xl font-semibold">
-            <LaurelWreath className="h-8 w-8 text-accent" />
-            juno<span className="text-accent">.</span>
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            An agentic copilot that interprets Marketing Mix Model outputs and answers
-            your questions with grounded reasoning and explicit confidence.
-          </p>
-        </div>
+    <div className="relative min-h-screen overflow-hidden">
+      <AmbientBackdrop />
+      <InnerNav active="analyze" />
+      <main className="relative mx-auto max-w-6xl px-6 py-12">
+      <header className="mb-10">
+        <div className="eyebrow mb-3">the copilot</div>
+        <h1 className="display text-3xl font-semibold sm:text-4xl">
+          Analyze an <span className="gradient-text">MMM output</span>
+        </h1>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          An agentic copilot that interprets Marketing Mix Model outputs and answers
+          your questions with grounded reasoning and explicit confidence.
+        </p>
       </header>
 
       {error && (
@@ -144,7 +139,7 @@ export default function Analyze() {
                 [0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="h-[4.25rem] w-52 animate-pulse rounded-xl border border-border bg-surface"
+                    className="shimmer h-[4.25rem] w-52 rounded-xl border border-border"
                   />
                 ))}
               {!samplesLoading &&
@@ -187,7 +182,7 @@ export default function Analyze() {
           <div>
             <ReportView report={report} />
           </div>
-          <div className="h-[70vh] lg:sticky lg:top-10 lg:h-[80vh]">
+          <div className="h-[70vh] lg:sticky lg:top-24 lg:h-[80vh]">
             <h2 className="mb-3 text-lg font-semibold">Chat</h2>
             <div className="h-[calc(100%-2.5rem)] rounded-xl border border-border p-4">
               <ChatPanel sessionId={sessionId} />
@@ -195,6 +190,7 @@ export default function Analyze() {
           </div>
         </div>
       )}
-    </main>
+      </main>
+    </div>
   );
 }

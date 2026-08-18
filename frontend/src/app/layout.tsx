@@ -37,7 +37,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <div className="grain-overlay" aria-hidden />
+        {children}
+      </body>
     </html>
   );
 }
