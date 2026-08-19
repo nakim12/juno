@@ -7,6 +7,7 @@ import { getEvaluationSummary } from "@/lib/api";
 import { CountUp } from "@/components/motion/CountUp";
 import { Reveal } from "@/components/motion/Reveal";
 import { InnerNav } from "@/components/motion/InnerNav";
+import { ReliabilityDiagram } from "@/components/ReliabilityDiagram";
 import { AmbientBackdrop } from "@/components/motion/AmbientBackdrop";
 import type { EvaluationSummary } from "@/types";
 
@@ -44,6 +45,39 @@ function MetricValue({ metricKey, value }: { metricKey: string; value: number | 
     <span className="text-2xl font-semibold">
       <CountUp to={value} decimals={3} />
     </span>
+  );
+}
+
+/**
+ * The run note carries two different things: how the run was measured, and any
+ * correction to a headline number. Splitting them keeps a stale metric from
+ * being silently explained away inside a wall of small text.
+ */
+function RunNote({ note }: { note: string }) {
+  const at = note.indexOf("CORRECTION");
+  const method = (at === -1 ? note : note.slice(0, at)).trim();
+  const raw = at === -1 ? null : note.slice(at).trim();
+  // Lift the "(Aug 2026)" style date into the heading and re-capitalize what's
+  // left, so the body doesn't read as a fragment of the stripped prefix.
+  const prefix = raw?.match(/^CORRECTION\s*(?:\(([^)]*)\))?:?\s*/);
+  const dated = prefix?.[1] ?? null;
+  const body = raw ? raw.slice(prefix?.[0].length ?? 0) : null;
+  const correction = body ? body.charAt(0).toUpperCase() + body.slice(1) : null;
+
+  return (
+    <div className="mt-4 space-y-3">
+      {method && (
+        <p className="max-w-3xl text-xs leading-relaxed text-muted-foreground">{method}</p>
+      )}
+      {correction && (
+        <div className="max-w-3xl rounded-xl border border-[hsl(var(--warning)/0.35)] bg-[hsl(var(--warning)/0.08)] p-4">
+          <div className="mono mb-1.5 text-[0.65rem] uppercase tracking-wider text-warning">
+            Correction{dated ? ` · ${dated}` : ""}
+          </div>
+          <p className="text-xs leading-relaxed text-muted-foreground">{correction}</p>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -148,10 +182,31 @@ export default function EvaluationPage() {
                   />
                 </div>
               )}
-              {data.note && (
-                <p className="mono mt-3 text-xs text-muted-foreground">{data.note}</p>
-              )}
+              {data.note && <RunNote note={data.note} />}
             </section>
+
+            {/* Reliability diagram */}
+            {data.calibration_reliability &&
+              data.calibration_reliability.per_label.length > 0 && (
+                <section className="mt-16">
+                  <h2 className="text-xl font-semibold">Is the confidence honest?</h2>
+                  <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                    A single ECE number hides <em>which direction</em> the agent is wrong. This
+                    plots every channel-level confidence label against how often that label was
+                    actually right. On the dashed line, the label means what it says; above it
+                    the agent is underselling itself, below it is the dangerous direction.
+                  </p>
+                  <div className="mt-6">
+                    <ReliabilityDiagram data={data.calibration_reliability} />
+                  </div>
+                  <p className="mono mt-4 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+                    Remapping each label to its observed accuracy would drop ECE to ~
+                    {data.calibration_reliability.remapped_ece_floor.toFixed(3)} in-sample, but
+                    that only relabels the symptom. The durable fix is prompt thresholds that
+                    make the labels mean what the metric assumes.
+                  </p>
+                </section>
+              )}
 
             {/* Six dimensions explainer */}
             <section className="mt-16">
@@ -202,6 +257,41 @@ export default function EvaluationPage() {
                         <span className="mono w-12 shrink-0 text-right text-xs">
                           <CountUp to={recall} decimals={2} />
                         </span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* Accuracy vs. problem size */}
+            {run.scenario_breakdown?.accuracy_by_channel_count && (
+              <section className="mt-16">
+                <h2 className="text-xl font-semibold">Accuracy by problem size</h2>
+                <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                  Ranking accuracy grouped by how many channels the model had to order. More
+                  channels means more ways to be wrong — but also stronger ROI separation, so
+                  the agent does better, not worse.
+                </p>
+                <div className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3">
+                  {Object.entries(run.scenario_breakdown.accuracy_by_channel_count).map(
+                    ([bucket, acc]) => (
+                      <div key={bucket} className="bg-background p-5">
+                        <div className="mono text-xs text-muted-foreground">
+                          {bucket} channels
+                        </div>
+                        <div className="mt-2 text-2xl font-semibold">
+                          <CountUp to={acc} decimals={3} />
+                        </div>
+                        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-surface">
+                          <motion.div
+                            className="h-full rounded-full bg-accent"
+                            initial={reduced ? false : { width: 0 }}
+                            whileInView={{ width: `${Math.round(acc * 100)}%` }}
+                            viewport={{ once: true, margin: "-40px" }}
+                            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                          />
+                        </div>
                       </div>
                     )
                   )}

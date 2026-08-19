@@ -70,5 +70,44 @@
       }
     }
   },
-  "note": "Live run: 100 ground-truth scenarios scored with the real agent (claude-sonnet-4-5, prompt analysis.v5) and LLM judge (claude-opus-4-5). v5 fixed calibration: after the reliability report showed the agent was under-confident (right ~88% but labeling channels medium/low), v5 redefined confidence as rank-certainty and defaults to 'high'. ECE fell from 0.263 (v4) to 0.093 \u2014 now passing \u2014 with the composite rising to 0.897 and 5 of 6 targets met. Accuracy = agent's own channel ranking vs. ground-truth ROI (Spearman); calibration = ECE of per-channel confidence against within-one-position rank correctness; groundedness/actionability are Opus-judged against cached gold-standard references. CORRECTION (Aug 2026): the hallucination_rate above (0.1034) was produced by an earlier formula, 1 - mean_judge_score/5, which conflated ordinary imperfection (a 4/5) with fabrication and overstated the rate. It has since been redefined as a true response-level rate — the fraction of responses the judge flags (hallucination score < 3 on an anchored 0-5 rubric) as containing a material invented or unsupported claim. Under the corrected metric, a live re-run (n=30, same agent analysis.v5 + Opus judge) measured a 0.000 hallucination rate, comfortably under the < 0.05 target; a full n=100 re-run to refresh this snapshot's headline number is pending."
+  "note": "Live run: 100 ground-truth scenarios scored with the real agent (claude-sonnet-4-5, prompt analysis.v5) and LLM judge (claude-opus-4-5). v5 fixed calibration: after the reliability report showed the agent was under-confident (right ~88% but labeling channels medium/low), v5 redefined confidence as rank-certainty and defaults to 'high'. ECE fell from 0.263 (v4) to 0.093 \u2014 now passing \u2014 with the composite rising to 0.897 and 5 of 6 targets met. Accuracy = agent's own channel ranking vs. ground-truth ROI (Spearman); calibration = ECE of per-channel confidence against within-one-position rank correctness; groundedness/actionability are Opus-judged against cached gold-standard references. CORRECTION (Aug 2026): the hallucination_rate above (0.1034) was produced by an earlier formula, 1 - mean_judge_score/5, which conflated ordinary imperfection (a 4/5) with fabrication and overstated the rate. It has since been redefined as a true response-level rate \u2014 the fraction of responses the judge flags (hallucination score < 3 on an anchored 0-5 rubric) as containing a material invented or unsupported claim. Under the corrected metric, a live re-run (n=30, same agent analysis.v5 + Opus judge) measured a 0.000 hallucination rate, comfortably under the < 0.05 target; a full n=100 re-run to refresh this snapshot's headline number is pending.",
+  "calibration_reliability": {
+    "run_id": "3a5325ba41404aa78336f4e539626116",
+    "n_points": 612,
+    "overall_ece": 0.0928,
+    "mean_confidence": 0.8157,
+    "mean_accuracy": 0.9085,
+    "per_label": [
+      {
+        "label": "high",
+        "n": 454,
+        "share": 0.742,
+        "mapped_prob": 0.9,
+        "empirical_acc": 0.925,
+        "gap": -0.025
+      },
+      {
+        "label": "medium",
+        "n": 144,
+        "share": 0.235,
+        "mapped_prob": 0.6,
+        "empirical_acc": 0.875,
+        "gap": -0.275
+      },
+      {
+        "label": "low",
+        "n": 14,
+        "share": 0.023,
+        "mapped_prob": 0.3,
+        "empirical_acc": 0.714,
+        "gap": -0.414
+      }
+    ],
+    "suggested_mapping": {
+      "high": 0.925,
+      "medium": 0.875,
+      "low": 0.714
+    },
+    "remapped_ece_floor": 0.0001
+  }
 }

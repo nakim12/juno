@@ -105,11 +105,35 @@ export interface JudgeValidation {
   per_dimension: Record<string, { test_retest_kappa: number; all_identical_rate: number }>;
 }
 
+export interface CalibrationBin {
+  label: string;
+  n: number;
+  share: number;
+  /** Probability the ECE metric assigns this confidence label. */
+  mapped_prob: number;
+  /** How often the agent was actually right at this label. */
+  empirical_acc: number;
+  /** mapped_prob − empirical_acc; positive means overconfident. */
+  gap: number;
+}
+
+export interface CalibrationReliability {
+  run_id: string;
+  n_points: number;
+  overall_ece: number;
+  mean_confidence: number;
+  mean_accuracy: number;
+  per_label: CalibrationBin[];
+  suggested_mapping: Record<string, number>;
+  remapped_ece_floor: number;
+}
+
 export interface EvaluationSummary {
   available: boolean;
   run?: EvalRun;
   failures?: { total: number; by_category: Record<string, number> };
   judge_validation?: JudgeValidation;
+  calibration_reliability?: CalibrationReliability;
   targets: Record<string, EvalDimensionMeta>;
   note?: string;
 }

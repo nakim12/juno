@@ -15,6 +15,7 @@ from pathlib import Path
 
 from fastapi import APIRouter
 
+from app.evaluation.calibration_report import reliability
 from app.evaluation.failure_catalog import all_failures
 from app.evaluation.results_store import all_runs
 
@@ -52,11 +53,17 @@ def _summary_from_db() -> dict | None:
         latest["scenario_breakdown"] = {}
     fails = all_failures()
     by_cat = dict(Counter(f["category"] for f in fails if f["category"]))
-    return {
+    summary: dict = {
         "available": True,
         "run": latest,
         "failures": {"total": len(fails), "by_category": by_cat},
     }
+    # Only present for runs captured with calibration instrumentation; older runs
+    # fall back to the snapshot's reliability block.
+    rel = reliability(str(latest.get("run_id", "")))
+    if rel.get("n_points"):
+        summary["calibration_reliability"] = rel
+    return summary
 
 
 @router.get("/summary")
@@ -75,6 +82,8 @@ def summary() -> dict:
             data.setdefault("judge_validation", snapshot["judge_validation"])
         if "note" in snapshot:
             data.setdefault("note", snapshot["note"])
+        if "calibration_reliability" in snapshot:
+            data.setdefault("calibration_reliability", snapshot["calibration_reliability"])
 
     data["targets"] = TARGETS
     return data
