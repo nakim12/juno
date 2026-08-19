@@ -99,7 +99,7 @@ export default function Landing() {
       <Navbar />
 
       {/* Hero — full screen with scroll-linked parallax + scale */}
-      <HeroSection githubUrl={GITHUB_URL} />
+      <HeroSection />
 
       {/* Showcase — the tool in action */}
       <section id="showcase" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-24">

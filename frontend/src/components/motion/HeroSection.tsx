@@ -1,15 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
+import { Fragment, useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { LaurelWreath } from "@/components/motion/LaurelWreath";
 import { SignatureLaurel } from "@/components/motion/SignatureLaurel";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Reveal } from "@/components/motion/Reveal";
+import { CountUp } from "@/components/motion/CountUp";
 import { DustMotes } from "@/components/motion/DustMotes";
 
-export function HeroSection({ githubUrl }: { githubUrl: string }) {
+/**
+ * Headline results from the committed benchmark snapshot (analysis.v5, n=100).
+ * Kept in sync with backend/app/evaluation/snapshot.json — the /evaluation page
+ * serves the same run, so these must not drift.
+ */
+const PROOF: { value: number; decimals: number; suffix?: string; label: string }[] = [
+  { value: 100, decimals: 0, label: "benchmark cases" },
+  { value: 87.5, decimals: 1, suffix: "%", label: "ranking accuracy" },
+  { value: 0.9, decimals: 2, label: "groundedness" },
+];
+
+export function HeroSection() {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
 
@@ -116,16 +128,27 @@ export function HeroSection({ githubUrl }: { githubUrl: string }) {
                 Try the live demo →
               </Link>
             </Magnetic>
-            <Magnetic strength={0.25}>
-              <a
-                href={githubUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mono inline-block rounded-xl border border-border bg-background/40 px-6 py-3 text-sm font-medium backdrop-blur-sm transition hover:border-accent"
-              >
-                View the code
-              </a>
-            </Magnetic>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.36}>
+          <div className="mono mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[0.7rem] tracking-wider text-muted-foreground">
+            {PROOF.map((stat, i) => (
+              <Fragment key={stat.label}>
+                {i > 0 && (
+                  <span aria-hidden className="hidden h-3 w-px bg-border sm:block" />
+                )}
+                <span>
+                  <CountUp
+                    to={stat.value}
+                    decimals={stat.decimals}
+                    suffix={stat.suffix ?? ""}
+                    className="text-foreground"
+                  />{" "}
+                  {stat.label}
+                </span>
+              </Fragment>
+            ))}
           </div>
         </Reveal>
       </motion.div>
