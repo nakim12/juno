@@ -22,6 +22,7 @@ backend/data/eval.db
 # Node / Next.js
 node_modules/
 .next/
+.next-prod/
 out/
 frontend/.env*.local
 *.tsbuildinfo
