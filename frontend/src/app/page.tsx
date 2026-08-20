@@ -98,8 +98,9 @@ export default function Landing() {
 
       <Navbar />
 
-      {/* Hero — full screen with scroll-linked parallax + scale */}
-      <HeroSection />
+      <main id="main" tabIndex={-1}>
+        {/* Hero — full screen with scroll-linked parallax + scale */}
+        <HeroSection />
 
       {/* Showcase — the tool in action */}
       <section id="showcase" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-24">
@@ -291,6 +292,7 @@ export default function Landing() {
         </SpotlightCard>
         </Reveal>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="border-t border-border/70">

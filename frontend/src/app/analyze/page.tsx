@@ -85,7 +85,7 @@ export default function Analyze() {
     <div className="relative min-h-screen overflow-hidden">
       <AmbientBackdrop />
       <InnerNav active="analyze" />
-      <main className="relative mx-auto max-w-6xl px-6 py-12">
+      <main id="main" tabIndex={-1} className="relative mx-auto max-w-6xl px-6 py-12">
       <header className="mb-10">
         <div className="eyebrow mb-3">the copilot</div>
         <h1 className="display text-3xl font-semibold sm:text-4xl">

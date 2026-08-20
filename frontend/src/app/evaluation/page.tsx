@@ -99,7 +99,7 @@ export default function EvaluationPage() {
       <AmbientBackdrop />
       <InnerNav active="evaluation" />
 
-      <main className="relative mx-auto max-w-5xl px-6 py-16">
+      <main id="main" tabIndex={-1} className="relative mx-auto max-w-5xl px-6 py-16">
         <Reveal>
           <div className="eyebrow mb-4">Trust &amp; Evaluation</div>
           <h1 className="display max-w-3xl text-4xl font-semibold sm:text-5xl">
