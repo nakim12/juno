@@ -5,10 +5,11 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.agents import initial_analysis
+from app.core.rate_limit import llm_rate_limit
 from app.models.analysis_report import AnalysisReport
 from app.models.mmm_output import MMMOutput
 from app.session.store import Session, session_store
@@ -85,7 +86,7 @@ def analysis_stream_response(
     return StreamingResponse(event_gen(), media_type="text/event-stream")
 
 
-@router.post("/analyze")
+@router.post("/analyze", dependencies=[Depends(llm_rate_limit)])
 async def analyze(mmm: MMMOutput) -> dict:
     """Create a session from an uploaded MMM output and run the analysis pipeline."""
     session = session_store.create(mmm)
@@ -95,7 +96,7 @@ async def analyze(mmm: MMMOutput) -> dict:
     return {"session_id": session.session_id, "report": report.model_dump()}
 
 
-@router.post("/analyze/stream")
+@router.post("/analyze/stream", dependencies=[Depends(llm_rate_limit)])
 async def analyze_streaming(mmm: MMMOutput) -> StreamingResponse:
     """Streaming variant of :func:`analyze` for a live report-building UX."""
     session = session_store.create(mmm)

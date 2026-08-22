@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   listSamples,
@@ -16,6 +17,12 @@ import { InnerNav } from "@/components/motion/InnerNav";
 import { AmbientBackdrop } from "@/components/motion/AmbientBackdrop";
 import type { AnalysisReport, KnowledgeSource, SampleInfo } from "@/types";
 
+// Backoff for waking a sleeping backend. Sums to ~58s, which covers the free
+// hosting tier's cold start (~50s) without hammering a host that's genuinely down.
+const WAKE_RETRY_DELAYS_MS = [3000, 5000, 8000, 12000, 15000, 15000];
+
+const IS_DEV = process.env.NODE_ENV === "development";
+
 const EMPTY_PROGRESS: ProgressState = {
   summary: null,
   sources: null,
@@ -27,24 +34,51 @@ export default function Analyze() {
   const [samples, setSamples] = useState<SampleInfo[]>([]);
   const [samplesLoading, setSamplesLoading] = useState(true);
   const [offline, setOffline] = useState(false);
+  const [wakeAttempt, setWakeAttempt] = useState(0);
+  const [gaveUp, setGaveUp] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [report, setReport] = useState<AnalysisReport | null>(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<ProgressState>(EMPTY_PROGRESS);
   const [error, setError] = useState<string | null>(null);
 
-  const loadSamples = useCallback(() => {
+  const connect = useCallback(async () => {
     setSamplesLoading(true);
-    setOffline(false);
-    listSamples()
-      .then((s) => setSamples(s))
-      .catch(() => setOffline(true))
-      .finally(() => setSamplesLoading(false));
+    try {
+      setSamples(await listSamples());
+      setOffline(false);
+      return true;
+    } catch {
+      setOffline(true);
+      return false;
+    } finally {
+      setSamplesLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    loadSamples();
-  }, [loadSamples]);
+    void connect();
+  }, [connect]);
+
+  // A failed first call is usually the host cold-starting, not a real outage,
+  // so keep retrying quietly for about a minute before showing a dead end.
+  useEffect(() => {
+    if (!offline || gaveUp) return;
+    if (wakeAttempt >= WAKE_RETRY_DELAYS_MS.length) {
+      setGaveUp(true);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      if (!(await connect())) setWakeAttempt((n) => n + 1);
+    }, WAKE_RETRY_DELAYS_MS[wakeAttempt]);
+    return () => clearTimeout(timer);
+  }, [offline, wakeAttempt, gaveUp, connect]);
+
+  function retryNow() {
+    setGaveUp(false);
+    setWakeAttempt(0);
+    void connect();
+  }
 
   async function runAnalysis(
     starter: (handlers: AnalysisStreamHandlers) => Promise<void>,
@@ -112,22 +146,50 @@ export default function Analyze() {
       {offline ? (
         <div className="card flex flex-col items-start gap-4 p-8">
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-error" />
-            <span className="eyebrow">Backend offline</span>
+            <span
+              className={`h-2 w-2 rounded-full ${gaveUp ? "bg-error" : "bg-warning animate-pulse"}`}
+            />
+            <span className="eyebrow">{gaveUp ? "Backend offline" : "Waking the server"}</span>
           </div>
-          <h2 className="text-xl font-semibold">Can&apos;t reach the Juno API</h2>
-          <p className="max-w-lg text-sm text-muted-foreground">
-            The frontend proxies to the backend on <code className="mono text-accent">:8000</code>.
-            Start it with{" "}
-            <code className="mono text-accent">uvicorn app.main:app --port 8000</code> from the{" "}
-            <code className="mono">backend/</code> directory, then retry.
-          </p>
+
+          {gaveUp ? (
+            <>
+              <h2 className="text-xl font-semibold">Can&apos;t reach the Juno API</h2>
+              <p className="max-w-lg text-sm text-muted-foreground">
+                {IS_DEV ? (
+                  <>
+                    Start the backend with{" "}
+                    <code className="mono text-accent">uvicorn app.main:app --port 8000</code> from
+                    the <code className="mono">backend/</code> directory, then retry.
+                  </>
+                ) : (
+                  <>
+                    The demo server isn&apos;t responding. It may still be starting up — try again
+                    in a moment. The{" "}
+                    <Link href="/evaluation" className="text-accent underline underline-offset-2">
+                      evaluation results
+                    </Link>{" "}
+                    are served statically and work regardless.
+                  </>
+                )}
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="text-xl font-semibold">Starting the demo server</h2>
+              <p className="max-w-lg text-sm text-muted-foreground">
+                The backend sleeps when nobody&apos;s using it and takes up to a minute to wake.
+                This retries on its own — no need to refresh.
+              </p>
+            </>
+          )}
+
           <button
-            onClick={loadSamples}
+            onClick={retryNow}
             disabled={samplesLoading}
             className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-[hsl(var(--background))] transition hover:opacity-90 disabled:opacity-50"
           >
-            {samplesLoading ? "Retrying…" : "Retry connection"}
+            {samplesLoading ? "Connecting…" : "Retry now"}
           </button>
         </div>
       ) : (

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { BackendWarmup } from "@/components/BackendWarmup";
 import { ScrollProgress } from "@/components/motion/ScrollProgress";
 import "./globals.css";
 
@@ -73,6 +74,7 @@ export default function RootLayout({
           Skip to content
         </a>
         <div className="grain-overlay" aria-hidden />
+        <BackendWarmup />
         <ScrollProgress />
         {children}
       </body>

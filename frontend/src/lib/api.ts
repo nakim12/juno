@@ -5,16 +5,34 @@ import type {
   SampleInfo,
 } from "@/types";
 
-// Base URL for API calls. In dev we hit the backend directly (localhost:8000)
-// rather than through Next's /api rewrite, because that proxy BUFFERS streaming
-// responses — which breaks the SSE analysis/chat streaming (everything would
-// arrive at once at the end). The backend enables CORS for the dev origin.
-// In prod this is same-origin ("") unless NEXT_PUBLIC_API_BASE is set.
+// Base URL for API calls. We hit the backend directly rather than going through
+// Next's /api rewrite, because that proxy BUFFERS streaming responses — the SSE
+// analysis and chat streams arrive all at once at the end instead of
+// progressively. That was confirmed in dev and the same risk applies to the
+// deployed proxy, so production should set NEXT_PUBLIC_API_BASE to the backend
+// origin and list the site in the backend's CORS_ORIGINS.
+//
+// Falling back to "" (same-origin, via the rewrite) keeps the app working if
+// that env var is missing — degraded to non-progressive streaming, not broken.
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE ??
   (process.env.NODE_ENV === "development" ? "http://localhost:8000" : "");
 
 const api = (path: string) => `${API_BASE}${path}`;
+
+/**
+ * Fire-and-forget ping to wake a sleeping backend.
+ *
+ * Render's free tier spins the service down after inactivity and takes ~50s to
+ * cold start. Calling this when someone lands on the site means the container is
+ * usually warm by the time they click through to the demo, instead of the wait
+ * landing on the first thing they actually try to do.
+ */
+export function warmBackend(): void {
+  fetch(api("/health"), { cache: "no-store" }).catch(() => {
+    // A failed warmup is not worth surfacing; the real request will report it.
+  });
+}
 
 export async function getEvaluationSummary(): Promise<EvaluationSummary> {
   const res = await fetch(api("/api/evaluation/summary"), { cache: "no-store" });

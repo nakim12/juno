@@ -46,6 +46,14 @@ class Settings(BaseSettings):
     # Session
     session_ttl_seconds: int = 60 * 60 * 2  # 2 hours (design doc 5.7)
 
+    # Rate limiting. The demo is public and every analysis/chat spends real API
+    # credit, so both a per-visitor limit and a global daily ceiling apply. The
+    # global cap is the wallet backstop: a per-IP limit alone bounds nothing,
+    # since IPs are trivially rotated. Tune via env on deploy.
+    rate_limit_enabled: bool = True
+    rate_limit_per_ip_per_hour: int = 20
+    rate_limit_global_per_day: int = 150
+
     # Evaluation
     eval_db_path: str = str(_BACKEND_ROOT / "data" / "eval.db")
 

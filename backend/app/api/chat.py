@@ -4,18 +4,19 @@ from __future__ import annotations
 
 import json
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.agents import chat_router
 from app.core.llm import LLMNotConfigured
+from app.core.rate_limit import llm_rate_limit
 from app.models.chat_message import ChatMessage, ChatRequest
 from app.session.store import session_store
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
 
-@router.post("/chat")
+@router.post("/chat", dependencies=[Depends(llm_rate_limit)])
 async def chat(req: ChatRequest) -> StreamingResponse:
     session = session_store.get(req.session_id)
     if session is None:

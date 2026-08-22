@@ -7,7 +7,11 @@ services:
     runtime: python
     rootDir: backend
     plan: free
-    buildCommand: pip install -r requirements.txt
+    # The Chroma index is gitignored and the free tier's disk is ephemeral, so
+    # the corpus is re-indexed on every build. Without this the retriever starts
+    # with an empty index and silently degrades: answers still return, but with
+    # no methodology citations — which is the whole grounding story.
+    buildCommand: pip install -r requirements.txt && python -m app.rag.indexer --reset
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
@@ -17,6 +21,14 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
-      # JSON array of allowed origins, e.g. ["https://juno.vercel.app"]
+      # JSON array of allowed origins, e.g. ["https://juno.vercel.app"].
+      # Required: the browser calls this service directly rather than through
+      # the Next rewrite, because that proxy buffers Server-Sent Events.
       - key: CORS_ORIGINS
         sync: false
+      # Budget guards for a public demo. See app/core/rate_limit.py; the global
+      # cap is what actually bounds spend, since IPs can be rotated.
+      - key: RATE_LIMIT_PER_IP_PER_HOUR
+        value: "20"
+      - key: RATE_LIMIT_GLOBAL_PER_DAY
+        value: "150"

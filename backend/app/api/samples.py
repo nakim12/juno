@@ -5,11 +5,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from app.agents import initial_analysis, sample_cache
 from app.api.analysis import analysis_stream_response
+from app.core.rate_limit import llm_rate_limit
 from app.models.mmm_output import MMMOutput
 from app.parsers import mmm_parser
 from app.session.store import session_store
@@ -46,11 +47,12 @@ def list_samples() -> list[dict]:
 
 
 @router.post("/{sample_id}/load")
-async def load_sample(sample_id: str) -> dict:
+async def load_sample(sample_id: str, request: Request) -> dict:
     """Load a sample into a fresh session and run the initial analysis.
 
     Sample reports are cached to disk after the first (paid) run and reused on
-    subsequent loads to avoid repeat LLM calls.
+    subsequent loads to avoid repeat LLM calls. The rate limit is applied only on
+    a cache miss, so the ordinary demo path stays free and unthrottled.
     """
     mmm = _load_sample_file(sample_id)
     session = session_store.create(mmm)
@@ -63,6 +65,7 @@ async def load_sample(sample_id: str) -> dict:
         session.report = report
         return {"session_id": session.session_id, "report": report.model_dump()}
 
+    await llm_rate_limit(request)
     summary, report = await initial_analysis.run(mmm, session.session_id)
     session.summary = summary
     session.report = report
@@ -71,11 +74,12 @@ async def load_sample(sample_id: str) -> dict:
 
 
 @router.post("/{sample_id}/load/stream")
-async def load_sample_stream(sample_id: str) -> StreamingResponse:
+async def load_sample_stream(sample_id: str, request: Request) -> StreamingResponse:
     """Streaming variant of :func:`load_sample` for a live report-building UX.
 
     On a cache hit the stored report is replayed (no LLM call); otherwise the
     live run is streamed and its report is written to the cache on completion.
+    Only the paid path is rate limited.
     """
     mmm = _load_sample_file(sample_id)
     session = session_store.create(mmm)
@@ -84,6 +88,7 @@ async def load_sample_stream(sample_id: str) -> StreamingResponse:
     if cached is not None:
         return analysis_stream_response(session, cached_report=cached)
 
+    await llm_rate_limit(request)
     return analysis_stream_response(
         session, on_report=lambda r: sample_cache.put(sample_id, r)
     )
