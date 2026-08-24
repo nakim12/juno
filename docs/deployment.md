@@ -44,6 +44,7 @@ The repo includes a [`render.yaml`](../render.yaml) blueprint.
 
    | Variable | Required | Notes |
    | --- | --- | --- |
+   | `PYTHON_VERSION` | yes | Pinned to `3.13.5` in the blueprint. Render now defaults to 3.14, which has no prebuilt `pydantic-core` wheel — pip then tries to compile it from Rust and fails on the read-only cargo registry. |
    | `CORS_ORIGINS` | yes | JSON array, e.g. `["https://juno.vercel.app"]`. |
    | `DEMO_MODE` | no | Default `true`. Serves pre-computed content and refuses to spend the server's key. See [Cost control](#cost-control). |
    | `ANTHROPIC_API_KEY` | **no — leave unset** | Only needed if you turn `DEMO_MODE` off. A key that isn't deployed cannot be spent. |

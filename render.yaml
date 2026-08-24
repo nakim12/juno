@@ -15,6 +15,12 @@ services:
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
+      # Render's default is 3.14+, which has no prebuilt pydantic-core wheel for
+      # the pinned pydantic — pip falls back to compiling it from Rust and dies
+      # on the build image's read-only cargo registry. 3.13 is what the test
+      # suite runs on locally. Must be fully qualified when set this way.
+      - key: PYTHON_VERSION
+        value: "3.13.5"
       - key: ENVIRONMENT
         value: prod
       # Keeps public traffic off the owner's wallet: sample analyses and the
