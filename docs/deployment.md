@@ -69,9 +69,14 @@ cd backend && docker build -t juno-backend . && docker run -p 8000:8000 --env-fi
 3. Framework preset is detected as Next.js (also pinned in
    [`frontend/vercel.json`](../frontend/vercel.json)).
 4. Env vars:
-   - `NEXT_PUBLIC_API_BASE` — the Render backend URL. **Set this before the
-     first build**: `NEXT_PUBLIC_*` values are inlined at build time, so changing
-     it later requires a redeploy, not just a restart.
+   - `NEXT_PUBLIC_API_BASE` — the Render backend URL. Optional: the deployed
+     origin is committed as `PROD_API_BASE` in
+     [`frontend/src/lib/api.ts`](../frontend/src/lib/api.ts), so the default
+     already points at the right place. Set this only to override it (a fork, a
+     staging backend). If you do set it, set it **before the first build** —
+     `NEXT_PUBLIC_*` values are inlined at build time, so changing it later needs
+     a rebuild, not a restart. On Vercel it must be a **Config** variable, not a
+     secret; secrets are write-only and can't be inlined into a client bundle.
    - `BACKEND_URL` — same URL. Only feeds the `/api` rewrite, which is now just
      a fallback for non-streaming calls if `NEXT_PUBLIC_API_BASE` is ever unset.
    - `NEXT_PUBLIC_SITE_URL` — your final public URL, so OG/Twitter cards resolve

@@ -5,18 +5,25 @@ import type {
   SampleInfo,
 } from "@/types";
 
-// Base URL for API calls. We hit the backend directly rather than going through
-// Next's /api rewrite, because that proxy BUFFERS streaming responses — the SSE
-// analysis and chat streams arrive all at once at the end instead of
-// progressively. That was confirmed in dev and the same risk applies to the
-// deployed proxy, so production should set NEXT_PUBLIC_API_BASE to the backend
-// origin and list the site in the backend's CORS_ORIGINS.
+// Base URL for API calls. The browser hits the backend directly rather than
+// going through Next's /api rewrite, because that proxy BUFFERS streaming
+// responses — the SSE analysis and chat streams then arrive in one dump at the
+// end instead of building progressively, which is the whole demo.
 //
-// Falling back to "" (same-origin, via the rewrite) keeps the app working if
-// that env var is missing — degraded to non-progressive streaming, not broken.
+// The deployed backend origin is committed rather than left purely to
+// NEXT_PUBLIC_API_BASE. That env var is inlined at build time, so a missing or
+// mis-scoped value can't be detected at runtime and fails *silently*: the app
+// still works, but every stream is buffered. Since there is exactly one public
+// backend, hardcoding it as the production default makes the good path the
+// default and the env var an override (useful for forks and staging).
+//
+// Changing the backend host means editing this line. That's the deliberate
+// trade: an obvious, greppable constant over an invisible degradation.
+const PROD_API_BASE = "https://juno-backend-wa9w.onrender.com";
+
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ??
-  (process.env.NODE_ENV === "development" ? "http://localhost:8000" : "");
+  process.env.NEXT_PUBLIC_API_BASE ||
+  (process.env.NODE_ENV === "development" ? "http://localhost:8000" : PROD_API_BASE);
 
 const api = (path: string) => `${API_BASE}${path}`;
 
