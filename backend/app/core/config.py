@@ -46,10 +46,18 @@ class Settings(BaseSettings):
     # Session
     session_ttl_seconds: int = 60 * 60 * 2  # 2 hours (design doc 5.7)
 
-    # Rate limiting. The demo is public and every analysis/chat spends real API
-    # credit, so both a per-visitor limit and a global daily ceiling apply. The
-    # global cap is the wallet backstop: a per-IP limit alone bounds nothing,
-    # since IPs are trivially rotated. Tune via env on deploy.
+    # Demo mode. When on, visitor requests may never spend the server's API
+    # credit: pre-computed sample analyses and chat answers are replayed from
+    # disk, uploads are parsed but not interpreted, and live generation requires
+    # the caller to supply their own key. The strongest version of this is to
+    # simply not set ANTHROPIC_API_KEY on the public host at all — then no code
+    # path can spend anything, whatever this flag says.
+    demo_mode: bool = True
+
+    # Rate limiting. Applies only to calls billed to the server's own key; a
+    # caller spending their own key is not throttled. The global cap is the
+    # wallet backstop, since a per-IP limit alone bounds nothing when IPs are
+    # trivially rotated. Tune via env on deploy.
     rate_limit_enabled: bool = True
     rate_limit_per_ip_per_hour: int = 20
     rate_limit_global_per_day: int = 150

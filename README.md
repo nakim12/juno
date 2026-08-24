@@ -99,6 +99,13 @@ Without an API key, the analysis pipeline falls back to a deterministic report
 and chat returns a configuration notice — so the end-to-end app is demoable
 before any keys are wired.
 
+Demo mode (`DEMO_MODE=true`, the default) goes further, and is how the public
+deployment runs: sample analyses and a curated set of chat answers are replayed
+from committed JSON, uploads are parsed but not interpreted, and live generation
+requires the visitor to supply their own key. The hosted demo therefore costs
+nothing to run and can't spend the owner's credit. See
+[docs/deployment.md](docs/deployment.md#cost-control).
+
 ### Frontend
 
 ```bash

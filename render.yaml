@@ -17,8 +17,16 @@ services:
     envVars:
       - key: ENVIRONMENT
         value: prod
-      - key: ANTHROPIC_API_KEY
-        sync: false
+      # Keeps public traffic off the owner's wallet: sample analyses and the
+      # curated chat answers are replayed from disk, uploads are parsed but not
+      # interpreted, and live generation requires the visitor's own key.
+      - key: DEMO_MODE
+        value: "true"
+      # Deliberately left unset on the public host. Demo mode already refuses to
+      # spend it, but not shipping the key at all is the only guarantee that no
+      # bug can. Set it locally to pre-compute content, not here.
+      # - key: ANTHROPIC_API_KEY
+      #   sync: false
       - key: OPENAI_API_KEY
         sync: false
       # JSON array of allowed origins, e.g. ["https://juno.vercel.app"].
@@ -26,8 +34,9 @@ services:
       # the Next rewrite, because that proxy buffers Server-Sent Events.
       - key: CORS_ORIGINS
         sync: false
-      # Budget guards for a public demo. See app/core/rate_limit.py; the global
-      # cap is what actually bounds spend, since IPs can be rotated.
+      # Backstop for the case where DEMO_MODE is turned off and a server key is
+      # supplied. Inert while demo mode is on, since nothing bills the server
+      # then. See app/core/rate_limit.py.
       - key: RATE_LIMIT_PER_IP_PER_HOUR
         value: "20"
       - key: RATE_LIMIT_GLOBAL_PER_DAY

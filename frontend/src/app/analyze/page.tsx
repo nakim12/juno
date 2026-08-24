@@ -4,11 +4,14 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   listSamples,
+  NeedsApiKeyError,
+  parseUpload,
   streamLoadSample,
   streamAnalyzeUpload,
   type AnalysisStreamHandlers,
   type AnalysisSummaryEvent,
 } from "@/lib/api";
+import { ApiKeyDialog } from "@/components/ApiKeyDialog";
 import { ReportView } from "@/components/ReportView";
 import { ChatPanel } from "@/components/ChatPanel";
 import { UploadPanel } from "@/components/UploadPanel";
@@ -41,6 +44,8 @@ export default function Analyze() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<ProgressState>(EMPTY_PROGRESS);
   const [error, setError] = useState<string | null>(null);
+  const [parsedOnly, setParsedOnly] = useState<AnalysisSummaryEvent | null>(null);
+  const [keyDialogOpen, setKeyDialogOpen] = useState(false);
 
   const connect = useCallback(async () => {
     setSamplesLoading(true);
@@ -103,6 +108,8 @@ export default function Analyze() {
         },
       });
     } catch (e) {
+      // Callers handle this one: an upload that needs a key can still be parsed.
+      if (e instanceof NeedsApiKeyError) throw e;
       setError(e instanceof Error ? e.message : fallbackError);
     } finally {
       setLoading(false);
@@ -112,8 +119,28 @@ export default function Analyze() {
   const onLoad = (id: string) =>
     runAnalysis((h) => streamLoadSample(id, h), "Failed to load sample.");
 
-  const onUpload = (data: unknown) =>
-    runAnalysis((h) => streamAnalyzeUpload(data, h), "Failed to analyze upload.");
+  async function onUpload(data: unknown) {
+    setParsedOnly(null);
+    try {
+      await runAnalysis(
+        (h) => streamAnalyzeUpload(data, h),
+        "Failed to analyze upload."
+      );
+    } catch (e) {
+      if (!(e instanceof NeedsApiKeyError)) throw e;
+      // The demo won't pay to interpret an arbitrary upload, but parsing is
+      // deterministic and free — so still show the visitor their own model.
+      setError(null);
+      try {
+        const { summary } = await parseUpload(data);
+        setParsedOnly(summary);
+      } catch (parseErr) {
+        setError(
+          parseErr instanceof Error ? parseErr.message : "That file couldn't be parsed."
+        );
+      }
+    }
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -230,7 +257,55 @@ export default function Analyze() {
 
       {loading && !report && <AnalysisProgress progress={progress} />}
 
-      {!offline && !loading && !report && (
+      {parsedOnly && !report && (
+        <div className="card space-y-4 p-6">
+          <div className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-accent" />
+            <span className="eyebrow">Parsed — interpretation locked</span>
+          </div>
+          <h2 className="text-xl font-semibold">We read your model</h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Stat label="model type" value={parsedOnly.model_type} />
+            <Stat label="channels" value={String(parsedOnly.n_channels)} />
+            <Stat
+              label="structural flags"
+              value={String(parsedOnly.detected_issues.length)}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {parsedOnly.channels.map((c) => (
+              <span
+                key={c}
+                className="mono rounded-full border border-border bg-muted/60 px-3 py-1 text-xs"
+              >
+                {c}
+              </span>
+            ))}
+            {parsedOnly.detected_issues.map((issue) => (
+              <span
+                key={issue}
+                className="mono rounded-full border border-[hsl(var(--warning)/0.5)] bg-[hsl(var(--warning)/0.12)] px-3 py-1 text-xs text-warning"
+              >
+                {issue}
+              </span>
+            ))}
+          </div>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Parsing is deterministic, so it runs free. Writing the interpretation takes
+            a live model call, which this demo won&apos;t bill to its owner — add your
+            own Anthropic key to generate the full report, or load a bundled sample to
+            see one that&apos;s already been generated.
+          </p>
+          <button
+            onClick={() => setKeyDialogOpen(true)}
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-[hsl(var(--background))] transition hover:opacity-90"
+          >
+            Add your API key
+          </button>
+        </div>
+      )}
+
+      {!offline && !loading && !report && !parsedOnly && (
         <div className="rounded-xl border border-dashed border-border bg-surface/40 p-8 text-center">
           <p className="text-sm text-muted-foreground">
             Pick a sample or upload your own MMM output to see a grounded, streamed
@@ -253,6 +328,21 @@ export default function Analyze() {
         </div>
       )}
       </main>
+
+      <ApiKeyDialog
+        open={keyDialogOpen}
+        onClose={() => setKeyDialogOpen(false)}
+        onSaved={() => setKeyDialogOpen(false)}
+      />
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border bg-muted/40 px-4 py-3">
+      <div className="eyebrow mb-1">{label}</div>
+      <div className="mono text-sm text-foreground">{value}</div>
     </div>
   );
 }

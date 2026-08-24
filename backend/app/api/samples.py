@@ -10,6 +10,7 @@ from fastapi.responses import StreamingResponse
 
 from app.agents import initial_analysis, sample_cache
 from app.api.analysis import analysis_stream_response
+from app.core.config import settings
 from app.core.rate_limit import llm_rate_limit
 from app.models.mmm_output import MMMOutput
 from app.parsers import mmm_parser
@@ -55,9 +56,9 @@ async def load_sample(sample_id: str, request: Request) -> dict:
     a cache miss, so the ordinary demo path stays free and unthrottled.
     """
     mmm = _load_sample_file(sample_id)
-    session = session_store.create(mmm)
+    session = session_store.create(mmm, sample_id=sample_id)
 
-    cached = sample_cache.get(sample_id)
+    cached = sample_cache.get(sample_id, allow_stale=settings.demo_mode)
     if cached is not None:
         report = cached.model_copy(deep=True)
         report.session_id = session.session_id
@@ -82,9 +83,9 @@ async def load_sample_stream(sample_id: str, request: Request) -> StreamingRespo
     Only the paid path is rate limited.
     """
     mmm = _load_sample_file(sample_id)
-    session = session_store.create(mmm)
+    session = session_store.create(mmm, sample_id=sample_id)
 
-    cached = sample_cache.get(sample_id)
+    cached = sample_cache.get(sample_id, allow_stale=settings.demo_mode)
     if cached is not None:
         return analysis_stream_response(session, cached_report=cached)
 

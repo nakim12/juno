@@ -10,6 +10,7 @@ from app.agents.handlers.interpretation import InterpretationHandler
 from app.agents.handlers.methodology import MethodologyHandler
 from app.agents.handlers.recommendation import RecommendationHandler
 from app.agents.handlers.uncertainty import UncertaintyHandler
+from app.core.llm import LLMClient
 from app.models.chat_message import QuestionType
 
 _HANDLERS: dict[QuestionType, type[BaseHandler]] = {
@@ -23,9 +24,11 @@ _HANDLERS: dict[QuestionType, type[BaseHandler]] = {
 }
 
 
-def get_handler(question_type: QuestionType) -> BaseHandler:
+def get_handler(
+    question_type: QuestionType, llm: LLMClient | None = None
+) -> BaseHandler:
     handler_cls = _HANDLERS.get(question_type, InterpretationHandler)
-    return handler_cls()
+    return handler_cls(llm)
 
 
 __all__ = ["get_handler", "BaseHandler"]

@@ -5,20 +5,48 @@ from __future__ import annotations
 import json
 from collections.abc import Callable
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import StreamingResponse
 
 from app.agents import initial_analysis
+from app.core.caller_key import LLMAccess, llm_access
+from app.core.llm import LLMClient
 from app.core.rate_limit import llm_rate_limit
 from app.models.analysis_report import AnalysisReport
 from app.models.mmm_output import MMMOutput
+from app.parsers import mmm_parser
 from app.session.store import Session, session_store
 
 router = APIRouter(prefix="/api", tags=["analysis"])
 
 
+def _require_generation(access: LLMAccess) -> None:
+    """Reject interpretation requests that nobody is willing to pay for."""
+    if access.can_generate:
+        return
+    raise HTTPException(
+        status_code=status.HTTP_402_PAYMENT_REQUIRED,
+        detail=(
+            "This demo doesn't run live analysis on uploads. Your file was "
+            "parsed locally — add your own Anthropic API key to generate the "
+            "written interpretation, or try a bundled sample."
+        ),
+    )
+
+
 def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
+
+
+def summary_payload(summary) -> dict:
+    """Flattened parse result. Shared by the SSE `summary` event and /parse so
+    the client renders both through the same code path."""
+    return {
+        "model_type": summary.model_type,
+        "n_channels": summary.n_channels,
+        "channels": [c.name for c in summary.channels],
+        "detected_issues": [i.code for i in summary.detected_issues],
+    }
 
 
 def analysis_stream_response(
@@ -26,6 +54,7 @@ def analysis_stream_response(
     *,
     cached_report: AnalysisReport | None = None,
     on_report: Callable[[AnalysisReport], None] | None = None,
+    llm: LLMClient | None = None,
 ) -> StreamingResponse:
     """Run the analysis pipeline for ``session`` and stream progress over SSE.
 
@@ -46,21 +75,13 @@ def analysis_stream_response(
             )
             if cached_report is not None
             else initial_analysis.run_streaming(
-                session.mmm_output, session.session_id
+                session.mmm_output, session.session_id, llm=llm
             )
         )
         async for kind, payload in stream:
             if kind == "summary":
                 session.summary = payload
-                yield _sse(
-                    "summary",
-                    {
-                        "model_type": payload.model_type,
-                        "n_channels": payload.n_channels,
-                        "channels": [c.name for c in payload.channels],
-                        "detected_issues": [i.code for i in payload.detected_issues],
-                    },
-                )
+                yield _sse("summary", summary_payload(payload))
             elif kind == "sources":
                 yield _sse(
                     "sources", {"sources": [s.model_dump() for s in payload]}
@@ -86,21 +107,50 @@ def analysis_stream_response(
     return StreamingResponse(event_gen(), media_type="text/event-stream")
 
 
-@router.post("/analyze", dependencies=[Depends(llm_rate_limit)])
-async def analyze(mmm: MMMOutput) -> dict:
-    """Create a session from an uploaded MMM output and run the analysis pipeline."""
+@router.post("/parse")
+async def parse_only(mmm: MMMOutput) -> dict:
+    """Parse an uploaded MMM output without interpreting it.
+
+    Fully deterministic and free — no LLM call. This is what the public demo
+    offers for uploads: a visitor still sees their own model parsed, ranked, and
+    checked for structural issues, and only the written interpretation requires
+    a key.
+    """
     session = session_store.create(mmm)
-    summary, report = await initial_analysis.run(mmm, session.session_id)
+    summary = mmm_parser.parse(mmm)
+    session.summary = summary
+    return {"session_id": session.session_id, "summary": summary_payload(summary)}
+
+
+@router.post("/analyze")
+async def analyze(
+    mmm: MMMOutput, request: Request, access: LLMAccess = Depends(llm_access)
+) -> dict:
+    """Create a session from an uploaded MMM output and run the analysis pipeline."""
+    _require_generation(access)
+    if access.billed_to_server:
+        await llm_rate_limit(request)
+
+    session = session_store.create(mmm)
+    summary, report = await initial_analysis.run(
+        mmm, session.session_id, llm=access.agent_llm()
+    )
     session.summary = summary
     session.report = report
     return {"session_id": session.session_id, "report": report.model_dump()}
 
 
-@router.post("/analyze/stream", dependencies=[Depends(llm_rate_limit)])
-async def analyze_streaming(mmm: MMMOutput) -> StreamingResponse:
+@router.post("/analyze/stream")
+async def analyze_streaming(
+    mmm: MMMOutput, request: Request, access: LLMAccess = Depends(llm_access)
+) -> StreamingResponse:
     """Streaming variant of :func:`analyze` for a live report-building UX."""
+    _require_generation(access)
+    if access.billed_to_server:
+        await llm_rate_limit(request)
+
     session = session_store.create(mmm)
-    return analysis_stream_response(session)
+    return analysis_stream_response(session, llm=access.agent_llm())
 
 
 @router.get("/analyze/{session_id}/stream")

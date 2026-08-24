@@ -42,9 +42,11 @@ async def classify(message: str, llm: LLMClient | None = None) -> RouterDecision
 
 
 async def route_and_stream(
-    session: Session, message: str
+    session: Session, message: str, llm: LLMClient | None = None
 ) -> tuple[QuestionType, list[RetrievedChunk], AsyncIterator[str]]:
-    decision = await classify(message)
-    handler = get_handler(decision.question_type)
+    """Classify, retrieve, and stream. ``llm`` lets a caller supply their own
+    credentials so the request bills to them rather than the server."""
+    decision = await classify(message, llm)
+    handler = get_handler(decision.question_type, llm)
     chunks = handler.retrieve(session, message)
     return decision.question_type, chunks, handler.stream(session, message, chunks)

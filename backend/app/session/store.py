@@ -21,6 +21,9 @@ from app.models.mmm_summary import MMMSummary
 class Session:
     session_id: str
     mmm_output: MMMOutput
+    # Set when the session came from a bundled sample. Uploads leave it None.
+    # Chat uses it to find that sample's pre-computed answers.
+    sample_id: str | None = None
     summary: MMMSummary | None = None
     report: AnalysisReport | None = None
     history: list[ChatMessage] = field(default_factory=list)
@@ -38,10 +41,12 @@ class SessionStore:
         self._sessions: dict[str, Session] = {}
         self._ttl = ttl_seconds
 
-    def create(self, mmm_output: MMMOutput) -> Session:
+    def create(self, mmm_output: MMMOutput, sample_id: str | None = None) -> Session:
         self._evict_expired()
         session_id = uuid.uuid4().hex
-        session = Session(session_id=session_id, mmm_output=mmm_output)
+        session = Session(
+            session_id=session_id, mmm_output=mmm_output, sample_id=sample_id
+        )
         self._sessions[session_id] = session
         return session
 

@@ -44,11 +44,12 @@ The repo includes a [`render.yaml`](../render.yaml) blueprint.
 
    | Variable | Required | Notes |
    | --- | --- | --- |
-   | `ANTHROPIC_API_KEY` | yes | Live agent + judge responses. |
    | `CORS_ORIGINS` | yes | JSON array, e.g. `["https://juno.vercel.app"]`. |
+   | `DEMO_MODE` | no | Default `true`. Serves pre-computed content and refuses to spend the server's key. See [Cost control](#cost-control). |
+   | `ANTHROPIC_API_KEY` | **no — leave unset** | Only needed if you turn `DEMO_MODE` off. A key that isn't deployed cannot be spent. |
    | `OPENAI_API_KEY` | no | Only if `EMBEDDING_BACKEND=openai`; the default local MiniLM needs no key. |
-   | `RATE_LIMIT_PER_IP_PER_HOUR` | no | Default 20. |
-   | `RATE_LIMIT_GLOBAL_PER_DAY` | no | Default 150. |
+   | `RATE_LIMIT_PER_IP_PER_HOUR` | no | Default 20. Only applies to calls billed to the server key. |
+   | `RATE_LIMIT_GLOBAL_PER_DAY` | no | Default 150. Same. |
 
 5. Health check is wired to `/health`.
 
@@ -79,17 +80,43 @@ cd backend && docker build -t juno-backend . && docker run -p 8000:8000 --env-fi
 
 ## Cost control
 
-The demo is public and every upload and chat message spends API credit.
+**A public deployment costs nothing to run.** With `DEMO_MODE=true` (the default)
+and no `ANTHROPIC_API_KEY` on the host, there is no code path by which a visitor
+can spend the owner's credit. Everything a visitor sees is either pre-computed or
+deterministic:
 
-- **Rate limits** ([`backend/app/core/rate_limit.py`](../backend/app/core/rate_limit.py))
-  apply a per-IP hourly cap and a global daily ceiling. The global cap is what
-  actually bounds spend — a per-IP limit alone bounds nothing, because IPs are
-  trivially rotated.
-- **The two bundled samples are free.** Their reports are pre-computed and
-  committed under `backend/data/sample_analyses/`, replayed from disk with no LLM
-  call, so the main demo path costs nothing and isn't throttled.
-- **Set a hard spend cap in the Anthropic console.** It's the only limit that
-  can't be defeated by a bug in this repo.
+| Surface | In demo mode | Cost |
+| --- | --- | --- |
+| Bundled sample analysis | Report replayed from `backend/data/sample_analyses/`, streamed so it still builds live on screen | free |
+| Suggested chat questions | Answers replayed from `backend/data/sample_chats/`, with the real routed question type and citations | free |
+| Any other chat message | `402` with an explanation, unless the caller supplies a key | free |
+| Uploaded MMM output | Parsed, ranked, and checked for structural issues; the written interpretation is withheld | free |
+| Evaluation dashboard | Committed `snapshot.json` | free |
+
+Visitors who want live generation add their own Anthropic key in the UI. It's held
+in `sessionStorage`, sent per request as `X-Anthropic-Api-Key`, and never written
+to the server — see [`backend/app/core/caller_key.py`](../backend/app/core/caller_key.py).
+Those requests bill the caller and skip the rate limiter.
+
+Regenerating the pre-computed content (the only step that costs *you* money, about
+$0.30, and only when prompts change):
+
+```bash
+cd backend
+python -m app.agents.precompute_chat            # curated chat answers
+python -m app.agents.precompute_chat --list     # see the questions first
+```
+
+Sample *reports* are cached the first time each sample is loaded with a key
+present; commit the resulting JSON under `backend/data/`.
+
+If you do turn `DEMO_MODE` off and deploy a key, two guards remain, neither of
+which is a substitute for the above: the
+[rate limiter](../backend/app/core/rate_limit.py) (per-IP hourly plus a global
+daily ceiling, which is the part that actually bounds spend, since IPs rotate
+freely) and a hard spend cap set in the Anthropic console — the only limit that
+can't be defeated by a bug in this repo. Note that request-count limits bound the
+*rate*, not the *total*: a determined visitor can still drain a balance over days.
 
 ## Notes
 

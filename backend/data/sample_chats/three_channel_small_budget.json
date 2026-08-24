@@ -1,0 +1,277 @@
+[
+  {
+    "question": "What's the headline read on this model?",
+    "question_type": "interpretation",
+    "answer": "The headline is: **Search is clearly effective, but the model is genuinely unsure about Social and Display\u2014don't make budget calls on them without experiments.**\n\nSearch dominates with an ROI of 3.2 (CI: 2.8\u20133.6) and 45% of attributed outcomes, and that ranking is rock-solid. Social and Display, however, have credible intervals so wide that the model can't confidently distinguish \"strong performer\" from \"barely breaks even.\" Social's interval (0.9\u20132.7) is as wide as its point estimate, and Display's (0.2\u20131.6) spans from unprofitable to moderately effective. The intervals tell you the observational data simply don't contain enough independent signal to pin down their true effects\u2014likely due to correlated spend patterns, limited variation over just 52 weeks, or the difficulty of identifying Social's high-adstock carryover.\n\nCompounding that uncertainty: all three channels are spending at or above their half-saturation points, so marginal ROI is lower than the point estimates suggest. Search's 3.2 average ROI doesn't mean the next dollar returns 3.2; at 101% of saturation, incremental spend will deliver less.\n\n**Confidence: High.** The diagnosis of Search's strength is unambiguous, and the uncertainty around Social and Display is not a subjective judgment\u2014it's directly encoded in the wide credible intervals the model itself reported. The analysis report and the credible interval methodology both ground this: interval width equal to or exceeding the point estimate is the technical marker of low precision.\n\nThe actionable read: protect the Search investment but test its marginal headroom before adding more. For Social and Display, run lift tests to resolve the uncertainty before reallocating budget\u2014shifting spend between two channels the model can't confidently rank is a coin flip dressed as optimization.",
+    "sources": [
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "saturation::0",
+        "topic": "saturation",
+        "source": "juno_kb",
+        "snippet": "Saturation describes how a channel's incremental effect flattens as spend\nincreases. The first dollars spent on a channel tend to be the most productive;\nas spend grows, each additional dollar buys less incremental outco\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "credible_intervals::0",
+        "topic": "credible_intervals",
+        "source": "juno_kb",
+        "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "multicollinearity::0",
+        "topic": "multicollinearity",
+        "source": "juno_kb",
+        "snippet": "Multicollinearity arises when two or more media channels have spend patterns\nthat move together over time. If Meta and Instagram are always flighted in\nlockstep, or if all upper-funnel channels ramp together for a season\u2026"
+      },
+      {
+        "chunk_id": "seasonality_baseline::0",
+        "topic": "seasonality",
+        "source": "juno_kb",
+        "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m\u2026"
+      }
+    ]
+  },
+  {
+    "question": "Should I cut Display?",
+    "question_type": "recommendation",
+    "answer": "# Should I cut Display?\n\n**No, do not cut Display based solely on the model's point estimate. Run a geo holdout test first to measure its true incremental ROI, then decide.**\n\n## The issue\n\nDisplay's estimated ROI is 0.9 (below break-even), but the credible interval is extremely wide: 0.2\u20131.6. This means the model genuinely cannot distinguish whether Display is deeply unprofitable (0.2) or moderately effective (1.6). The point estimate of 0.9 is just the middle of a range spanning nearly the full spectrum from \"cut immediately\" to \"keep as-is.\"\n\nCutting a $12,250/week channel based on a point estimate the model itself flags as highly uncertain is a high-risk decision. If Display's true ROI is near the upper end of the interval (1.3\u20131.6), cutting it would lose profitable conversions. If it's near the lower end (0.2\u20130.5), you're wasting budget. The observational data cannot resolve this.\n\n## Executable action\n\n**Run a 4\u20136 week geo-based holdout experiment where Display is paused in a randomized set of test geographies (ideally 40\u201350% of regions) while continuing at current levels in the control group. Measure the incremental conversion lift (or lack thereof) directly.**\n\n- If the test shows ROI below 1.0 with statistical confidence, reallocate the $12,250/week to Search (despite saturation) or prospecting channels, or bank it.\n- If the test shows ROI in the 1.2\u20131.6 range, maintain Display at current spend but do not increase it, since it is already at saturation ($12,250 current vs. $12,000 half-saturation).\n- If results are inconclusive, extend the test or accept that Display's true effect is small and prioritize budget for channels with tighter intervals.\n\n## Why this is the right sequence\n\nAs the calibration methodology notes, experiments break the correlation that observational models cannot disentangle and measure incrementality directly. Display's wide interval likely stems from limited spend variation, possible correlation with Social (both prospecting channels), or weak independent signal in only 52 weeks of data. A holdout test sidesteps all of these: you create the variation deliberately, and the measured lift is causal by design.\n\nThe model is already telling you it doesn't know Display's true value. Treating the 0.9 point estimate as gospel when the interval says \"could be 0.2, could be 1.6\" is overconfident. The right move is to generate the missing evidence rather than guess.\n\n## Priority and dependencies\n\n**Priority: High**  \nDisplay represents 16% of total spend ($12,250 of ~$77,000/week) and sits at saturation, so marginal returns are already low even if true ROI is positive. Resolving its uncertainty quickly prevents continued waste if it truly underperforms, or prevents an incorrect cut if the true ROI is acceptable.\n\n**Dependencies:**\n- Ability to pause Display in a subset of geographies for 4\u20136 weeks without business-critical coverage gaps\n- Analytics infrastructure to measure geo-level conversions cleanly during the test period\n- Stakeholder buy-in to accept the risk of potentially losing some conversions in test regions if Display turns out to be incrementally positive\n\n## Confidence\n\n**High confidence** that this is the correct next step, **medium confidence** on what the test result will show.\n\nThe recommendation to test rather than cut immediately is high confidence because the credible interval is wide enough that any action without experimental validation is a coin flip. The model itself is uncertain, so the decision framework should acknowledge that uncertainty and resolve it with causal evidence.\n\nThe eventual outcome is medium confidence: Display could land anywhere in its interval. But that is exactly why the test is necessary\u2014you are trading model uncertainty for experimental clarity.\n\n---\n\n**Sources consulted:** As the credible intervals methodology explains, when interval width approaches or exceeds the point estimate, the model cannot confidently distinguish the channel's true performance, and decisions should not rest on the point alone. The calibration methodology reinforces that experiments provide the causal ground truth observational models cannot deliver, and are most valuable exactly where the model is least certain\u2014which is Display.",
+    "sources": [
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "seasonality_baseline::0",
+        "topic": "seasonality",
+        "source": "juno_kb",
+        "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "credible_intervals::0",
+        "topic": "credible_intervals",
+        "source": "juno_kb",
+        "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi\u2026"
+      },
+      {
+        "chunk_id": "roi_vs_mroi::0",
+        "topic": "roi_mroi",
+        "source": "juno_kb",
+        "snippet": "Return on investment in a marketing mix model is usually reported as a point\nestimate with a credible interval \u2014 for example an ROI of 3.2 meaning the model\nattributes $3.20 of outcome per dollar spent. This is an averag\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      }
+    ]
+  },
+  {
+    "question": "Is the Social result reliable enough to act on?",
+    "question_type": "uncertainty",
+    "answer": "## Short answer\n\n**No. Confidence: high**\n\nSocial's credible interval (0.9\u20132.7) is as wide as the point estimate itself (1.8), meaning the model genuinely cannot distinguish whether Social is highly profitable or barely break-even. Any budget action\u2014cutting, increasing, or shifting spend to or from Social\u2014rests on fragile evidence. You should run a conversion lift test on Social before making material budget decisions based on this estimate.\n\n---\n\n## Why the Social estimate is unreliable\n\n**1. The credible interval spans the decision boundary**\n\nAs the credible intervals methodology notes, when an interval's width equals or exceeds the point estimate, treat the result as low confidence. Social's interval width is 1.8 (from 0.9 to 2.7), exactly matching its point ROI of 1.8. This means the model assigns meaningful probability mass to both \"Social is one of our best channels\" (ROI near 2.7) and \"Social barely breaks even\" (ROI near 0.9). Those two states demand opposite actions, so the estimate does not support a confident decision.\n\n**2. High adstock decay compounds identification difficulty**\n\nSocial's adstock decay of 0.6 means 60% of one week's effect carries into the next, smearing impact across multiple weeks. As the adstock methodology chunk explains, high decay values are hard to identify from limited data because they reduce the amount of independent week-to-week variation the model can learn from. With only 52 weeks of data, the uncertainty around Social's true effect is elevated. This parameter choice likely contributes directly to the wide credible interval.\n\n**3. Potential multicollinearity with Display**\n\nBoth Social and Display have unusually wide credible intervals (Social: 0.9\u20132.7; Display: 0.2\u20131.6), which is often a symptom of correlated spend patterns. As the multicollinearity methodology notes, when two channels are flighted together or move in lockstep, the model cannot cleanly separate their contributions and distributes credit almost arbitrarily. If Social and Display spend have been correlated historically, the observational model cannot tell which channel is doing the work, inflating uncertainty on both.\n\n**4. No experimental calibration to anchor the estimate**\n\nThe model output shows no indication that Social's coefficient has been calibrated to an incrementality test. As the calibration methodology emphasizes, observational models are vulnerable to confounding and attribution of non-incremental conversions. A lift test would measure Social's true incremental ROI directly and provide causal ground truth independent of the correlational model. Without that anchor, the wide interval stands uncorrected.\n\n---\n\n## What \"acting on it\" would require\n\nIf the decision is whether to **increase** Social spend: the model cannot tell you whether marginal ROI will be near 2.7 (a strong case for more budget) or 0.9 (already at diminishing returns). Social is spending $24,300 against a half-saturation point of $25,000, so it is entering the diminishing-returns zone regardless. You would be betting on the upper end of the interval without evidence.\n\nIf the decision is whether to **cut or reallocate** Social spend: the model cannot tell you whether you would be cutting a high-performer (true ROI near 2.7, forfeiting substantial incremental contribution) or a marginal one (true ROI near 0.9, freeing budget for better uses). That ambiguity makes reallocation fragile.\n\nIf the decision is whether Social **ranks above Display**: that is the one claim the model does support with medium confidence, because Social's higher point estimate (1.8 vs 0.9) and substantially greater contribution (33% vs 22%) make second place the most probable position even accounting for interval overlap. But \"Social is likely better than Display\" is a weaker statement than \"Social's ROI is 1.8,\" and it still does not tell you whether either channel deserves its current budget.\n\n---\n\n## What to do instead\n\n**Run a geo-based conversion lift test on Social** (priority: high). Hold out or vary Social spend in a randomized set of matched geographies and measure the incremental lift. The experiment will produce a causal estimate of Social's true ROI, independent of the observational model's confounding and collinearity issues. Use that result as an informative prior in the next Bayesian model iteration to tighten the credible interval and anchor future budget recommendations.\n\nUntil that test completes, **do not make material budget changes to Social based on the current model alone**. The 1.8 point estimate is the model's best guess, but the width of the interval means it is nearly uninformative for decision-making.",
+    "sources": [
+      {
+        "chunk_id": "credible_intervals::0",
+        "topic": "credible_intervals",
+        "source": "juno_kb",
+        "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi\u2026"
+      },
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "attribution_mmm_vs_mta::0",
+        "topic": "attribution",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data \u2014 weekly spend and outcomes across channe\u2026"
+      },
+      {
+        "chunk_id": "multicollinearity::0",
+        "topic": "multicollinearity",
+        "source": "juno_kb",
+        "snippet": "Multicollinearity arises when two or more media channels have spend patterns\nthat move together over time. If Meta and Instagram are always flighted in\nlockstep, or if all upper-funnel channels ramp together for a season\u2026"
+      },
+      {
+        "chunk_id": "lift_tests::0",
+        "topic": "lift_tests",
+        "source": "juno_kb",
+        "snippet": "Incrementality tests measure the causal lift of advertising by creating a\ncontrolled contrast between exposed and unexposed groups. The most common design\nin a marketing context is a geo experiment: a set of matched geog\u2026"
+      },
+      {
+        "chunk_id": "roi_vs_mroi::0",
+        "topic": "roi_mroi",
+        "source": "juno_kb",
+        "snippet": "Return on investment in a marketing mix model is usually reported as a point\nestimate with a credible interval \u2014 for example an ROI of 3.2 meaning the model\nattributes $3.20 of outcome per dollar spent. This is an averag\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      }
+    ]
+  },
+  {
+    "question": "Why are the credible intervals so wide?",
+    "question_type": "uncertainty",
+    "answer": "The wide credible intervals on Social (0.9\u20132.7) and Display (0.2\u20131.6) stem from three compounding problems in the data and model structure:\n\n## 1. Limited independent variation (multicollinearity)\nSocial and Display likely have spend patterns that move together over time\u2014both ramping for seasonal pushes or managed with linked budgets. When two channels are flighted in lockstep, the regression cannot cleanly separate their individual contributions; it distributes credit between them almost arbitrarily. As the multicollinearity methodology notes, \"the model splits credit between them almost arbitrarily, producing wide, unstable intervals.\" Even small changes in priors or data preprocessing can swing the estimates substantially when channels are correlated.\n\n**What to check:** Calculate the Pearson correlation between Social and Display weekly spend. If it's above 0.6\u20130.7, that's direct evidence of collinearity driving the wide intervals.\n\n## 2. High adstock decay on Social makes effects hard to identify\nSocial's adstock decay parameter is 0.6, meaning 60% of one week's effect carries into the next, smearing the signal across multiple weeks. As the adstock methodology explains, \"high adstock values are harder to identify from limited data because they reduce the amount of independent week-to-week variation the model can learn from.\" With only 52 weeks of data, the model struggles to disentangle Social's persistent carryover from baseline seasonality and other channels, which inflates uncertainty around its coefficient.\n\n## 3. Short data span (52 weeks) limits statistical power\nOne year of weekly data provides limited degrees of freedom once you account for seasonality, trend, and three media variables with adstock and saturation transformations. The credible intervals methodology states that interval width \"tells you how much the data actually constrain the answer.\" Here, the answer is: not much. The posterior for Social and Display remains close to the prior because the likelihood is weak.\n\n---\n\n**Confidence: High.** These three factors\u2014collinearity, high adstock, and limited data\u2014are well-established causes of wide Bayesian credible intervals and are all present in this model. The structural risks section of the analysis already flagged the first two.\n\n**What would narrow the intervals:**\n- **Run lift tests** on Social and Display to inject causal priors (highest priority; directly resolves uncertainty).\n- **Introduce independent variation** in future spend timing so the channels aren't always flighted together.\n- **Collect more data** (extending to 2+ years) to give the model more independent signal to learn from.\n- **Simplify the model** by grouping Social and Display into a single \"Digital Prospecting\" variable if they truly cannot be separated observationally\u2014you'll lose granularity but gain a stable, narrow interval on the combined effect.",
+    "sources": [
+      {
+        "chunk_id": "credible_intervals::0",
+        "topic": "credible_intervals",
+        "source": "juno_kb",
+        "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi\u2026"
+      },
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "roi_vs_mroi::0",
+        "topic": "roi_mroi",
+        "source": "juno_kb",
+        "snippet": "Return on investment in a marketing mix model is usually reported as a point\nestimate with a credible interval \u2014 for example an ROI of 3.2 meaning the model\nattributes $3.20 of outcome per dollar spent. This is an averag\u2026"
+      },
+      {
+        "chunk_id": "lift_tests::0",
+        "topic": "lift_tests",
+        "source": "juno_kb",
+        "snippet": "Incrementality tests measure the causal lift of advertising by creating a\ncontrolled contrast between exposed and unexposed groups. The most common design\nin a marketing context is a geo experiment: a set of matched geog\u2026"
+      },
+      {
+        "chunk_id": "budget_optimization::0",
+        "topic": "budget_optimization",
+        "source": "juno_kb",
+        "snippet": "The main decision a marketing mix model informs is how to allocate a budget\nacross channels. The principle is straightforward: at the optimal allocation,\nthe marginal ROI of the last dollar is equal across all channels. \u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      }
+    ]
+  },
+  {
+    "question": "What if I moved Display budget into Search?",
+    "question_type": "hypothetical",
+    "answer": "## Answer\n\n**Do not shift Display budget into Search without validating marginal returns first.** Search is already spending $40,500, which is above its half-saturation point of $40,000, meaning it's operating in diminishing returns. Adding Display's $12,250 would push Search to $52,750 \u2014 32% above half-saturation and well into the flattened part of its curve. The marginal ROI on that incremental spend will be substantially lower than Search's average ROI of 3.2, likely closer to 1.5\u20132.0 based on typical saturation behavior. Meanwhile, turning off Display entirely loses its attributed contribution (22% of outcomes), and while Display's point ROI is only 0.9, its credible interval extends to 1.6, so it may be more profitable than the model's central estimate suggests.\n\n**If you execute this move, the likely outcome is:** Search delivers moderate incremental lift on the transferred budget (lower than its average ROI would predict), while you lose Display's contribution entirely. The net effect could easily be negative or marginal \u2014 you're trading a channel with uncertain but real contribution for a channel that's already saturated.\n\n**The right sequence is:**\n\n1. **Test Search's marginal returns first.** Increase Search spend by 10\u201315% ($4,000\u20136,000) in a controlled test (geo holdout or time-based experiment) to measure actual marginal ROI at current saturation levels. If marginal ROI is still above 2.0, incremental budget may be justified.\n\n2. **Run a holdout test on Display** to measure its true incremental ROI. If the test confirms it's unprofitable (true ROI closer to 0.2\u20130.5), then reallocating that budget becomes defensible. If the test shows ROI in the 1.2\u20131.6 range, Display may be worth keeping.\n\n3. **Stage any reallocation gradually** rather than moving all $12,250 at once. Shift $3,000\u20135,000 initially, measure the result, and iterate based on observed marginal returns.\n\n**Confidence: High.** The saturation mechanics are clear from the model output: Search is past its most productive range, and large budget increases will underperform the average ROI. The uncertainty around Display's true ROI (wide credible interval) means turning it off is a gamble without experimental validation. As the budget optimization methodology notes, \"recommendations to dramatically increase a channel's spend should be staged and validated rather than executed in one step,\" and \"an optimizer should not extrapolate confidently beyond the range of historically observed spend.\"\n\n---\n\n### Why saturation and extrapolation matter here\n\nSearch's half-saturation point is $40,000, and current weekly spend is around $5,000 (totaling $40,500 across the data span shown). Moving Display's $12,250 into Search would represent a 30%+ increase in Search's total observed spend, pushing it far beyond the range where the saturation curve was fit. The model's confidence in Search's response curve deteriorates rapidly beyond observed spend levels, because the saturation transform (a Hill function with shape 1.1) was estimated from data where Search spent $4,800\u20135,300 per week. Extrapolating to $6,500+ per week assumes the curve continues to behave the same way, which is unreliable without new data.\n\nAs the saturation methodology chunk notes: \"A channel can have an attractive average ROI while its marginal ROI has already collapsed because spend is well past the half-saturation point. Budget decisions should be driven by marginal ROI, not average ROI.\" And on extrapolation risk: \"If current spend is at or above [half-saturation], the channel is in diminishing-returns territory and further spend is likely wasteful \u2014 the model may even be extrapolating beyond the range of observed data, which is unreliable.\"",
+    "sources": [
+      {
+        "chunk_id": "budget_optimization::0",
+        "topic": "budget_optimization",
+        "source": "juno_kb",
+        "snippet": "The main decision a marketing mix model informs is how to allocate a budget\nacross channels. The principle is straightforward: at the optimal allocation,\nthe marginal ROI of the last dollar is equal across all channels. \u2026"
+      },
+      {
+        "chunk_id": "roi_vs_mroi::0",
+        "topic": "roi_mroi",
+        "source": "juno_kb",
+        "snippet": "Return on investment in a marketing mix model is usually reported as a point\nestimate with a credible interval \u2014 for example an ROI of 3.2 meaning the model\nattributes $3.20 of outcome per dollar spent. This is an averag\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "saturation::0",
+        "topic": "saturation",
+        "source": "juno_kb",
+        "snippet": "Saturation describes how a channel's incremental effect flattens as spend\nincreases. The first dollars spent on a channel tend to be the most productive;\nas spend grows, each additional dollar buys less incremental outco\u2026"
+      },
+      {
+        "chunk_id": "seasonality_baseline::0",
+        "topic": "seasonality",
+        "source": "juno_kb",
+        "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      }
+    ]
+  }
+]

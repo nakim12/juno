@@ -1,0 +1,234 @@
+[
+  {
+    "question": "Which channel is actually delivering the best return?",
+    "question_type": "comparison",
+    "answer": "**Search is delivering the best return you should expect, accounting for both ROI magnitude and certainty.**\n\n## Why Search, not Affiliate?\n\n**Affiliate** has the highest *point* ROI at 4.5 (vs. Search's 2.9), but it operates at tiny scale ($6k total spend, 5% contribution) and is already at 75% of half-saturation \u2014 meaning marginal returns are declining steeply. You can't meaningfully grow it. Think of Affiliate as a niche that delivers excellent efficiency at low volume, but hits a wall quickly.\n\n**Search**, by contrast:\n- Delivers a strong ROI of **2.9** with a tight credible interval (2.6\u20133.2)\n- Contributes **30% of attributed sales** from $48.5k spend \u2014 real scale\n- Has room to grow: current spend is only 54% of half-saturation ($90k), so marginal returns haven't compressed yet\n- Shows **high identification confidence**: the narrow CI means the model is certain about this effect\n\n## What about the others?\n\n**Meta** (ROI 2.1, CI 1.4\u20132.8) is third. Its interval is wider than Search's, reflecting some measurement uncertainty, but it clearly underperforms Search \u2014 even Meta's *upper* bound (2.8) barely touches Search's point estimate.\n\n**YouTube** (1.4), **TikTok** (1.7), and **Display** (0.7) all rank lower. TikTok and Display have extremely wide intervals (TikTok: 0.6\u20132.8; Display: 0.1\u20131.3) that span breakeven to moderate performance, so their point estimates are not actionable. As the credible intervals methodology notes, wide intervals signal the model cannot confidently separate these channels' effects \u2014 likely due to collinearity or limited independent variation in spend.\n\n## Bottom line\n\nIf the question is \"where is my next dollar best spent,\" the answer is **Search** (or possibly Meta). If the question is \"which channel is most efficient per dollar at current scale,\" it's **Affiliate** \u2014 but that channel can't absorb more budget. Search combines strong, well-identified returns with the capacity to scale, making it the best workhorse in the portfolio.\n\n**Confidence: High.** Search's tight CI and clear separation from other channels make this ranking robust even in the face of YouTube's and TikTok's uncertainty.",
+    "sources": []
+  },
+  {
+    "question": "How much should I trust the TikTok number?",
+    "question_type": "uncertainty",
+    "answer": "# Trust in TikTok Estimate: Low\n\nYou should **not** trust TikTok's ROI estimate of 1.7 for decision-making. The credible interval (0.6\u20132.8) is so wide that the point estimate carries very little information.\n\n## Why confidence is low\n\n**Extreme uncertainty span**: The interval width of 2.2 is larger than the point estimate itself. This means TikTok could be anywhere from barely breakeven (0.6) to highly effective (2.8) \u2014 a range that includes both \"cut this channel\" and \"scale this channel\" decisions. As the credible intervals methodology notes, when interval width exceeds or approaches the point estimate, treat it as low confidence.\n\n**Poor identification**: This width signals the model cannot reliably separate TikTok's effect from noise or from other correlated channels. The likely culprits are:\n- **Collinearity with other digital channels**: TikTok, Meta, YouTube, and Display budgets may move together seasonally or in response to shared optimization rules, making it hard for the model to assign credit uniquely.\n- **High adstock compounding the problem**: TikTok's decay of 0.7 means effects smear across many weeks, reducing the independent variation the model can learn from.\n\n**No experimental grounding**: The model output cites no lift tests or incrementality experiments. Without causal calibration, this observational estimate rests entirely on correlational patterns that may conflate TikTok spend with unmodeled demand drivers.\n\n## What this means for decisions\n\nThe 1.7 point estimate is essentially a guess within a very wide range. **Do not reallocate budget to or from TikTok based on this number alone.** The model is telling you it does not know whether TikTok works.\n\n## What would raise confidence\n\n1. **Run a geo-based holdout or conversion lift test** on TikTok to measure its true incremental ROI. This is the highest-priority validation step because it will replace the model's uncertainty with causal ground truth.\n2. **Feed the experimental result back as a calibration prior** in future model runs to anchor the estimate.\n3. **Check for spend correlation**: If TikTok budgets are tightly correlated with Meta or other channels, consider testing TikTok in isolation (turn it off in some geos, hold others constant) to break the collinearity.\n\n**Confidence level: High** \u2014 I am highly confident that TikTok's current estimate is not trustworthy for decisions, because the interval width directly reflects severe identification failure that cannot be resolved without new data or experimental intervention.",
+    "sources": [
+      {
+        "chunk_id": "credible_intervals::0",
+        "topic": "credible_intervals",
+        "source": "juno_kb",
+        "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      },
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "holdout_validation::0",
+        "topic": "holdout_validation",
+        "source": "juno_kb",
+        "snippet": "Fit metrics tell you how well a marketing mix model reproduces observed\noutcomes. In-sample R-squared measures the fraction of variance explained on the\ndata the model was trained on, and MAPE (mean absolute percentage e\u2026"
+      },
+      {
+        "chunk_id": "attribution_mmm_vs_mta::0",
+        "topic": "attribution",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data \u2014 weekly spend and outcomes across channe\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      }
+    ]
+  },
+  {
+    "question": "Where should I move budget next quarter?",
+    "question_type": "recommendation",
+    "answer": "# Budget Reallocation for Next Quarter\n\n**Move $6,000\u2013$8,000 from Display to Search, and move $3,000\u2013$5,000 from Display to Meta.**\n\n## Executable Actions\n\n### 1. Cut Display by $9,000\u2013$12,000 total (75\u2013100% reduction)\n- **Current spend:** ~$12,000/quarter\n- **New spend:** $0\u2013$3,000/quarter\n- **Timing:** Phase down over the first 3\u20134 weeks of the quarter to avoid abrupt shock\n\n### 2. Increase Search by $6,000\u2013$8,000\n- **Current spend:** ~$48,500/quarter\n- **New spend:** $54,500\u2013$56,500/quarter (~13\u201316% increase)\n- **Timing:** Ramp up gradually week-by-week; monitor weekly marginal ROAS to catch saturation onset early\n\n### 3. Increase Meta by $3,000\u2013$5,000\n- **Current spend:** ~$36,200/quarter  \n- **New spend:** $39,200\u2013$41,200/quarter (~8\u201314% increase)\n- **Timing:** Scale evenly across the quarter; evaluate performance over a 3\u20134 week window to account for carryover (adstock = 0.55)\n\n### 4. Hold all other channels constant\n- **Affiliate:** Keep at current $6k/quarter (already at 75% of saturation; scaling will destroy returns)\n- **TikTok & YouTube:** Hold pending incrementality tests (see dependencies)\n\n---\n\n## Rationale\n\n**Display is the clear candidate for cuts.** ROI of 0.7 (CI 0.1\u20131.3) is the lowest in the portfolio, and the lower bound of 0.1 suggests it may be operating at or below breakeven. It's already at 60% of half-saturation, so marginal returns are declining. Even if the true ROI is at the upper CI bound (1.3), that still lags Search's *lower* bound (2.6) by a factor of two.\n\n**Search and Meta have the clearest headroom.** Search is at 54% of saturation with ROI 2.9 (tight CI 2.6\u20133.2), and Meta is at 52% of saturation with ROI 2.1 (CI 1.4\u20132.8). Both are operating well below the point where marginal returns collapse, and both have demonstrated strong, well-identified performance. The budget allocation methodology notes that optimization should equalize *marginal* ROI across channels, and moving spend from a channel with 0.7 average ROI (and likely worse marginal ROI given its saturation position) to channels with 2.1\u20132.9 average ROI (and still-healthy marginal ROI) is directionally correct.\n\n**Why not TikTok or YouTube?** TikTok's CI (0.6\u20132.8) is so wide the model cannot confidently say whether it's profitable or marginal, and YouTube's extremely high adstock (0.92) is flagged as a structural risk that may be overstated. Moving budget into channels with unreliable estimates is reckless. Resolve their uncertainty with tests first (see dependencies).\n\n---\n\n## Confidence: **High**\n\nThe Display \u2192 Search/Meta shift is robust even accounting for uncertainty. Display's *upper* CI bound (1.3) is below Search's *lower* bound (2.6), so the expected gain from reallocation holds across the full range of plausible Display performance. The exact split between Search and Meta is less certain (Meta's interval is wider), but both clearly dominate Display, so the direction of the move is unambiguous.\n\nThe main risk is operational: if Search cannot absorb the incremental budget without bid inflation or if Meta's incremental spend only reaches low-quality audiences, marginal ROAS will decline faster than the model predicts. This is why the recommendation stages the increases and monitors marginal performance weekly rather than executing a one-time jump.\n\n---\n\n## Dependencies\n\n### Before executing:\n1. **Confirm Display's role:** Verify with stakeholders that Display is not serving an unmodeled objective (e.g., contractual remarketing requirement, brand lift goal). If it is, negotiate the minimum viable spend rather than cutting to zero.\n\n2. **Check Search capacity:** Ensure Search can absorb $6k\u2013$8k in incremental budget without:\n   - Running out of high-intent keyword inventory\n   - Driving CPCs up so sharply that marginal ROAS collapses\n   - Violating any daily budget caps or campaign structure limits\n\n3. **Check Meta targeting:** Confirm that Meta can deploy $3k\u2013$5k in incremental spend by expanding to new high-quality audiences (not just bidding harder for the same users). If the account is already targeting its full addressable market, incremental spend will inflate CPMs rather than reaching new demand.\n\n4. **Set up marginal ROAS tracking:** Instrument weekly tracking of *marginal* ROAS for Search and Meta (sales lift divided by incremental spend above baseline). The model's ROI estimates are averages; you need to catch the point where marginal returns drop below acceptable thresholds.\n\n### After executing (validation):\n5. **Run incrementality tests on TikTok and Display within 60 days.** TikTok and Display have the widest CIs and are the top candidates for further optimization once their true performance is known. A geo-based holdout or conversion lift test will resolve whether TikTok (currently held at $24k/quarter) should be scaled or cut, and whether Display's residual spend (if any) is worth keeping.\n\n6. **Monitor for saturation in Search.** Search is moving from 54% to ~60\u201363% of half-saturation. Track weekly performance closely; if marginal ROAS falls below 2.0, pause further increases and consider reallocating the next marginal dollar to Meta instead.\n\n---\n\n## Implementation Timeline\n\n| Week | Action |\n|------|--------|\n| **Week 1** | Reduce Display spend by 25%; increase Search by 15%, Meta by 10% |\n| **Weeks 2\u20133** | Complete Display phasedown; finish ramping Search and Meta |\n| **Week 4** | Evaluate week-3 marginal ROAS for Search and Meta; adjust if needed |\n| **Ongoing** | Track marginal ROAS weekly; if Search marginal ROAS < 2.0, reallocate next dollar to Meta |\n| **By Week 8** | Launch TikTok/Display incrementality tests |\n\n---\n\n**Priority: High.** This is the single highest-impact move available with the current data. Display is dragging down portfolio efficiency, and Search and Meta have demonstrated capacity to deliver superior returns. Execute this quarter; validate with tests to inform the quarter after.",
+    "sources": [
+      {
+        "chunk_id": "roi_vs_mroi::0",
+        "topic": "roi_mroi",
+        "source": "juno_kb",
+        "snippet": "Return on investment in a marketing mix model is usually reported as a point\nestimate with a credible interval \u2014 for example an ROI of 3.2 meaning the model\nattributes $3.20 of outcome per dollar spent. This is an averag\u2026"
+      },
+      {
+        "chunk_id": "budget_optimization::0",
+        "topic": "budget_optimization",
+        "source": "juno_kb",
+        "snippet": "The main decision a marketing mix model informs is how to allocate a budget\nacross channels. The principle is straightforward: at the optimal allocation,\nthe marginal ROI of the last dollar is equal across all channels. \u2026"
+      },
+      {
+        "chunk_id": "seasonality_baseline::0",
+        "topic": "seasonality",
+        "source": "juno_kb",
+        "snippet": "Only part of a brand's sales is driven by media. The rest is the baseline: the\ndemand that would exist with no advertising, shaped by trend, seasonality,\nprice, distribution, and macro conditions. A marketing mix model m\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "saturation::0",
+        "topic": "saturation",
+        "source": "juno_kb",
+        "snippet": "Saturation describes how a channel's incremental effect flattens as spend\nincreases. The first dollars spent on a channel tend to be the most productive;\nas spend grows, each additional dollar buys less incremental outco\u2026"
+      },
+      {
+        "chunk_id": "attribution_mmm_vs_mta::0",
+        "topic": "attribution",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data \u2014 weekly spend and outcomes across channe\u2026"
+      }
+    ]
+  },
+  {
+    "question": "What if I doubled Search spend?",
+    "question_type": "hypothetical",
+    "answer": "# What if I doubled Search spend?\n\n**Answer:** Doubling Search spend from $48.5k to $97k would push the channel well past its half-saturation point ($90k), where marginal returns compress sharply. Expected incremental sales would be substantially lower than a naive doubling of attributed contribution would suggest \u2014 likely in the range of 30\u201340% additional sales from Search rather than 100%. The marginal ROI on the second $48.5k would fall below 1.5 (possibly as low as 1.0\u20131.2), compared to the current average ROI of 2.9. This is still above breakeven but far less efficient than the current spend level, and it would make Search one of the least productive channels at the margin.\n\n**Confidence:** Medium. The saturation curve is estimated from observed data where Search spend ranged around $12k/week. Doubling to $97k total (approximately $24k/week if spread evenly) is a significant extrapolation beyond the observed range, so the model's saturation parameters become less reliable. The direction of the effect \u2014 sharply declining marginal returns \u2014 is certain, but the exact magnitude is uncertain.\n\n---\n\n## Why marginal returns would collapse\n\nSearch's **half-saturation point is $90k**, meaning that at $90k of spend the channel reaches half of its theoretical maximum effect. Current spend of $48.5k sits at 54% of that threshold, which is a healthy position: the channel is productive but not yet hitting steep diminishing returns.\n\nDoubling spend to $97k pushes Search **8% beyond half-saturation**. As the saturation methodology notes, once spend crosses the half-saturation point, each additional dollar produces a smaller and smaller incremental effect. The Hill saturation function (shape parameter 1.2 in this case) bends sharply in this region. The second $48.5k of spend would operate almost entirely in the flat part of the curve, where the channel is near its maximum possible contribution and marginal ROI has compressed dramatically.\n\nTo illustrate: the first $48.5k generates an average ROI of 2.9, so it produces roughly $140k in attributed sales. The model's saturation curve implies that moving from $48.5k to $97k might add only another $40\u201360k in sales (a marginal ROI of 0.8\u20131.2 on that incremental $48.5k), rather than doubling sales to $280k. The exact number depends on the shape parameter, but the qualitative result is robust: **marginal returns would be far below the current average.**\n\n---\n\n## Interaction with adstock and headroom elsewhere\n\nSearch has **low adstock (0.25)**, so the effect of the doubled spend would materialize quickly \u2014 within 1\u20132 weeks \u2014 with minimal carryover. This means there is no delayed benefit to cushion the low marginal ROI; what you see in the short term is what you get.\n\nMeanwhile, **Meta and YouTube both have room below their half-saturation points** (Meta at 52%, YouTube near 100% but with high measurement uncertainty). The opportunity cost of putting an extra $48.5k into Search is high: that same budget split between Meta and a modest YouTube test would likely deliver better aggregate returns, because those channels are operating in regions of their saturation curves where marginal ROI is still strong.\n\n---\n\n## Extrapolation risk\n\nThis scenario extrapolates meaningfully beyond the observed data. The model has seen Search spend around $11.8k\u2013$12.5k per week (total ~$48.5k over the time window shown). Doubling that implies sustained weekly spend near $24k, which is **roughly double the historical maximum**. The saturation curve is least trustworthy when predicting far outside the range of observed spend, because the model has no direct evidence about how Search behaves at that scale.\n\nIt is possible that at $24k/week, Search encounters operational constraints the model does not capture \u2014 keyword inventory exhaustion, bid inflation, or declining match quality \u2014 that would make actual performance even worse than the saturation curve predicts. Conversely, if there is substantial untapped high-intent inventory, performance might degrade less sharply than the model forecasts. The model gives you the expected outcome under its assumed functional form, but treat it as directional rather than precise at this spend level.\n\n---\n\n## Recommendation\n\nDo not double Search spend in one move. If you want to test Search's headroom, **stage the increase in 15\u201320% increments** and monitor marginal ROAS week-over-week. Stop when marginal performance drops below your hurdle rate (likely around 1.5\u20132.0 given your portfolio). A more efficient path is to take half of the $48.5k you were considering for Search and allocate it to Meta or a controlled YouTube expansion, where marginal returns are likely stronger. Reserve the other half for Search only if staged testing confirms it can absorb the budget without hitting saturation.\n\n---\n\n### Sources consulted\n- **saturation::0** (saturation curve mechanics and half-saturation interpretation)\n- **roi_vs_mroi::0** (distinction between average and marginal ROI)\n- **adstock::0** (low carryover means no delayed benefit)",
+    "sources": [
+      {
+        "chunk_id": "roi_vs_mroi::0",
+        "topic": "roi_mroi",
+        "source": "juno_kb",
+        "snippet": "Return on investment in a marketing mix model is usually reported as a point\nestimate with a credible interval \u2014 for example an ROI of 3.2 meaning the model\nattributes $3.20 of outcome per dollar spent. This is an averag\u2026"
+      },
+      {
+        "chunk_id": "saturation::0",
+        "topic": "saturation",
+        "source": "juno_kb",
+        "snippet": "Saturation describes how a channel's incremental effect flattens as spend\nincreases. The first dollars spent on a channel tend to be the most productive;\nas spend grows, each additional dollar buys less incremental outco\u2026"
+      },
+      {
+        "chunk_id": "budget_optimization::0",
+        "topic": "budget_optimization",
+        "source": "juno_kb",
+        "snippet": "The main decision a marketing mix model informs is how to allocate a budget\nacross channels. The principle is straightforward: at the optimal allocation,\nthe marginal ROI of the last dollar is equal across all channels. \u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "attribution_mmm_vs_mta::0",
+        "topic": "attribution",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling (MMM) and multi-touch attribution (MTA) answer related\nbut different questions and rest on different data. MMM works top-down on\naggregate time-series data \u2014 weekly spend and outcomes across channe\u2026"
+      },
+      {
+        "chunk_id": "causal_inference::0",
+        "topic": "causal_inference",
+        "source": "juno_kb",
+        "snippet": "Marketing mix modeling is fundamentally a causal question dressed as a\nregression: what would sales have been if we had spent differently? Answering it\nrequires more than fitting a curve to historical data, because the m\u2026"
+      },
+      {
+        "chunk_id": "lift_tests::0",
+        "topic": "lift_tests",
+        "source": "juno_kb",
+        "snippet": "Incrementality tests measure the causal lift of advertising by creating a\ncontrolled contrast between exposed and unexposed groups. The most common design\nin a marketing context is a geo experiment: a set of matched geog\u2026"
+      },
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      }
+    ]
+  },
+  {
+    "question": "What does saturation mean for my budget decisions?",
+    "question_type": "interpretation",
+    "answer": "# Saturation and Your Budget Decisions\n\nSaturation tells you **where each channel sits on its curve of diminishing returns**, which is critical for deciding where the next dollar should go.\n\n## The Core Principle\n\nAs the saturation methodology notes, **a channel's average ROI and marginal ROI are different numbers**. Average ROI is total attributed sales divided by total spend \u2014 that's what the model reports as \"ROI\" for each channel. Marginal ROI is the return on the *next* incremental dollar, which depends on where you are on the saturation curve. Budget decisions should be driven by marginal ROI, not average ROI.\n\n## What This Means for Your Channels\n\nLet me translate your model's saturation parameters into actionable guidance:\n\n### **Affiliate (4.5 ROI) \u2014 Hold, don't scale**\n- Current spend: ~$6k/week  \n- Half-saturation point: $8k  \n- **You're at 75% of saturation**  \n\nThe average ROI of 4.5 looks fantastic, but you're already deep into diminishing returns. Marginal ROI at this point is *well below* 4.5 \u2014 probably closer to 2.0 or less. Pushing spend higher will hit a wall fast. Treat Affiliate as a high-efficiency niche that's already maximized, not a growth lever.\n\n### **Search (2.9 ROI) \u2014 Modest headroom**\n- Current spend: ~$48.5k/week  \n- Half-saturation: $90k  \n- **You're at 54% of saturation**  \n\nThere's room to grow before marginal returns collapse. A 10\u201320% increase is defensible, but moving dramatically higher risks hitting the bend in the curve where each additional dollar starts returning much less. Monitor marginal ROAS closely as you scale.\n\n### **Meta (2.1 ROI) \u2014 Room to test expansion**\n- Current spend: ~$36.2k/week  \n- Half-saturation: $70k  \n- **You're at 52% of saturation**  \n\nSimilar headroom to Search. A controlled 15\u201325% expansion can test whether marginal returns remain acceptable, but don't chase scale blindly \u2014 the curve will compress returns as you approach $70k.\n\n### **Display (0.7 ROI) \u2014 Already over-saturated**\n- Current spend: ~$12k/week  \n- Half-saturation: $20k  \n- **You're at 60% of saturation**  \n\nYou're already past the efficient zone on a channel with the lowest average ROI. Marginal ROI is likely near zero or negative. This is a strong candidate for budget cuts and reallocation to Search or Meta.\n\n### **TikTok and YouTube** \u2014 Uncertain position\nBoth have wide credible intervals, making it hard to say confidently where their marginal returns sit. YouTube's very high adstock (0.92) compounds the problem \u2014 effects persist so long that short-term changes in spend won't immediately show up in sales, making optimization harder.\n\n## The Decision Rule\n\nAt the optimal budget allocation, **marginal ROI should be roughly equal across all active channels**. If Search's marginal ROI at $55k/week is still 2.5 while Display's at $12k is 0.5, you have a clear arbitrage: shift dollars from Display to Search until their marginal returns converge.\n\n**Confidence: High**  \nThe saturation parameters are well-defined in your model, and the interpretation follows directly from standard microeconomic principles of diminishing returns. The only uncertainty is in TikTok and Display's absolute positions due to their wide credible intervals, but the directional guidance (hold Affiliate, test expanding Search/Meta, cut Display) is robust.",
+    "sources": [
+      {
+        "chunk_id": "saturation::0",
+        "topic": "saturation",
+        "source": "juno_kb",
+        "snippet": "Saturation describes how a channel's incremental effect flattens as spend\nincreases. The first dollars spent on a channel tend to be the most productive;\nas spend grows, each additional dollar buys less incremental outco\u2026"
+      },
+      {
+        "chunk_id": "budget_optimization::0",
+        "topic": "budget_optimization",
+        "source": "juno_kb",
+        "snippet": "The main decision a marketing mix model informs is how to allocate a budget\nacross channels. The principle is straightforward: at the optimal allocation,\nthe marginal ROI of the last dollar is equal across all channels. \u2026"
+      },
+      {
+        "chunk_id": "adstock::0",
+        "topic": "adstock",
+        "source": "juno_kb",
+        "snippet": "Adstock (also called carryover) captures the idea that advertising exposure has\nan effect that persists beyond the week the money is spent. Someone who sees an\nad today may not convert until two or three weeks later. Mar\u2026"
+      },
+      {
+        "chunk_id": "roi_vs_mroi::0",
+        "topic": "roi_mroi",
+        "source": "juno_kb",
+        "snippet": "Return on investment in a marketing mix model is usually reported as a point\nestimate with a credible interval \u2014 for example an ROI of 3.2 meaning the model\nattributes $3.20 of outcome per dollar spent. This is an averag\u2026"
+      },
+      {
+        "chunk_id": "credible_intervals::0",
+        "topic": "credible_intervals",
+        "source": "juno_kb",
+        "snippet": "A credible interval is the Bayesian analogue of a confidence interval: a 95%\ncredible interval means the model assigns 95% posterior probability to the true\nvalue lying within that range. In a marketing mix model, the wi\u2026"
+      },
+      {
+        "chunk_id": "failure_modes::0",
+        "topic": "failure_modes",
+        "source": "juno_kb",
+        "snippet": "Marketing mix models fail in recognizable ways, and a good interpreter names\nthese risks explicitly rather than presenting every number as trustworthy. The\nmost common pitfalls cluster around confounding, identifiability\u2026"
+      },
+      {
+        "chunk_id": "calibration::0",
+        "topic": "calibration",
+        "source": "juno_kb",
+        "snippet": "A marketing mix model is a correlational model fit to observational data, so its\ncoefficients can be biased by confounding, collinearity, and mis-specification.\nCalibration is the practice of anchoring the model to causa\u2026"
+      },
+      {
+        "chunk_id": "bayesian_priors::0",
+        "topic": "bayesian_priors",
+        "source": "juno_kb",
+        "snippet": "Bayesian marketing mix models treat the unknown parameters \u2014 channel\ncoefficients, adstock decays, saturation shapes \u2014 as distributions rather than\nsingle numbers. The model combines a prior (what we believe before seein\u2026"
+      }
+    ]
+  },
+  {
+    "question": "Is Affiliate really better than Search?",
+    "question_type": "comparison",
+    "answer": "# Is Affiliate really better than Search?\n\n**Yes, with high confidence.** Affiliate is definitively more efficient than Search on a per-dollar basis, though the two channels serve very different strategic roles.\n\n## The ROI gap is clear and unambiguous\n\n- **Affiliate:** ROI 4.5 with a tight credible interval (3.9\u20135.1)\n- **Search:** ROI 2.9 with a tight credible interval (2.6\u20133.2)\n\n**There is zero overlap between these intervals.** Even Affiliate's worst-case lower bound (3.9) exceeds Search's best-case upper bound (3.2) by a wide margin. The model is certain that Affiliate delivers higher returns per dollar spent.\n\n## Why Affiliate ranks first despite its tiny scale\n\nAffiliate operates at just $6k total spend (5% of attributed sales), while Search drives $48.5k spend (30% of attributed sales). **Affiliate is more efficient but cannot scale.** It's already at 75% of its half-saturation point ($8k), meaning marginal returns are declining steeply. If you tried to double Affiliate spend, the incremental ROI would collapse.\n\nSearch, by contrast, is at 54% of its half-saturation point ($90k) and has room to grow before hitting steep diminishing returns. **Search is the scalable workhorse; Affiliate is a high-efficiency niche.**\n\n## The ranking reflects return per dollar, not total value\n\nThe analysis ranks channels by **expected efficiency accounting for uncertainty**, not by total contribution or strategic importance. Affiliate wins on efficiency because every dollar returns $4.50 with high confidence. But Search contributes 6\u00d7 more total sales and can absorb far more budget.\n\n**In practice:** Keep Affiliate at current spend (do not try to scale it), and treat Search as your primary growth lever. Affiliate being \"better\" on ROI does not mean you should shift budget from Search to Affiliate \u2014 the saturation curves make that impossible.\n\n## Confidence: High\nBoth channels have tight credible intervals and their ROI ranges do not overlap. The ranking is rock-solid on the data provided. The only caveat is that neither estimate is calibrated to an incrementality test, so treat both as observational best-estimates rather than causal ground truth.\n\n---\n\n**Sources consulted:**\n- [credible_intervals::0] Credible interval interpretation\n- MMM_OUTPUT: Affiliate and Search coefficients",
+    "sources": []
+  }
+]

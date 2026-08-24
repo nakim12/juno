@@ -20,6 +20,69 @@ const API_BASE =
 
 const api = (path: string) => `${API_BASE}${path}`;
 
+// --- Bring-your-own-key -----------------------------------------------------
+// The public demo answers a curated set of questions from a pre-computed cache
+// and never spends the owner's API credit. Anyone who wants live generation
+// supplies their own key, which is held in sessionStorage (cleared when the tab
+// closes) and sent per request. It is never persisted server-side.
+
+const KEY_STORAGE = "juno.anthropic-key";
+const KEY_HEADER = "X-Anthropic-Api-Key";
+
+export function getApiKey(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.sessionStorage.getItem(KEY_STORAGE);
+}
+
+export function setApiKey(key: string | null): void {
+  if (typeof window === "undefined") return;
+  if (key) window.sessionStorage.setItem(KEY_STORAGE, key);
+  else window.sessionStorage.removeItem(KEY_STORAGE);
+}
+
+function keyHeaders(): Record<string, string> {
+  const key = getApiKey();
+  return key ? { [KEY_HEADER]: key } : {};
+}
+
+/** Thrown when an action needs live generation the demo won't pay for. */
+export class NeedsApiKeyError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "NeedsApiKeyError";
+  }
+}
+
+export interface ChatCapabilities {
+  questions: string[];
+  free_text_enabled: boolean;
+  demo_mode: boolean;
+}
+
+export async function getChatCapabilities(sessionId: string): Promise<ChatCapabilities> {
+  const res = await fetch(api(`/api/chat/${sessionId}/suggestions`), {
+    headers: keyHeaders(),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to load chat suggestions");
+  return res.json();
+}
+
+/** Parses an uploaded model without interpreting it — free, no LLM call. */
+export async function parseUpload(
+  mmmOutput: unknown
+): Promise<{ session_id: string; summary: AnalysisSummaryEvent }> {
+  const res = await fetch(api("/api/parse"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(mmmOutput),
+  });
+  if (!res.ok) {
+    throw new Error(await readErrorDetail(res, "That file couldn't be parsed."));
+  }
+  return res.json();
+}
+
 /**
  * Fire-and-forget ping to wake a sleeping backend.
  *
@@ -157,9 +220,14 @@ export async function streamAnalyzeUpload(
 ): Promise<void> {
   const res = await fetch(api("/api/analyze/stream"), {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...keyHeaders() },
     body: JSON.stringify(mmmOutput),
   });
+  if (res.status === 402) {
+    throw new NeedsApiKeyError(
+      await readErrorDetail(res, "Live analysis needs your own API key.")
+    );
+  }
   if (!res.ok) {
     throw new Error(
       await readErrorDetail(res, "The MMM output could not be analyzed.")
@@ -179,20 +247,31 @@ export async function streamChat(
     onMeta?: (questionType: string) => void;
     onSources?: (sources: KnowledgeSource[]) => void;
     onToken: (text: string) => void;
+    onError?: (message: string) => void;
     onDone?: () => void;
   }
 ): Promise<void> {
   const res = await fetch(api("/api/chat"), {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...keyHeaders() },
     body: JSON.stringify({ session_id: sessionId, message }),
   });
-  if (!res.ok) throw new Error("Chat request failed");
+  if (res.status === 402) {
+    throw new NeedsApiKeyError(
+      await readErrorDetail(res, "Only the suggested questions are pre-answered.")
+    );
+  }
+  if (!res.ok) {
+    throw new Error(
+      await readErrorDetail(res, "Chat request failed. Please try again.")
+    );
+  }
 
   await readSSE(res, (eventType, data: any) => {
     if (eventType === "meta") handlers.onMeta?.(data.question_type);
     else if (eventType === "sources") handlers.onSources?.(data.sources);
     else if (eventType === "token") handlers.onToken(data.text);
+    else if (eventType === "error") handlers.onError?.(data.message);
     else if (eventType === "done") handlers.onDone?.();
   });
 }

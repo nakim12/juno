@@ -22,12 +22,17 @@ def _path(sample_id: str) -> Path:
     return _CACHE_DIR / f"{sample_id}.json"
 
 
-def get(sample_id: str) -> AnalysisReport | None:
+def get(sample_id: str, *, allow_stale: bool = False) -> AnalysisReport | None:
     """Return the cached report for ``sample_id`` if present, valid, and current.
 
     A cached report is only reused when it was produced by the *current* prompt
     version; otherwise it is treated as stale so a prompt bump transparently
     regenerates (and never silently serves outdated output).
+
+    ``allow_stale`` relaxes the version check for callers that have no way to
+    regenerate — a demo deployment with no API key. There, a slightly outdated
+    report is strictly better than a broken page, and it's labelled as
+    pre-computed either way.
     """
     path = _path(sample_id)
     if not path.exists():
@@ -37,7 +42,7 @@ def get(sample_id: str) -> AnalysisReport | None:
     except Exception:
         # Corrupt or stale-schema cache entry: ignore and regenerate.
         return None
-    if report.metadata.prompt_version != prompts.version_tag(PROMPT_NAME):
+    if not allow_stale and report.metadata.prompt_version != prompts.version_tag(PROMPT_NAME):
         return None
     return report
 
