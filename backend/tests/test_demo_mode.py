@@ -132,3 +132,30 @@ def test_upload_can_still_be_parsed_for_free(demo_mode):
     summary = resp.json()["summary"]
     assert summary["n_channels"] == 3
     assert "Search" in summary["channels"]
+
+
+# --- the stream must survive a degraded deployment --------------------------
+
+
+def test_replay_completes_without_a_vector_index(demo_mode):
+    """A missing Chroma index must not truncate the analysis stream.
+
+    Regression: retrieval raised mid-generator, which SSE delivers as a normal
+    end-of-stream. The client showed a half-built report and no error at all —
+    the exact symptom seen on first deploy, where the index wasn't available.
+    """
+    from unittest.mock import patch
+
+    with patch(
+        "app.rag.retriever.retriever.retrieve", side_effect=RuntimeError("no index")
+    ):
+        resp = client.post(f"/api/samples/{SAMPLE}/load/stream")
+
+    assert resp.status_code == 200
+    body = resp.text
+    assert "event: report" in body, "stream ended before delivering the report"
+    assert "event: done" in body
+    # Citations still arrive: they're stored on the cached report, so the replay
+    # never needs to query the index at all.
+    assert "event: sources" in body
+    assert "bayesian_priors" in body

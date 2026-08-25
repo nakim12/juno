@@ -8,6 +8,7 @@ prompt; stream the answer. Subclasses override :meth:`extra_grounding` and
 
 from __future__ import annotations
 
+import logging
 from collections.abc import AsyncIterator
 
 from app.agents import prompts
@@ -15,6 +16,8 @@ from app.core.llm import LLMClient, get_agent_llm
 from app.models.chat_message import QuestionType
 from app.rag.retriever import RetrievedChunk, retriever
 from app.session.store import Session
+
+logger = logging.getLogger(__name__)
 
 PROMPT_NAME = "chat"
 HISTORY_TURNS = 3
@@ -44,10 +47,19 @@ class BaseHandler:
         )
 
     def retrieve(self, session: Session, message: str) -> list[RetrievedChunk]:
-        """Retrieve grounding chunks for this turn (empty if KB disabled)."""
+        """Retrieve grounding chunks for this turn (empty if KB disabled).
+
+        An unreachable index degrades the answer rather than failing the turn;
+        raising here would abort the SSE stream, which the client can only read
+        as a silent truncation.
+        """
         if not self.uses_knowledge_base:
             return []
-        return retriever.retrieve(self._retrieval_query(session, message))
+        try:
+            return retriever.retrieve(self._retrieval_query(session, message))
+        except Exception:
+            logger.exception("Knowledge base retrieval failed; answering ungrounded")
+            return []
 
     def _build_user_prompt(
         self, session: Session, message: str, chunks: list[RetrievedChunk]

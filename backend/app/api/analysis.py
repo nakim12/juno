@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from collections.abc import Callable
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -16,6 +17,8 @@ from app.models.analysis_report import AnalysisReport
 from app.models.mmm_output import MMMOutput
 from app.parsers import mmm_parser
 from app.session.store import Session, session_store
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api", tags=["analysis"])
 
@@ -68,7 +71,6 @@ def analysis_stream_response(
     """
 
     async def event_gen():
-        chars = 0
         stream = (
             initial_analysis.replay_streaming(
                 session.mmm_output, session.session_id, cached_report
@@ -78,6 +80,22 @@ def analysis_stream_response(
                 session.mmm_output, session.session_id, llm=llm
             )
         )
+        try:
+            async for event in _events(stream):
+                yield event
+        except Exception:
+            # An exception escaping the generator just closes the connection,
+            # which SSE clients read as a normal end of stream — a truncated
+            # report with no error anywhere. Say so explicitly instead.
+            logger.exception("Analysis stream failed")
+            yield _sse(
+                "error",
+                {"message": "The analysis stopped unexpectedly. Please try again."},
+            )
+        yield _sse("done", {})
+
+    async def _events(stream):
+        chars = 0
         async for kind, payload in stream:
             if kind == "summary":
                 session.summary = payload
@@ -102,7 +120,6 @@ def analysis_stream_response(
                         "report": payload.model_dump(),
                     },
                 )
-        yield _sse("done", {})
 
     return StreamingResponse(event_gen(), media_type="text/event-stream")
 

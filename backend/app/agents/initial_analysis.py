@@ -13,6 +13,7 @@ report so the end-to-end skeleton is demoable before wiring the API key.
 from __future__ import annotations
 
 import asyncio
+import logging
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from typing import Any
@@ -32,6 +33,8 @@ from app.models.analysis_report import (
 from app.models.mmm_summary import MMMSummary
 from app.parsers import mmm_parser
 from app.rag.retriever import retriever
+
+logger = logging.getLogger(__name__)
 
 PROMPT_NAME = "analysis"
 
@@ -72,11 +75,31 @@ def _knowledge_sources(chunks) -> list[KnowledgeSource]:
     ]
 
 
+def _safe_retrieve(summary: MMMSummary):
+    """Retrieve grounding, treating an unavailable index as "no grounding".
+
+    The vector store is a hard dependency of *quality*, not of *liveness*: if it
+    can't be reached the report is less well cited, but it should still be
+    produced. Previously an exception here escaped mid-stream, which SSE reports
+    as a normal end-of-stream — the client saw a truncated analysis with no
+    error, which is the worst possible failure mode.
+    """
+    try:
+        return retriever.retrieve(_retrieval_query(summary))
+    except Exception:
+        logger.exception("Knowledge base retrieval failed; continuing ungrounded")
+        return []
+
+
+def _safe_retrieve_sources(summary: MMMSummary) -> list[KnowledgeSource]:
+    return _knowledge_sources(_safe_retrieve(summary))
+
+
 async def run(
     mmm_output, session_id: str, llm: LLMClient | None = None
 ) -> tuple[MMMSummary, AnalysisReport]:
     summary = mmm_parser.parse(mmm_output)
-    chunks = retriever.retrieve(_retrieval_query(summary))
+    chunks = _safe_retrieve(summary)
 
     llm = llm or get_agent_llm()
     try:
@@ -111,7 +134,7 @@ async def run_streaming(
     yield "summary", summary
 
     await asyncio.sleep(STAGE_DWELL_S)  # brief "consulting knowledge base" beat
-    chunks = retriever.retrieve(_retrieval_query(summary))
+    chunks = _safe_retrieve(summary)
     sources = _knowledge_sources(chunks)
     yield "sources", sources
     await asyncio.sleep(STAGE_DWELL_S)  # let the KB chips read before generating
@@ -155,8 +178,11 @@ async def replay_streaming(
     yield "summary", summary
 
     await asyncio.sleep(STAGE_DWELL_S)  # brief "consulting knowledge base" beat
-    chunks = retriever.retrieve(_retrieval_query(summary))
-    sources = _knowledge_sources(chunks)
+    # Reuse the citations stored with the report rather than re-querying the
+    # vector store. They are what this report was actually grounded in, so they
+    # are more faithful than a fresh lookup — and it keeps the entire replay path
+    # free of any runtime dependency on Chroma, which a demo host need not have.
+    sources = list(report.knowledge_sources or []) or _safe_retrieve_sources(summary)
     yield "sources", sources
     await asyncio.sleep(STAGE_DWELL_S)  # let the KB chips read before generating
 

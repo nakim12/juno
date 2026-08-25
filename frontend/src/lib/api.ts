@@ -148,6 +148,7 @@ export interface AnalysisStreamHandlers {
   onSources?: (sources: KnowledgeSource[]) => void;
   onProgress?: (chars: number) => void;
   onReport: (sessionId: string, report: AnalysisReport) => void;
+  onError?: (message: string) => void;
   onDone?: () => void;
 }
 
@@ -185,6 +186,7 @@ function dispatchAnalysisEvent(
   else if (eventType === "sources") handlers.onSources?.(data.sources);
   else if (eventType === "progress") handlers.onProgress?.(data.chars);
   else if (eventType === "report") handlers.onReport(data.session_id, data.report);
+  else if (eventType === "error") handlers.onError?.(data.message);
   else if (eventType === "done") handlers.onDone?.();
 }
 

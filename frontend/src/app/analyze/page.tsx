@@ -106,6 +106,7 @@ export default function Analyze() {
           setSessionId(session_id);
           setReport(rpt);
         },
+        onError: (message: string) => setError(message),
       });
     } catch (e) {
       // Callers handle this one: an upload that needs a key can still be parsed.
