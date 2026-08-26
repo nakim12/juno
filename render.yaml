@@ -7,11 +7,12 @@ services:
     runtime: python
     rootDir: backend
     plan: free
-    # The Chroma index is gitignored and the free tier's disk is ephemeral, so
-    # the corpus is re-indexed on every build. Without this the retriever starts
-    # with an empty index and silently degrades: answers still return, but with
-    # no methodology citations — which is the whole grounding story.
-    buildCommand: pip install -r requirements.txt && python -m app.rag.indexer --reset
+    # No index build here. The free tier has 512 MB, and loading the embedding
+    # model to query that index gets the process OOM-killed — building it would
+    # only produce an index the runtime can never safely open. Retrieval uses
+    # the model-free lexical backend instead (RETRIEVAL_BACKEND below), which
+    # reads the corpus markdown straight from the repo.
+    buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
@@ -33,6 +34,12 @@ services:
       # bug can. Set it locally to pre-compute content, not here.
       # - key: ANTHROPIC_API_KEY
       #   sync: false
+      # BM25 over the corpus rather than the embedding model. "auto" would
+      # detect this container's 512 MB limit and choose the same thing, but
+      # pinning it means retrieval behaviour doesn't quietly change if the
+      # instance size does. See app/rag/retriever.py.
+      - key: RETRIEVAL_BACKEND
+        value: lexical
       - key: OPENAI_API_KEY
         sync: false
       # JSON array of allowed origins, e.g. ["https://juno.vercel.app"].

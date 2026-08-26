@@ -43,6 +43,12 @@ class Settings(BaseSettings):
     rag_top_k: int = 8
     rag_rerank_candidates: int = 20
 
+    # Which retrieval backend to use. "auto" prefers the embedding model but
+    # steps down to BM25 when the container is too small to load it without
+    # being OOM-killed — see app/rag/retriever.py. Pin it explicitly to keep a
+    # deployment's retrieval behaviour from depending on its memory limit.
+    retrieval_backend: Literal["auto", "vector", "lexical"] = "auto"
+
     # Session
     session_ttl_seconds: int = 60 * 60 * 2  # 2 hours (design doc 5.7)
 
